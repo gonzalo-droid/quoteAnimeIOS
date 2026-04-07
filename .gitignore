@@ -1,0 +1,62 @@
+# ── Xcode ──────────────────────────────────────────────────────────────────
+**/*.xcodeproj/xcuserdata/
+**/*.xcworkspace/xcuserdata/
+**/*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcarchive
+*.dSYM.zip
+*.dSYM
+*.xcuserstate
+
+# ── Claude Code ─────────────────────────────────────────────────────────────
+.claude/
+
+# ── Swift Package Manager ───────────────────────────────────────────────────
+.build/
+.swiftpm/
+*.resolved           # descomenta si prefieres no fijar versiones en el repo
+# Package.resolved   # comenta esta línea para SÍ fijar versiones (recomendado)
+
+# ── CocoaPods (si alguna vez se usa) ───────────────────────────────────────
+Pods/
+*.xcworkspace
+!*.xcodeproj/project.xcworkspace
+
+# ── Archivos de sistema ─────────────────────────────────────────────────────
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# ── Secretos y configuración Firebase ──────────────────────────────────────
+# GoogleService-Info.plist contiene claves privadas de Firebase.
+# Añádelo manualmente en cada entorno o usa CI secrets.
+GoogleService-Info.plist
+
+# ── Archivos de build locales ───────────────────────────────────────────────
+build/
+*.o
+*.d
+
+# ── Fastlane ────────────────────────────────────────────────────────────────
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+
+# ── Cobertura y tests ───────────────────────────────────────────────────────
+*.gcda
+*.gcno
+xcov_report/
+
+# ── Editor ──────────────────────────────────────────────────────────────────
+.idea/
+*.swp
+*~

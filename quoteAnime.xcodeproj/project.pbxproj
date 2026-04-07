@@ -1,0 +1,646 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EA8F974D2F84DA3300A074F8 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F974C2F84DA3300A074F8 /* FirebaseAnalytics */; };
+		EA8F974F2F84DA3300A074F8 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F974E2F84DA3300A074F8 /* FirebaseAnalyticsCore */; };
+		EA8F97512F84DA3300A074F8 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F97502F84DA3300A074F8 /* FirebaseCore */; };
+		EA8F97532F84DA3300A074F8 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F97522F84DA3300A074F8 /* FirebaseCrashlytics */; };
+		EA8F97552F84DA3300A074F8 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F97542F84DA3300A074F8 /* FirebaseDatabase */; };
+		EA8F97572F84DA3300A074F8 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F97562F84DA3300A074F8 /* FirebaseMessaging */; };
+		EA8F97592F84DA3300A074F8 /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F97582F84DA3300A074F8 /* FirebasePerformance */; };
+		EA8F975B2F84DA3300A074F8 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F975A2F84DA3300A074F8 /* FirebaseRemoteConfig */; };
+		EA8F975E2F84DA6F00A074F8 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F975D2F84DA6F00A074F8 /* GoogleMobileAds */; };
+		EA8F97EB2F84DFBF00A074F8 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA8F97EA2F84DFBF00A074F8 /* WidgetKit.framework */; };
+		EA8F97ED2F84DFBF00A074F8 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA8F97EC2F84DFBF00A074F8 /* SwiftUI.framework */; };
+		EA8F97FC2F84DFC200A074F8 /* QuoteAnimeWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = EA8F97E82F84DFBF00A074F8 /* QuoteAnimeWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EA8F97FA2F84DFC200A074F8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA8F96BA2F84D00300A074F8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EA8F97E72F84DFBF00A074F8;
+			remoteInfo = QuoteAnimeWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EA8F97FD2F84DFC200A074F8 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				EA8F97FC2F84DFC200A074F8 /* QuoteAnimeWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		EA8F96C22F84D00300A074F8 /* quoteAnime.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = quoteAnime.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA8F97E82F84DFBF00A074F8 /* QuoteAnimeWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = QuoteAnimeWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA8F97EA2F84DFBF00A074F8 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		EA8F97EC2F84DFBF00A074F8 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		EA8F98062F84E11500A074F8 /* QuoteAnimeWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QuoteAnimeWidgetExtension.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		EA8F98002F84DFC200A074F8 /* Exceptions for "QuoteAnimeWidget" folder in "QuoteAnimeWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = EA8F97E72F84DFBF00A074F8 /* QuoteAnimeWidgetExtension */;
+		};
+		EA8F98082F84E1F400A074F8 /* Exceptions for "quoteAnime" folder in "quoteAnime" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = EA8F96C12F84D00300A074F8 /* quoteAnime */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		EA8F96C42F84D00300A074F8 /* quoteAnime */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				EA8F98082F84E1F400A074F8 /* Exceptions for "quoteAnime" folder in "quoteAnime" target */,
+			);
+			path = quoteAnime;
+			sourceTree = "<group>";
+		};
+		EA8F97EE2F84DFBF00A074F8 /* QuoteAnimeWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				EA8F98002F84DFC200A074F8 /* Exceptions for "QuoteAnimeWidget" folder in "QuoteAnimeWidgetExtension" target */,
+			);
+			path = QuoteAnimeWidget;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EA8F96BF2F84D00300A074F8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EA8F97592F84DA3300A074F8 /* FirebasePerformance in Frameworks */,
+				EA8F97572F84DA3300A074F8 /* FirebaseMessaging in Frameworks */,
+				EA8F97552F84DA3300A074F8 /* FirebaseDatabase in Frameworks */,
+				EA8F975E2F84DA6F00A074F8 /* GoogleMobileAds in Frameworks */,
+				EA8F974D2F84DA3300A074F8 /* FirebaseAnalytics in Frameworks */,
+				EA8F97532F84DA3300A074F8 /* FirebaseCrashlytics in Frameworks */,
+				EA8F97512F84DA3300A074F8 /* FirebaseCore in Frameworks */,
+				EA8F974F2F84DA3300A074F8 /* FirebaseAnalyticsCore in Frameworks */,
+				EA8F975B2F84DA3300A074F8 /* FirebaseRemoteConfig in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EA8F97E52F84DFBF00A074F8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EA8F97ED2F84DFBF00A074F8 /* SwiftUI.framework in Frameworks */,
+				EA8F97EB2F84DFBF00A074F8 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EA8F96B92F84D00300A074F8 = {
+			isa = PBXGroup;
+			children = (
+				EA8F98062F84E11500A074F8 /* QuoteAnimeWidgetExtension.entitlements */,
+				EA8F96C42F84D00300A074F8 /* quoteAnime */,
+				EA8F97EE2F84DFBF00A074F8 /* QuoteAnimeWidget */,
+				EA8F97E92F84DFBF00A074F8 /* Frameworks */,
+				EA8F96C32F84D00300A074F8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EA8F96C32F84D00300A074F8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EA8F96C22F84D00300A074F8 /* quoteAnime.app */,
+				EA8F97E82F84DFBF00A074F8 /* QuoteAnimeWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EA8F97E92F84DFBF00A074F8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EA8F97EA2F84DFBF00A074F8 /* WidgetKit.framework */,
+				EA8F97EC2F84DFBF00A074F8 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EA8F96C12F84D00300A074F8 /* quoteAnime */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EA8F96CD2F84D00500A074F8 /* Build configuration list for PBXNativeTarget "quoteAnime" */;
+			buildPhases = (
+				EA8F96BE2F84D00300A074F8 /* Sources */,
+				EA8F96BF2F84D00300A074F8 /* Frameworks */,
+				EA8F96C02F84D00300A074F8 /* Resources */,
+				EA8F97FD2F84DFC200A074F8 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EA8F97FB2F84DFC200A074F8 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				EA8F96C42F84D00300A074F8 /* quoteAnime */,
+			);
+			name = quoteAnime;
+			packageProductDependencies = (
+				EA8F974C2F84DA3300A074F8 /* FirebaseAnalytics */,
+				EA8F974E2F84DA3300A074F8 /* FirebaseAnalyticsCore */,
+				EA8F97502F84DA3300A074F8 /* FirebaseCore */,
+				EA8F97522F84DA3300A074F8 /* FirebaseCrashlytics */,
+				EA8F97542F84DA3300A074F8 /* FirebaseDatabase */,
+				EA8F97562F84DA3300A074F8 /* FirebaseMessaging */,
+				EA8F97582F84DA3300A074F8 /* FirebasePerformance */,
+				EA8F975A2F84DA3300A074F8 /* FirebaseRemoteConfig */,
+				EA8F975D2F84DA6F00A074F8 /* GoogleMobileAds */,
+			);
+			productName = quoteAnime;
+			productReference = EA8F96C22F84D00300A074F8 /* quoteAnime.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EA8F97E72F84DFBF00A074F8 /* QuoteAnimeWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EA8F98012F84DFC200A074F8 /* Build configuration list for PBXNativeTarget "QuoteAnimeWidgetExtension" */;
+			buildPhases = (
+				EA8F97E42F84DFBF00A074F8 /* Sources */,
+				EA8F97E52F84DFBF00A074F8 /* Frameworks */,
+				EA8F97E62F84DFBF00A074F8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				EA8F97EE2F84DFBF00A074F8 /* QuoteAnimeWidget */,
+			);
+			name = QuoteAnimeWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = QuoteAnimeWidgetExtension;
+			productReference = EA8F97E82F84DFBF00A074F8 /* QuoteAnimeWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EA8F96BA2F84D00300A074F8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					EA8F96C12F84D00300A074F8 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					EA8F97E72F84DFBF00A074F8 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+				};
+			};
+			buildConfigurationList = EA8F96BD2F84D00300A074F8 /* Build configuration list for PBXProject "quoteAnime" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EA8F96B92F84D00300A074F8;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				EA8F974B2F84DA3300A074F8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				EA8F975C2F84DA6F00A074F8 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = EA8F96C32F84D00300A074F8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EA8F96C12F84D00300A074F8 /* quoteAnime */,
+				EA8F97E72F84DFBF00A074F8 /* QuoteAnimeWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EA8F96C02F84D00300A074F8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EA8F97E62F84DFBF00A074F8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EA8F96BE2F84D00300A074F8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EA8F97E42F84DFBF00A074F8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EA8F97FB2F84DFC200A074F8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EA8F97E72F84DFBF00A074F8 /* QuoteAnimeWidgetExtension */;
+			targetProxy = EA8F97FA2F84DFC200A074F8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		EA8F96CB2F84D00500A074F8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 2436FLG37H;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		EA8F96CC2F84D00500A074F8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 2436FLG37H;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EA8F96CE2F84D00500A074F8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = quoteAnime/quoteAnime.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2436FLG37H;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = quoteAnime/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gonzadev.quoteAnime;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EA8F96CF2F84D00500A074F8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = quoteAnime/quoteAnime.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2436FLG37H;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = quoteAnime/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gonzadev.quoteAnime;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EA8F97FE2F84DFC200A074F8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = QuoteAnimeWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2436FLG37H;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = QuoteAnimeWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = QuoteAnimeWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gonzadev.quoteAnime.QuoteAnimeWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EA8F97FF2F84DFC200A074F8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = QuoteAnimeWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2436FLG37H;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = QuoteAnimeWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = QuoteAnimeWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gonzadev.quoteAnime.QuoteAnimeWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EA8F96BD2F84D00300A074F8 /* Build configuration list for PBXProject "quoteAnime" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA8F96CB2F84D00500A074F8 /* Debug */,
+				EA8F96CC2F84D00500A074F8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EA8F96CD2F84D00500A074F8 /* Build configuration list for PBXNativeTarget "quoteAnime" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA8F96CE2F84D00500A074F8 /* Debug */,
+				EA8F96CF2F84D00500A074F8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EA8F98012F84DFC200A074F8 /* Build configuration list for PBXNativeTarget "QuoteAnimeWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA8F97FE2F84DFC200A074F8 /* Debug */,
+				EA8F97FF2F84DFC200A074F8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EA8F974B2F84DA3300A074F8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.0;
+			};
+		};
+		EA8F975C2F84DA6F00A074F8 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EA8F974C2F84DA3300A074F8 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F974B2F84DA3300A074F8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		EA8F974E2F84DA3300A074F8 /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F974B2F84DA3300A074F8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		EA8F97502F84DA3300A074F8 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F974B2F84DA3300A074F8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		EA8F97522F84DA3300A074F8 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F974B2F84DA3300A074F8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		EA8F97542F84DA3300A074F8 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F974B2F84DA3300A074F8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		EA8F97562F84DA3300A074F8 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F974B2F84DA3300A074F8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		EA8F97582F84DA3300A074F8 /* FirebasePerformance */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F974B2F84DA3300A074F8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebasePerformance;
+		};
+		EA8F975A2F84DA3300A074F8 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F974B2F84DA3300A074F8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
+		EA8F975D2F84DA6F00A074F8 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F975C2F84DA6F00A074F8 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = EA8F96BA2F84D00300A074F8 /* Project object */;
+}
