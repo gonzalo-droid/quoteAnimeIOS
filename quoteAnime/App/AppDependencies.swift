@@ -43,9 +43,16 @@ final class AppDependencies: ObservableObject {
             }
         }
 
+        // ── Remote data sources ──
+        let remote     = QuoteRemoteDataSource()
+        let imagesDS   = AnimeImagesRemoteDataSource()
+
         // ── Repositories ──
-        let remote = QuoteRemoteDataSource()
-        let quoteRepo = QuoteRepositoryImpl(remoteDataSource: remote, favoriteStorage: favoriteStorage)
+        let quoteRepo = QuoteRepositoryImpl(
+            remoteDataSource: remote,
+            imagesDataSource: imagesDS,
+            favoriteStorage: favoriteStorage
+        )
         self.quoteRepository = quoteRepo
 
         let prefStore = UserPreferencesStore()

@@ -8,7 +8,7 @@ enum AppScreen: Equatable {
 }
 
 enum AppRoute: Hashable {
-    case catalog(categoryId: String?)
+    case catalog
     case settings
     case widgetTutorial
 }

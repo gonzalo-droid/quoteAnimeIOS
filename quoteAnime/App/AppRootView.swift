@@ -83,13 +83,11 @@ struct MainContainerView: View {
     @ViewBuilder
     private func destination(for route: AppRoute) -> some View {
         switch route {
-        case .catalog(let categoryId):
+        case .catalog:
             CatalogView(
-                getCategoriesUseCase: deps.getCategoriesUseCase,
-                getQuotesByCategoryUseCase: deps.getQuotesByCategoryUseCase,
+                getAllQuotesUseCase: deps.getAllQuotesUseCase,
                 getFavoriteQuotesUseCase: deps.getFavoriteQuotesUseCase,
-                toggleFavoriteUseCase: deps.toggleFavoriteUseCase,
-                initialCategoryId: categoryId
+                toggleFavoriteUseCase: deps.toggleFavoriteUseCase
             )
 
         case .settings:

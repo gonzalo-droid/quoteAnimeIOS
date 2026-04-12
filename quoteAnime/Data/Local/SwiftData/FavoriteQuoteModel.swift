@@ -8,17 +8,27 @@ final class FavoriteQuoteModel {
     var quoteText: String
     var author: String
     var anime: String
+    var animeSlug: String?
     var savedAt: Date
 
     init(from quote: Quote) {
-        self.id = quote.id
+        self.id        = quote.id
         self.quoteText = quote.quote
-        self.author = quote.author
-        self.anime = quote.anime
-        self.savedAt = Date()
+        self.author    = quote.author
+        self.anime     = quote.anime
+        self.animeSlug = quote.animeSlug
+        self.savedAt   = Date()
     }
 
     func toDomain() -> Quote {
-        Quote(id: id, quote: quoteText, author: author, anime: anime, isFavorite: true)
+        Quote(
+            id: id,
+            quote: quoteText,
+            author: author,
+            anime: anime,
+            categories: [],
+            animeSlug: animeSlug,
+            isFavorite: true
+        )
     }
 }

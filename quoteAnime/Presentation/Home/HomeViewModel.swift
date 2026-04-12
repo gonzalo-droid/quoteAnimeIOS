@@ -11,7 +11,7 @@ final class HomeViewModel: ObservableObject {
     @Published var shareImage: UIImage? = nil
 
     private var getAllQuotes: GetAllQuotesUseCase?
-    private var toggleFavorite: ToggleFavoriteUseCase?
+    private var toggleFavoriteUseCase: ToggleFavoriteUseCase?
     private var getCategoriesUseCase: GetCategoriesUseCase?
     private var getUserPreferences: GetUserPreferencesUseCase?
     private var router: AppRouter?
@@ -29,10 +29,10 @@ final class HomeViewModel: ObservableObject {
         guard !setupDone else { return }
         setupDone = true
         self.getAllQuotes          = getAllQuotes
-        self.toggleFavorite       = toggleFavorite
-        self.getCategoriesUseCase = getCategoriesUseCase
-        self.getUserPreferences   = getUserPreferences
-        self.router               = router
+        self.toggleFavoriteUseCase = toggleFavorite
+        self.getCategoriesUseCase  = getCategoriesUseCase
+        self.getUserPreferences    = getUserPreferences
+        self.router                = router
         Task { await loadQuotes() }
     }
 
@@ -42,10 +42,10 @@ final class HomeViewModel: ObservableObject {
         isLoading = true
         loadError = nil
         do {
-            let prefs       = getUserPreferences?.execute() ?? UserPreferences()
-            let fetched     = try await getAllQuotes?.execute(filteredBy: prefs.selectedCategoryIds) ?? []
-            quotes          = fetched.shuffled()
-            currentIndex    = 0
+            let prefs = getUserPreferences?.execute() ?? UserPreferences()
+            let fetched = try await getAllQuotes?.execute(filteredBy: prefs.selectedCategoryIds) ?? []
+            quotes       = fetched.shuffled()
+            currentIndex = 0
         } catch {
             loadError = error.localizedDescription
         }
@@ -54,11 +54,11 @@ final class HomeViewModel: ObservableObject {
 
     // MARK: - Favorites
 
-    func toggleFavoriteForCurrentQuote() async {
-        guard currentIndex < quotes.count else { return }
+    func toggleFavorite(at index: Int) async {
+        guard index < quotes.count else { return }
         do {
-            try await toggleFavorite?.execute(quotes[currentIndex])
-            quotes[currentIndex].isFavorite.toggle()
+            try await toggleFavoriteUseCase?.execute(quotes[index])
+            quotes[index].isFavorite.toggle()
         } catch {
             print("[HomeViewModel] toggleFavorite error: \(error)")
         }
@@ -69,17 +69,16 @@ final class HomeViewModel: ObservableObject {
     func buildShareImage() {
         guard currentIndex < quotes.count else { return }
         let quote = quotes[currentIndex]
-        let card  = ShareCardView(quote: quote)
-        let renderer = ImageRenderer(content: card)
-        renderer.scale = UIScreen.main.scale
-        shareImage = renderer.uiImage
-        if shareImage != nil { showShareSheet = true }
+        Task {
+            shareImage = await ShareImageRenderer.fetchAndRender(quote: quote)
+            if shareImage != nil { showShareSheet = true }
+        }
     }
 
     // MARK: - Navigation
 
-    func openCatalog(categoryId: String? = nil) {
-        router?.push(.catalog(categoryId: categoryId))
+    func openCatalog() {
+        router?.push(.catalog)
     }
 
     func openSettings() {
@@ -87,11 +86,6 @@ final class HomeViewModel: ObservableObject {
     }
 
     // MARK: - Helpers
-
-    var currentAnime: String? {
-        guard currentIndex < quotes.count else { return nil }
-        return quotes[currentIndex].anime
-    }
 
     static let gradients: [(Color, Color)] = [
         (Color(hex: "#0C0C1E"), Color(hex: "#1A1040")),
