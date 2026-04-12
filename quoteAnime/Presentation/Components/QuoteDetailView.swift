@@ -34,29 +34,24 @@ struct QuoteDetailView<Actions: View>: View {
                     actions()
                         .padding(.bottom, geo.safeAreaInsets.bottom + 20)
                 }
-
-                // Optional back button
-                if let onBack {
-                    VStack {
-                        HStack {
-                            Button(action: onBack) {
-                                Image(systemName: "chevron.left")
-                                    .font(.system(size: 17, weight: .semibold))
-                                    .foregroundColor(.white)
-                                    .frame(width: 40, height: 40)
-                                    .background(Color.black.opacity(0.35))
-                                    .clipShape(Circle())
-                            }
-                            .padding(.leading, 16)
-                            .padding(.top, geo.safeAreaInsets.top + 8)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                }
             }
         }
         .ignoresSafeArea()
+        // Back button as overlay so SwiftUI maneja el safe area automáticamente
+        .overlay(alignment: .topLeading) {
+            if let onBack {
+                Button(action: onBack) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 40, height: 40)
+                        .background(Color.black.opacity(0.35))
+                        .clipShape(Circle())
+                }
+                .padding(.leading, 16)
+                .padding(.top, 8)
+            }
+        }
     }
 
     // MARK: - Subviews

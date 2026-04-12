@@ -18,11 +18,9 @@ struct CatalogView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.bgDark.ignoresSafeArea()
-
+        Group {
             if let selectedQuote = viewModel.uiState.selectedQuote {
-                // VISTA 3 — Detail full-screen
+                // VISTA 3 — Detail full-screen (manages its own background)
                 detailView(quote: selectedQuote)
                     .transition(.opacity)
             } else if let filter = viewModel.uiState.selectedFilter {
@@ -35,6 +33,9 @@ struct CatalogView: View {
                     .transition(.move(edge: .leading).combined(with: .opacity))
             }
         }
+        // Background extends under status bar; content VStacks respect safe area naturally
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.bgDark.ignoresSafeArea())
         .animation(.easeInOut(duration: 0.25), value: viewModel.uiState.selectedFilter)
         .animation(.easeInOut(duration: 0.20), value: viewModel.uiState.selectedQuote?.id)
         .navigationBarHidden(true)
@@ -187,7 +188,9 @@ struct CatalogView: View {
 
                 // Share
                 CircleActionButton(icon: "square.and.arrow.up", color: .white) {
-                    viewModel.buildShareImage(for: quote)
+                    ShareInterstitialManager.shared.onShareRequested {
+                        viewModel.buildShareImage(for: quote)
+                    }
                 }
             }
         }

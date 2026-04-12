@@ -25,8 +25,9 @@ struct OnboardingView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut, value: viewModel.currentPage)
 
-            // Overlay controls
-            VStack {
+            // Overlay controls — GeometryReader reads the real safe area inset
+            GeometryReader { geo in
+             VStack {
                 // Skip button
                 HStack {
                     Spacer()
@@ -34,8 +35,8 @@ struct OnboardingView: View {
                         .font(.system(size: 15, weight: .medium))
                         .foregroundColor(.textSecondary)
                         .padding(.horizontal, 24)
-                        .padding(.top, 56)
                 }
+                .padding(.top, geo.safeAreaInsets.top + 12)
 
                 Spacer()
 
@@ -69,6 +70,8 @@ struct OnboardingView: View {
                 .padding(.top, 20)
                 .padding(.bottom, 48)
             }
+            }
+            .ignoresSafeArea()
         }
     }
 }

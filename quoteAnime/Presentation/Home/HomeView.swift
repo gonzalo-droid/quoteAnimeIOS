@@ -49,17 +49,20 @@ private struct HomeContentView: View {
             }
             .ignoresSafeArea()
 
-            // Settings button
-            HStack {
-                Spacer()
-                Button { router.push(.settings) } label: {
-                    Image(systemName: "gearshape.fill")
-                        .font(.system(size: 20))
-                        .foregroundColor(.white.opacity(0.7))
-                        .padding(14)
+            // Settings button — safe area handled naturally by the ZStack
+            VStack {
+                HStack {
+                    Spacer()
+                    Button { router.push(.settings) } label: {
+                        Image(systemName: "gearshape.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white.opacity(0.7))
+                            .padding(14)
+                    }
                 }
+                .padding(.top, 4)
+                Spacer()
             }
-            .padding(.top, 8)
         }
         .navigationBarHidden(true)
     }
@@ -135,7 +138,9 @@ private struct QuotePageView: View {
                     }
 
                     // Share
-                    Button(action: onShare) {
+                    Button {
+                        ShareInterstitialManager.shared.onShareRequested(onProceed: onShare)
+                    } label: {
                         Image(systemName: "square.and.arrow.up")
                             .font(.system(size: 24))
                             .foregroundColor(.white.opacity(0.8))
@@ -150,10 +155,10 @@ private struct QuotePageView: View {
                 }
                 .padding(.bottom, 16)
 
-                // AdMob banner
-                BannerAdView(adUnitID: AdConstants.homeBannerID)
-                    .frame(height: 50)
-                    .padding(.bottom, 12)
+                // Banner desactivado temporalmente — reemplazado por intersticial en flujo de compartir
+                // BannerAdView(adUnitID: AdConstants.homeBannerID)
+                //     .frame(height: 50)
+                //     .padding(.bottom, 12)
             }
         }
     }

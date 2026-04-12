@@ -1,5 +1,6 @@
 import SwiftUI
 import FirebaseCore
+import GoogleMobileAds
 
 @main
 struct QuoteAnimeApp: App {
@@ -8,6 +9,9 @@ struct QuoteAnimeApp: App {
 
     init() {
         FirebaseApp.configure()
+        MobileAds.shared.start()
+        // Warm up the interstitial so the first ad is ready when the user shares
+        _ = ShareInterstitialManager.shared
         _dependencies = StateObject(wrappedValue: AppDependencies())
         _router       = StateObject(wrappedValue: AppRouter())
     }
