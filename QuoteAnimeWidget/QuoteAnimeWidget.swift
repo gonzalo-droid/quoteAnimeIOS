@@ -252,6 +252,34 @@ struct QuoteWidgetMediumContent: View {
 }
 
 // Entry-point view
+// Lock screen rectangular — quote text only, system vibrant rendering
+struct QuoteWidgetLockScreenContent: View {
+    let entry: QuoteEntry
+    var body: some View {
+        Text(entry.quoteText)
+            .font(.custom("Georgia", size: 11))
+            .lineSpacing(2)
+            .lineLimit(3)
+            .minimumScaleFactor(0.8)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .widgetAccentable()
+    }
+}
+
+// Lock screen inline — single line (shown above the clock)
+struct QuoteWidgetInlineContent: View {
+    let entry: QuoteEntry
+    var body: some View {
+        // Inline only supports a single Label or Text — keep it short
+        Text("\u{201C} \(entry.quoteText)")
+            .lineLimit(1)
+            .widgetAccentable()
+    }
+}
+
+// MARK: - Entry-point views
+
+// Home screen entry view
 // iOS 17+: transparent (containerBackground handles fill + corner clipping)
 // iOS 16:  ZStack with explicit background to fill the widget frame
 struct QuoteAnimeWidgetEntryView: View {
@@ -260,17 +288,17 @@ struct QuoteAnimeWidgetEntryView: View {
 
     var body: some View {
         if #available(iOS 17.0, *) {
-            content // background comes from containerBackground
+            homeContent
         } else {
             ZStack {
                 QuoteWidgetBackground(imageData: entry.backgroundImageData)
-                content
+                homeContent
             }
         }
     }
 
     @ViewBuilder
-    private var content: some View {
+    private var homeContent: some View {
         switch family {
         case .systemMedium, .systemLarge:
             QuoteWidgetMediumContent(entry: entry)
@@ -280,7 +308,22 @@ struct QuoteAnimeWidgetEntryView: View {
     }
 }
 
-// MARK: - Widget
+// Lock screen entry view — no background, system handles rendering
+struct QuoteAnimeLockWidgetEntryView: View {
+    @Environment(\.widgetFamily) var family
+    let entry: QuoteEntry
+
+    var body: some View {
+        switch family {
+        case .accessoryInline:
+            QuoteWidgetInlineContent(entry: entry)
+        default:
+            QuoteWidgetLockScreenContent(entry: entry)
+        }
+    }
+}
+
+// MARK: - Widgets
 
 struct QuoteAnimeWidget: Widget {
     let kind = "QuoteAnimeWidget"
@@ -288,7 +331,6 @@ struct QuoteAnimeWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: QuoteProvider()) { entry in
             if #available(iOS 17.0, *) {
-                // containerBackground fills the full widget shape including corners
                 QuoteAnimeWidgetEntryView(entry: entry)
                     .containerBackground(for: .widget) {
                         QuoteWidgetBackground(imageData: entry.backgroundImageData)
@@ -303,6 +345,21 @@ struct QuoteAnimeWidget: Widget {
     }
 }
 
+// Lock screen widget — iOS 16+
+struct QuoteAnimeLockWidget: Widget {
+    let kind = "QuoteAnimeLockWidget"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: QuoteProvider()) { entry in
+            QuoteAnimeLockWidgetEntryView(entry: entry)
+                .containerBackground(for: .widget) { Color.clear }
+        }
+        .configurationDisplayName("Quote Anime — Lock Screen")
+        .description("Una frase de anime en tu pantalla de bloqueo.")
+        .supportedFamilies([.accessoryRectangular, .accessoryInline])
+    }
+}
+
 // MARK: - Previews
 
 #Preview("Small", as: .systemSmall) {
@@ -313,6 +370,18 @@ struct QuoteAnimeWidget: Widget {
 
 #Preview("Medium", as: .systemMedium) {
     QuoteAnimeWidget()
+} timeline: {
+    QuoteEntry.placeholder
+}
+
+#Preview("Lock Rectangular", as: .accessoryRectangular) {
+    QuoteAnimeLockWidget()
+} timeline: {
+    QuoteEntry.placeholder
+}
+
+#Preview("Lock Inline", as: .accessoryInline) {
+    QuoteAnimeLockWidget()
 } timeline: {
     QuoteEntry.placeholder
 }
