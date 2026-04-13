@@ -95,7 +95,7 @@ struct MainContainerView: View {
                 getUserPreferences: deps.getUserPreferencesUseCase,
                 updateUserPreferences: deps.updateUserPreferencesUseCase,
                 notificationScheduler: deps.notificationScheduler,
-                getRandomQuote: deps.getRandomQuoteUseCase
+                getAllQuotes: deps.getAllQuotesUseCase
             )
 
         case .widgetTutorial:

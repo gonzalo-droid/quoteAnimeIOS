@@ -9,13 +9,13 @@ struct SettingsView: View {
         getUserPreferences: GetUserPreferencesUseCase,
         updateUserPreferences: UpdateUserPreferencesUseCase,
         notificationScheduler: NotificationScheduler,
-        getRandomQuote: GetRandomQuoteUseCase
+        getAllQuotes: GetAllQuotesUseCase
     ) {
         _viewModel = StateObject(wrappedValue: SettingsViewModel(
             getUserPreferences: getUserPreferences,
             updateUserPreferences: updateUserPreferences,
             notificationScheduler: notificationScheduler,
-            getRandomQuote: getRandomQuote
+            getAllQuotes: getAllQuotes
         ))
     }
 
@@ -58,6 +58,7 @@ struct SettingsView: View {
             .tint(.accentPurple)
 
             if viewModel.preferences.notificationsEnabled {
+
                 DatePicker(
                     "Desde",
                     selection: Binding(

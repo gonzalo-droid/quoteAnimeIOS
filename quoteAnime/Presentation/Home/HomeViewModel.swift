@@ -14,6 +14,7 @@ final class HomeViewModel: ObservableObject {
     private var toggleFavoriteUseCase: ToggleFavoriteUseCase?
     private var getCategoriesUseCase: GetCategoriesUseCase?
     private var getUserPreferences: GetUserPreferencesUseCase?
+    private var notificationScheduler: NotificationScheduler?
     private var router: AppRouter?
     private var setupDone = false
 
@@ -24,14 +25,16 @@ final class HomeViewModel: ObservableObject {
         toggleFavorite: ToggleFavoriteUseCase,
         getCategoriesUseCase: GetCategoriesUseCase,
         getUserPreferences: GetUserPreferencesUseCase,
+        notificationScheduler: NotificationScheduler,
         router: AppRouter
     ) {
         guard !setupDone else { return }
         setupDone = true
-        self.getAllQuotes          = getAllQuotes
+        self.getAllQuotes           = getAllQuotes
         self.toggleFavoriteUseCase = toggleFavorite
         self.getCategoriesUseCase  = getCategoriesUseCase
         self.getUserPreferences    = getUserPreferences
+        self.notificationScheduler = notificationScheduler
         self.router                = router
         Task { await loadQuotes() }
     }
@@ -50,6 +53,13 @@ final class HomeViewModel: ObservableObject {
             loadError = error.localizedDescription
         }
         isLoading = false
+
+        // Refill notification budget on every app launch
+        // (iOS allows max 64 pending notifications; with high frequency they drain in days)
+        let prefs = getUserPreferences?.execute() ?? UserPreferences()
+        if prefs.notificationsEnabled, !quotes.isEmpty {
+            await notificationScheduler?.reschedule(preferences: prefs, quotes: quotes)
+        }
     }
 
     // MARK: - Favorites

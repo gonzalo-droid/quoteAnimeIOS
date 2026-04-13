@@ -37,6 +37,10 @@ final class UserPreferencesStore {
         defaults.set(preferences.notificationFrequency,   forKey: Keys.notificationFrequency)
         defaults.set(preferences.widgetUpdateTimesPerDay, forKey: Keys.widgetUpdateTimesPerDay)
         defaults.set(Array(preferences.selectedCategoryIds), forKey: Keys.selectedCategoryIds)
+
+        // Share widget frequency with the widget extension via App Group
+        UserDefaults(suiteName: "group.com.gonzadev.quoteAnime")?
+            .set(preferences.widgetUpdateTimesPerDay, forKey: "widget_update_times_per_day")
     }
 
     var isOnboardingCompleted: Bool {

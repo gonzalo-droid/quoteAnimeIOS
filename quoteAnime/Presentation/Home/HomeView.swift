@@ -14,6 +14,7 @@ struct HomeContainerView: View {
                 toggleFavorite: deps.toggleFavoriteUseCase,
                 getCategoriesUseCase: deps.getCategoriesUseCase,
                 getUserPreferences: deps.getUserPreferencesUseCase,
+                notificationScheduler: deps.notificationScheduler,
                 router: router
             )}
             .sheet(isPresented: $viewModel.showShareSheet) {

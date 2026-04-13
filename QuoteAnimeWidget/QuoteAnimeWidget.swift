@@ -17,6 +17,13 @@ private enum SharedKey {
     static let imageUrl    = "widget_image_url"
 }
 
+// MARK: - Helpers
+
+private extension Int {
+    /// Returns nil when the Int is zero, used to safely handle missing UserDefaults values.
+    var nonZero: Int? { self == 0 ? nil : self }
+}
+
 // MARK: - Theme (inline — widget target has no access to app's Theme/)
 
 private extension Color {
@@ -143,10 +150,21 @@ struct QuoteProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<QuoteEntry>) -> Void) {
         Task {
             let entry = await WidgetNetworkService.fetchEntry() ?? WidgetNetworkService.readAppGroup()
-            // Refresh every 2 hours
-            let next = Calendar.current.date(byAdding: .hour, value: 2, to: entry.date) ?? entry.date
+            let next = Calendar.current.date(byAdding: .minute,
+                                             value: refreshIntervalMinutes(),
+                                             to: entry.date) ?? entry.date
             completion(Timeline(entries: [entry], policy: .after(next)))
         }
+    }
+
+    /// Converts the user-configured "times per day" into a minute interval.
+    /// Reads from App Group so the widget extension can access it.
+    /// Falls back to 2 times/day (720 min) if not set.
+    private func refreshIntervalMinutes() -> Int {
+        let timesPerDay = UserDefaults(suiteName: kAppGroupSuite)?
+            .integer(forKey: "widget_update_times_per_day")
+            .nonZero ?? 2
+        return max(1, (24 * 60) / timesPerDay)
     }
 }
 

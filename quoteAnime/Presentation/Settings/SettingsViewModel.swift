@@ -11,19 +11,19 @@ final class SettingsViewModel: ObservableObject {
     private let getUserPreferences: GetUserPreferencesUseCase
     private let updateUserPreferences: UpdateUserPreferencesUseCase
     private let notificationScheduler: NotificationScheduler
-    private let getRandomQuote: GetRandomQuoteUseCase
+    private let getAllQuotes: GetAllQuotesUseCase
     private var setupDone = false
 
     init(
         getUserPreferences: GetUserPreferencesUseCase,
         updateUserPreferences: UpdateUserPreferencesUseCase,
         notificationScheduler: NotificationScheduler,
-        getRandomQuote: GetRandomQuoteUseCase
+        getAllQuotes: GetAllQuotesUseCase
     ) {
         self.getUserPreferences    = getUserPreferences
         self.updateUserPreferences = updateUserPreferences
         self.notificationScheduler = notificationScheduler
-        self.getRandomQuote        = getRandomQuote
+        self.getAllQuotes           = getAllQuotes
     }
 
     func onAppear() {
@@ -61,10 +61,55 @@ final class SettingsViewModel: ObservableObject {
     }
 
     private func reschedule() async {
-        guard let quote = try? await getRandomQuote.execute() else { return }
-        // Provide a variety of quotes by using a singleton quote for now;
-        // A full implementation would cache all quotes and sample from them.
-        await notificationScheduler.reschedule(preferences: preferences, quotes: [quote])
+        guard let quotes = try? await getAllQuotes.execute(filteredBy: []),
+              !quotes.isEmpty else { return }
+        await notificationScheduler.reschedule(preferences: preferences, quotes: quotes)
+    }
+
+    // MARK: - Test notifications
+
+    @Published var testNotificationMessage: String? = nil
+
+    /// Schedules `count` notifications firing 5 s apart, each with a different quote.
+    /// Removes them after 60 s so they don't pollute the real schedule.
+    func scheduleTestNotifications(count: Int = 3) async {
+        let status = await notificationScheduler.authorizationStatus()
+        guard status == .authorized || status == .provisional else {
+            testNotificationMessage = "Activa los permisos de notificaciones primero."
+            return
+        }
+
+        guard let quotes = try? await getAllQuotes.execute(filteredBy: []),
+              !quotes.isEmpty else {
+            testNotificationMessage = "No hay frases disponibles."
+            return
+        }
+
+        let center = UNUserNotificationCenter.current()
+
+        // Remove previous test notifications
+        let testIDs = (0..<count).map { "test_notification_\($0)" }
+        center.removePendingNotificationRequests(withIdentifiers: testIDs)
+
+        var shuffled = quotes.shuffled()
+        for i in 0..<count {
+            let quote   = shuffled[i % shuffled.count]
+            let content = NotificationHelper.makeContent(for: quote)
+            content.subtitle = "(\(i + 1)/\(count)) " + content.subtitle
+
+            let trigger = UNTimeIntervalNotificationTrigger(
+                timeInterval: Double((i + 1) * 5),   // 5 s, 10 s, 15 s …
+                repeats: false
+            )
+            let request = UNNotificationRequest(
+                identifier: testIDs[i],
+                content: content,
+                trigger: trigger
+            )
+            try? await center.add(request)
+        }
+
+        testNotificationMessage = "\(count) notificaciones de prueba en \(count * 5) segundos."
     }
 
     // MARK: - DatePicker bindings
@@ -97,6 +142,6 @@ final class SettingsViewModel: ObservableObject {
     // MARK: - App Version
 
     var appVersion: String {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
     }
 }
