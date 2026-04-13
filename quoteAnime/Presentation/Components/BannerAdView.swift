@@ -25,5 +25,5 @@ struct BannerAdView: UIViewRepresentable {
 /// Centralized ad unit IDs. Replace with real IDs before production.
 enum AdConstants {
     static let homeBannerID       = "ca-app-pub-1427341798923689/4873365993" // AdMob test banner ID
-    static let shareInterstitialID = "ca-app-pub-1427341798923689/1127716194" // AdMob test interstitial ID
+    static let shareInterstitialID = "ca-app-pub-1427341798923689/7805407829" // AdMob test interstitial ID
 }

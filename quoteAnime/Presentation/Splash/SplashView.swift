@@ -11,12 +11,12 @@ struct SplashView: View {
         ZStack {
             Color.bgDark.ignoresSafeArea()
 
-            VStack(spacing: 12) {
-                Image(systemName: "quote.bubble.fill")
+            VStack(spacing: 16) {
+                Image("AppLogo")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 80, height: 80)
-                    .foregroundStyle(Color.accentPurple)
+                    .frame(width: 110, height: 110)
+                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
 
                 Text("Quote Anime")
                     .font(.quoteSerif(size: 28))
