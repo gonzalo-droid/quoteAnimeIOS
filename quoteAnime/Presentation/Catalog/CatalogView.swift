@@ -100,8 +100,7 @@ struct CatalogView: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.textPrimary)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 20)
+            .frame(maxWidth: .infinity, minHeight: 64)
             .background(Color.surface)
             .cornerRadius(16)
             .overlay(

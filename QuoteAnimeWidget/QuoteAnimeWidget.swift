@@ -275,8 +275,8 @@ struct QuoteWidgetLockScreenContent: View {
     let entry: QuoteEntry
     var body: some View {
         Text(entry.quoteText)
-            .font(.custom("Georgia", size: 11))
-            .lineSpacing(2)
+            .font(.custom("SF Pro", size: 14))
+            .lineSpacing(1)
             .lineLimit(3)
             .minimumScaleFactor(0.8)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
