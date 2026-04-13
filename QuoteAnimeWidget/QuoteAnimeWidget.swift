@@ -181,91 +181,101 @@ struct QuoteWidgetBackground: View {
     }
 }
 
-// Small widget — compact layout
-struct QuoteWidgetSmallView: View {
+// Small widget — content only, no background (background injected by caller)
+struct QuoteWidgetSmallContent: View {
     let entry: QuoteEntry
     var body: some View {
-        ZStack {
-            QuoteWidgetBackground(imageData: entry.backgroundImageData)
-            VStack(alignment: .leading, spacing: 0) {
-                Text("\u{201C}")
-                    .font(.custom("Georgia", size: 32))
-                    .foregroundColor(.wAccentPurple.opacity(0.6))
-                    .padding(.bottom, -10)
+        VStack(alignment: .leading, spacing: 0) {
+            Text("\u{201C}")
+                .font(.custom("Georgia", size: 32))
+                .foregroundColor(.wAccentPurple.opacity(0.6))
+                .padding(.bottom, -10)
 
-                Text(entry.quoteText)
-                    .font(.custom("Georgia-Italic", size: 12))
-                    .foregroundColor(.wTextPrimary)
-                    .lineSpacing(3)
-                    .lineLimit(5)
+            Text(entry.quoteText)
+                .font(.custom("Georgia-Italic", size: 12))
+                .foregroundColor(.wTextPrimary)
+                .lineSpacing(3)
+                .lineLimit(5)
 
-                Spacer(minLength: 6)
+            Spacer(minLength: 6)
 
-                Text("— \(entry.author)")
-                    .font(.custom("Georgia", size: 10))
-                    .foregroundColor(.wTextPrimary.opacity(0.8))
+            Text("— \(entry.author)")
+                .font(.custom("Georgia", size: 10))
+                .foregroundColor(.wTextPrimary.opacity(0.8))
 
-                Text(entry.anime.uppercased())
-                    .font(.system(size: 8, weight: .bold))
-                    .kerning(1.5)
-                    .foregroundColor(.wAccentPurple)
-                    .padding(.top, 2)
-            }
-            .padding(14)
+            Text(entry.anime.uppercased())
+                .font(.system(size: 8, weight: .bold))
+                .kerning(1.5)
+                .foregroundColor(.wAccentPurple)
+                .padding(.top, 2)
         }
+        .padding(14)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }
 }
 
-// Medium widget — full design matching the reference
-struct QuoteWidgetMediumView: View {
+// Medium widget — content only, no background (background injected by caller)
+struct QuoteWidgetMediumContent: View {
     let entry: QuoteEntry
     var body: some View {
-        ZStack {
-            QuoteWidgetBackground(imageData: entry.backgroundImageData)
-            VStack(alignment: .leading, spacing: 0) {
-                Text("\u{201C}")
-                    .font(.custom("Georgia", size: 48))
-                    .foregroundColor(.wAccentPurple.opacity(0.5))
-                    .padding(.bottom, -14)
+        VStack(alignment: .leading, spacing: 0) {
+            Text("\u{201C}")
+                .font(.custom("Georgia", size: 48))
+                .foregroundColor(.wAccentPurple.opacity(0.5))
+                .padding(.bottom, -14)
 
-                Text(entry.quoteText)
-                    .font(.custom("Georgia-Italic", size: 14))
-                    .foregroundColor(.wTextPrimary)
-                    .lineSpacing(4)
-                    .lineLimit(4)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            Text(entry.quoteText)
+                .font(.custom("Georgia-Italic", size: 14))
+                .foregroundColor(.wTextPrimary)
+                .lineSpacing(4)
+                .lineLimit(4)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-                Rectangle()
-                    .fill(Color.white.opacity(0.25))
-                    .frame(width: 40, height: 1)
-                    .padding(.vertical, 10)
+            Rectangle()
+                .fill(Color.white.opacity(0.25))
+                .frame(width: 40, height: 1)
+                .padding(.vertical, 10)
 
-                Text("— \(entry.author)")
-                    .font(.custom("Georgia", size: 11))
-                    .foregroundColor(.wTextPrimary.opacity(0.85))
+            Text("— \(entry.author)")
+                .font(.custom("Georgia", size: 11))
+                .foregroundColor(.wTextPrimary.opacity(0.85))
 
-                Text(entry.anime.uppercased())
-                    .font(.system(size: 9, weight: .bold))
-                    .kerning(2)
-                    .foregroundColor(.wAccentPurple)
-                    .padding(.top, 3)
-            }
-            .padding(16)
+            Text(entry.anime.uppercased())
+                .font(.system(size: 9, weight: .bold))
+                .kerning(2)
+                .foregroundColor(.wAccentPurple)
+                .padding(.top, 3)
         }
+        .padding(16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }
 }
 
-// Entry-point view — picks layout by family
+// Entry-point view
+// iOS 17+: transparent (containerBackground handles fill + corner clipping)
+// iOS 16:  ZStack with explicit background to fill the widget frame
 struct QuoteAnimeWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
     let entry: QuoteEntry
 
     var body: some View {
+        if #available(iOS 17.0, *) {
+            content // background comes from containerBackground
+        } else {
+            ZStack {
+                QuoteWidgetBackground(imageData: entry.backgroundImageData)
+                content
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
         switch family {
         case .systemMedium, .systemLarge:
-            QuoteWidgetMediumView(entry: entry)
+            QuoteWidgetMediumContent(entry: entry)
         default:
-            QuoteWidgetSmallView(entry: entry)
+            QuoteWidgetSmallContent(entry: entry)
         }
     }
 }
@@ -278,6 +288,7 @@ struct QuoteAnimeWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: QuoteProvider()) { entry in
             if #available(iOS 17.0, *) {
+                // containerBackground fills the full widget shape including corners
                 QuoteAnimeWidgetEntryView(entry: entry)
                     .containerBackground(for: .widget) {
                         QuoteWidgetBackground(imageData: entry.backgroundImageData)
