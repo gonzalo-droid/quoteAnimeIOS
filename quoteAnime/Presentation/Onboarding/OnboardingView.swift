@@ -10,68 +10,66 @@ struct OnboardingView: View {
     ]
 
     var body: some View {
-        ZStack {
-            Color.bgDark.ignoresSafeArea()
-
-            TabView(selection: $viewModel.currentPage) {
-                ForEach(pages.indices, id: \.self) { index in
-                    OnboardingPageView(
-                        imageName: pages[index].image,
-                        phrase: pages[index].phrase
-                    )
-                    .tag(index)
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .animation(.easeInOut, value: viewModel.currentPage)
-
-            // Overlay controls — GeometryReader reads the real safe area inset
-            GeometryReader { geo in
-             VStack {
-                // Skip button
-                HStack {
-                    Spacer()
-                    Button("Saltar") { viewModel.complete() }
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundColor(.textSecondary)
-                        .padding(.horizontal, 24)
-                }
-                .padding(.top, geo.safeAreaInsets.top + 12)
-
-                Spacer()
-
-                // Page indicators
-                HStack(spacing: 8) {
+        GeometryReader { geo in
+            ZStack {
+                // TabView fullscreen — ignores safe area so image fills the entire screen
+                TabView(selection: $viewModel.currentPage) {
                     ForEach(pages.indices, id: \.self) { index in
-                        Capsule()
-                            .fill(viewModel.currentPage == index ? Color.accentPurple : Color.outline)
-                            .frame(width: viewModel.currentPage == index ? 20 : 8, height: 8)
-                            .animation(.spring(response: 0.3), value: viewModel.currentPage)
+                        OnboardingPageView(
+                            imageName: pages[index].image,
+                            phrase: pages[index].phrase
+                        )
+                        .tag(index)
                     }
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .animation(.easeInOut, value: viewModel.currentPage)
+                .ignoresSafeArea()
 
-                // Next / Start button
-                Button {
-                    if viewModel.currentPage < pages.count - 1 {
-                        viewModel.currentPage += 1
-                    } else {
-                        viewModel.complete()
+                // Bottom controls — use geo from outer GeometryReader (before ignoresSafeArea)
+                VStack(spacing: 0) {
+                    Spacer()
+
+                    // Page indicators
+                    HStack(spacing: 8) {
+                        ForEach(pages.indices, id: \.self) { index in
+                            Capsule()
+                                .fill(viewModel.currentPage == index ? Color.accentPurple : Color.white.opacity(0.4))
+                                .frame(width: viewModel.currentPage == index ? 20 : 8, height: 8)
+                                .animation(.spring(response: 0.3), value: viewModel.currentPage)
+                        }
                     }
-                } label: {
-                    Text(viewModel.currentPage < pages.count - 1 ? "Siguiente" : "Comenzar")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.bgDark)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(Color.accentPurple)
-                        .cornerRadius(14)
-                        .padding(.horizontal, 32)
+
+                    // Next / Start button
+                    Button {
+                        if viewModel.currentPage < pages.count - 1 {
+                            viewModel.currentPage += 1
+                        } else {
+                            viewModel.complete()
+                        }
+                    } label: {
+                        Text(viewModel.currentPage < pages.count - 1 ? "Siguiente" : "Comenzar")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundColor(.bgDark)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(Color.accentPurple)
+                            .cornerRadius(14)
+                            .padding(.horizontal, 32)
+                    }
+                    .padding(.top, 20)
+                    .padding(.bottom, geo.safeAreaInsets.bottom + 16)
                 }
-                .padding(.top, 20)
-                .padding(.bottom, 48)
             }
-            }
-            .ignoresSafeArea()
+        }
+        .ignoresSafeArea()
+        // Skip button outside ignoresSafeArea so SwiftUI respects the safe area automatically
+        .overlay(alignment: .topTrailing) {
+            Button("Saltar") { viewModel.complete() }
+                .font(.system(size: 15, weight: .medium))
+                .foregroundColor(.white.opacity(0.75))
+                .padding(.top, 12)
+                .padding(.trailing, 24)
         }
     }
 }
@@ -81,35 +79,53 @@ private struct OnboardingPageView: View {
     let phrase: String
 
     var body: some View {
-        ZStack {
-            // Background image (or placeholder)
-            if let uiImage = UIImage(named: imageName) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-            } else {
-                Color.surface.ignoresSafeArea()
-            }
+        GeometryReader { geo in
+            ZStack {
+                // Background image — fills the full screen
+                if let uiImage = UIImage(named: imageName) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .clipped()
+                } else {
+                    Color.surface
+                }
 
-            // Gradient overlay
-            LinearGradient(
-                colors: [Color.bgDark.opacity(0.2), Color.bgDark.opacity(0.92)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+                // Same gradient as QuoteDetailView
+                LinearGradient(
+                    stops: [
+                        .init(color: .black.opacity(0.45), location: 0),
+                        .init(color: .black.opacity(0.72), location: 0.5),
+                        .init(color: .black.opacity(0.92), location: 1),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
 
-            VStack {
-                Spacer()
-                Text(phrase)
-                    .font(.quoteSerifItalic(size: 22))
-                    .foregroundColor(.textPrimary)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(6)
-                    .padding(.horizontal, 36)
-                    .padding(.bottom, 180)
+                // Quote centered — same layout as HomeView quote block
+                VStack(spacing: 0) {
+                    Text("\u{201C}")
+                        .font(.quoteSerif(size: 80))
+                        .foregroundColor(.accentPurple.opacity(0.25))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 32)
+                        .padding(.bottom, -28)
+
+                    Text(phrase)
+                        .font(.quoteSerifItalic(size: 22))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(6)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 32)
+                }
+                .frame(maxWidth: .infinity)
+                // Shift slightly above center to leave room for bottom controls
+                .offset(y: -40)
             }
+            .frame(width: geo.size.width, height: geo.size.height)
         }
+        .ignoresSafeArea()
     }
 }
