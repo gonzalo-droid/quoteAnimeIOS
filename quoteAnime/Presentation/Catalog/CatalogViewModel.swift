@@ -27,12 +27,12 @@ struct EmotionCategory: Identifiable {
 }
 
 let allEmotionCategories: [EmotionCategory] = [
-    EmotionCategory(id: "motivacion", label: "Motivación",  emoji: "⚡", color: Color(hex: "#E67E22")),
+    EmotionCategory(id: "motivación", label: "Motivación",  emoji: "⚡", color: Color(hex: "#E67E22")),
     EmotionCategory(id: "lucha",      label: "Lucha",       emoji: "🛡", color: Color(hex: "#C0392B")),
     EmotionCategory(id: "tristeza",   label: "Tristeza",    emoji: "💧", color: Color(hex: "#5D8AA8")),
     EmotionCategory(id: "amor",       label: "Amor",        emoji: "❤️", color: Color(hex: "#FF6B8A")),
     EmotionCategory(id: "amistad",    label: "Amistad",     emoji: "👥", color: Color(hex: "#27AE60")),
-    EmotionCategory(id: "reflexion",  label: "Reflexión",   emoji: "🧠", color: Color(hex: "#A78BFA")),
+    EmotionCategory(id: "reflexión",  label: "Reflexión",   emoji: "🧠", color: Color(hex: "#A78BFA")),
     EmotionCategory(id: "soledad",    label: "Soledad",     emoji: "🌙", color: Color(hex: "#4A4A5A")),
     EmotionCategory(id: "sacrificio", label: "Sacrificio",  emoji: "🧘", color: Color(hex: "#8B2252")),
     EmotionCategory(id: "esperanza",  label: "Esperanza",   emoji: "☀️", color: Color(hex: "#F1C40F")),
