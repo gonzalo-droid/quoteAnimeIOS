@@ -1,4 +1,5 @@
 import Foundation
+import WidgetKit
 
 final class UserPreferencesStore {
     private enum Keys {
@@ -41,6 +42,8 @@ final class UserPreferencesStore {
         // Share widget frequency with the widget extension via App Group
         UserDefaults(suiteName: "group.com.gonzadev.quoteAnime")?
             .set(preferences.widgetUpdateTimesPerDay, forKey: "widget_update_times_per_day")
+
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     var isOnboardingCompleted: Bool {

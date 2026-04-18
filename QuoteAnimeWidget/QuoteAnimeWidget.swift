@@ -6,7 +6,7 @@ import UIKit
 // ⚠️ Fill in your Firebase project URL.
 // Find it in: Firebase Console → Realtime Database → Data tab (top of page)
 // or in GoogleService-Info.plist → DATABASE_URL
-private let kFirebaseDatabaseURL = "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com"
+private let kFirebaseDatabaseURL = "https://quoteanime-76a76-default-rtdb.firebaseio.com"
 
 private let kAppGroupSuite = "group.com.gonzadev.quoteAnime"
 
