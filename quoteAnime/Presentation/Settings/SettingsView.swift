@@ -161,3 +161,33 @@ struct SettingsView: View {
         }
     }
 }
+
+#if DEBUG
+private struct PreviewQuoteRepository: QuoteRepository {
+    func fetchAllQuotes() async throws -> [Quote] { [] }
+    func fetchQuotesByAnime(_ anime: String) async throws -> [Quote] { [] }
+    func toggleFavorite(_ quote: Quote) async throws {}
+    func fetchFavorites() async throws -> [Quote] { [] }
+    func isFavorite(id: String) async -> Bool { false }
+}
+private struct PreviewPreferencesRepository: UserPreferencesRepository {
+    func getPreferences() -> UserPreferences { UserPreferences() }
+    func savePreferences(_ preferences: UserPreferences) {}
+    func isOnboardingCompleted() -> Bool { true }
+    func setOnboardingCompleted(_ completed: Bool) {}
+}
+#endif
+
+#Preview {
+    let prefsRepo = PreviewPreferencesRepository()
+    let quoteRepo = PreviewQuoteRepository()
+    return NavigationStack {
+        SettingsView(
+            getUserPreferences: GetUserPreferencesUseCase(repository: prefsRepo),
+            updateUserPreferences: UpdateUserPreferencesUseCase(repository: prefsRepo),
+            notificationScheduler: NotificationScheduler(),
+            getAllQuotes: GetAllQuotesUseCase(repository: quoteRepo)
+        )
+    }
+    .environmentObject(AppRouter())
+}

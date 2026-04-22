@@ -74,6 +74,10 @@ struct OnboardingView: View {
     }
 }
 
+#Preview {
+    OnboardingView(viewModel: OnboardingViewModel())
+}
+
 private struct OnboardingPageView: View {
     let imageName: String
     let phrase: String

@@ -127,3 +127,18 @@ struct QuoteDetailView<Actions: View>: View {
         }
     }
 }
+
+#Preview("Sin botón atrás") {
+    QuoteDetailView(
+        quote: Quote(id: "1", quote: "El ser humano no puede perfeccionar nada sin antes sacrificar algo.", author: "Edward Elric", anime: "Fullmetal Alchemist"),
+        actions: { EmptyView() }
+    )
+}
+
+#Preview("Con botón atrás") {
+    QuoteDetailView(
+        quote: Quote(id: "2", quote: "La gente que no puede tirar cosas importantes, tampoco puede cambiar nada.", author: "Armin Arlert", anime: "Attack on Titan"),
+        onBack: {},
+        actions: { EmptyView() }
+    )
+}

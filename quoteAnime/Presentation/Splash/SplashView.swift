@@ -39,3 +39,7 @@ struct SplashView: View {
         }
     }
 }
+
+#Preview {
+    SplashView(isOnboardingCompleted: true, onComplete: { _ in })
+}

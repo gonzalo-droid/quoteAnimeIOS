@@ -53,3 +53,21 @@ struct QuoteCard: View {
         )
     }
 }
+
+#Preview("Normal") {
+    QuoteCard(
+        quote: Quote(id: "1", quote: "El ser humano no puede perfeccionar nada sin antes sacrificar algo.", author: "Edward Elric", anime: "Fullmetal Alchemist"),
+        onFavorite: {}
+    )
+    .padding()
+    .background(Color.bgDark)
+}
+
+#Preview("Favorita") {
+    QuoteCard(
+        quote: Quote(id: "2", quote: "La gente que no puede tirar cosas importantes, tampoco puede cambiar nada.", author: "Armin Arlert", anime: "Attack on Titan", isFavorite: true),
+        onFavorite: {}
+    )
+    .padding()
+    .background(Color.bgDark)
+}

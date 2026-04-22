@@ -120,3 +120,9 @@ struct WidgetTutorialView: View {
         }
     }
 }
+
+#Preview {
+    NavigationStack {
+        WidgetTutorialView()
+    }
+}
