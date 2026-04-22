@@ -91,14 +91,6 @@ struct QuoteDetailView<Actions: View>: View {
 
     private var quoteBlock: some View {
         VStack(spacing: 0) {
-            // Decorative opening quote mark
-            Text("\u{201C}")
-                .font(.quoteSerif(size: 96))
-                .foregroundColor(.accentPurple.opacity(0.20))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 28)
-                .padding(.bottom, -32)
-
             // Quote text
             Text(quote.quote)
                 .font(.quoteSerifItalic(size: 20))

@@ -105,8 +105,8 @@ enum ShareImageRenderer {
         let sidePad:     CGFloat = 130
         let maxTextW:    CGFloat = width - 2 * sidePad
         let lineHeight:  CGFloat = 70
-        let quoteFont    = UIFont(name: "Georgia-Italic",  size: 52) ?? UIFont.italicSystemFont(ofSize: 52)
-        let authorFont   = UIFont(name: "Georgia",         size: 38) ?? UIFont.systemFont(ofSize: 38)
+        let quoteFont    = UIFont(name: "Georgia",  size: 52) ?? UIFont.italicSystemFont(ofSize: 52)
+        let authorFont   = UIFont(name: "Didot", size: 38) ?? UIFont.systemFont(ofSize: 38)
         let animeFont    = UIFont.systemFont(ofSize: 26, weight: .bold)
         let dividerW:    CGFloat = 64
         let dividerH:    CGFloat = 2
@@ -123,18 +123,9 @@ enum ShareImageRenderer {
 
         let totalH = textH + gap1 + dividerH + gap2 + authorH + gap3 + animeH
 
-        // Centre vertically; min Y = 240 so quote mark at 220 is not overlapped
+        // Centre vertically; min top margin = 80
         var startY = (height - totalH) / 2
-        if startY < 240 { startY = 240 }
-
-        // Draw decorative quote mark at (118, 220)
-        let quoteMark = "\u{201C}" as NSString
-        let quoteMarkFont = UIFont(name: "Georgia", size: 140) ?? UIFont.systemFont(ofSize: 140)
-        let markAttrs: [NSAttributedString.Key: Any] = [
-            .font: quoteMarkFont,
-            .foregroundColor: UIColor(red: 0xA7 / 255.0, green: 0x8B / 255.0, blue: 0xFA / 255.0, alpha: 0.22),
-        ]
-        quoteMark.draw(at: CGPoint(x: 118, y: 220), withAttributes: markAttrs)
+        if startY < 80 { startY = 80 }
 
         // Draw each line of the quote
         var currentY = startY

@@ -77,7 +77,8 @@ private enum WidgetNetworkService {
 
     private static func fetchRandomQuote() async
         -> (text: String, author: String, anime: String, animeSlug: String?)? {
-        guard let url = URL(string: "\(kFirebaseDatabaseURL)/quotes.json?limitToFirst=100") else { return nil }
+        // orderBy is required by Firebase REST when using limitToFirst
+        guard let url = URL(string: "\(kFirebaseDatabaseURL)/quotes.json?orderBy=%22%24key%22&limitToFirst=100") else { return nil }
         guard let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
         guard let json = try? JSONSerialization.jsonObject(with: data) else { return nil }
 
@@ -204,13 +205,8 @@ struct QuoteWidgetSmallContent: View {
     let entry: QuoteEntry
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("\u{201C}")
-                .font(.custom("Georgia", size: 32))
-                .foregroundColor(.wAccentPurple.opacity(0.6))
-                .padding(.bottom, -10)
-
             Text(entry.quoteText)
-                .font(.custom("Georgia-Italic", size: 12))
+                .font(.custom("Georgia", size: 12))
                 .foregroundColor(.wTextPrimary)
                 .lineSpacing(3)
                 .lineLimit(5)
@@ -218,7 +214,7 @@ struct QuoteWidgetSmallContent: View {
             Spacer(minLength: 6)
 
             Text("— \(entry.author)")
-                .font(.custom("Georgia", size: 10))
+                .font(.custom("Didot", size: 10))
                 .foregroundColor(.wTextPrimary.opacity(0.8))
 
             Text(entry.anime.uppercased())
@@ -237,13 +233,8 @@ struct QuoteWidgetMediumContent: View {
     let entry: QuoteEntry
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("\u{201C}")
-                .font(.custom("Georgia", size: 48))
-                .foregroundColor(.wAccentPurple.opacity(0.5))
-                .padding(.bottom, -14)
-
             Text(entry.quoteText)
-                .font(.custom("Georgia-Italic", size: 14))
+                .font(.custom("Georgia", size: 14))
                 .foregroundColor(.wTextPrimary)
                 .lineSpacing(4)
                 .lineLimit(4)
@@ -255,7 +246,7 @@ struct QuoteWidgetMediumContent: View {
                 .padding(.vertical, 10)
 
             Text("— \(entry.author)")
-                .font(.custom("Georgia", size: 11))
+                .font(.custom("Didot", size: 11))
                 .foregroundColor(.wTextPrimary.opacity(0.85))
 
             Text(entry.anime.uppercased())
@@ -289,7 +280,7 @@ struct QuoteWidgetInlineContent: View {
     let entry: QuoteEntry
     var body: some View {
         // Inline only supports a single Label or Text — keep it short
-        Text("\u{201C} \(entry.quoteText)")
+        Text(entry.quoteText)
             .lineLimit(1)
             .widgetAccentable()
     }

@@ -109,13 +109,6 @@ private struct OnboardingPageView: View {
 
                 // Quote centered — same layout as HomeView quote block
                 VStack(spacing: 0) {
-                    Text("\u{201C}")
-                        .font(.quoteSerif(size: 80))
-                        .foregroundColor(.accentPurple.opacity(0.25))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 32)
-                        .padding(.bottom, -28)
-
                     Text(phrase)
                         .font(.quoteSerifItalic(size: 22))
                         .foregroundColor(.white)

@@ -224,11 +224,12 @@
 				};
 			};
 			buildConfigurationList = EA8F96BD2F84D00300A074F8 /* Build configuration list for PBXProject "quoteAnime" */;
-			developmentRegion = en;
+			developmentRegion = "es-419";
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				"es-419",
 			);
 			mainGroup = EA8F96B92F84D00300A074F8;
 			minimizedProjectReferenceProxies = 1;

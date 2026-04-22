@@ -8,9 +8,18 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+### Added
+- SwiftUI `#Preview` blocks added to all presentation views: `QuoteCard`, `QuoteDetailView`, `SplashView`, `WidgetTutorialView`, `OnboardingView`, `SettingsView`, `CatalogView`. Views with ViewModels use inline mock repositories.
+
 ### Fixed
 - Settings button in Home overlapping the status bar (safe area not respected).
 - Back button in QuoteDetailView moved to `.overlay` so SwiftUI manages safe area automatically instead of manual `geo.safeAreaInsets.top` calculation.
+- Widget always showing placeholder quote — Firebase REST query was missing required `orderBy=%22%24key%22` parameter when using `limitToFirst`, causing Firebase to return an error response that parsed as empty.
+- Widget update frequency (set in Settings) now correctly controls the timeline refresh interval — `reloadAllTimelines()` is only called when the user changes the frequency, not on every app launch or quote swipe.
+
+### Changed
+- Removed decorative opening quote mark (`\u{201C}`) from `QuoteDetailView`, `OnboardingView`, widget Small/Medium/Inline views, and `ShareImageRenderer`.
+- Typography: `quoteSerif` changed from `Georgia` to `Didot`; `quoteSerifItalic` changed from `Georgia-Italic` to `Georgia`.
 
 ---
 
