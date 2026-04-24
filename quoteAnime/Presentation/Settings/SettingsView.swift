@@ -1,5 +1,4 @@
 import SwiftUI
-import StoreKit
 
 struct SettingsView: View {
     @StateObject private var viewModel: SettingsViewModel
@@ -231,15 +230,6 @@ struct SettingsView: View {
     // MARK: - Review
 
     private func requestReview() {
-        if let scene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-            SKStoreReviewController.requestReview(in: scene)
-        } else {
-            openAppStoreReview()
-        }
-    }
-
-    private func openAppStoreReview() {
         if let url = URL(string: "https://apps.apple.com/app/id6762100338?action=write-review") {
             UIApplication.shared.open(url)
         }

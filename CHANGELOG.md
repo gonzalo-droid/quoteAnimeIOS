@@ -10,7 +10,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ### Added
 - SwiftUI `#Preview` blocks added to all presentation views: `QuoteCard`, `QuoteDetailView`, `SplashView`, `WidgetTutorialView`, `OnboardingView`, `SettingsView`, `CatalogView`. Views with ViewModels use inline mock repositories.
-- **Settings — Apóyanos section**: in-app review prompt via `SKStoreReviewController` (falls back to App Store URL if no active scene), and "Compartir la app" via `ShareLink` with custom invite message.
+- **Settings — Apóyanos section**: "Déjanos una reseña" abre directamente la App Store (`?action=write-review`), y "Compartir la app" via `ShareLink` con mensaje de invitación personalizado.
 - **Settings — Síguenos section**: Instagram and Facebook links with deep-link-first strategy (opens native app if installed, browser otherwise). Custom SVG brand icons added to `Assets.xcassets` (`icon_instagram`, `icon_facebook`, `icon_tiktok`).
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
