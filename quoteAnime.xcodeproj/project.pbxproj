@@ -223,7 +223,7 @@
 					};
 				};
 			};
-			buildConfigurationList = EA8F96BD2F84D00300A074F8 /* Build configuration list for PBXProject "quoteAnime" */;
+			buildConfigurationList = EA8F96BD2F84D00300A074F8 /* Build configuration list for PBXProject "quoteanime" */;
 			developmentRegion = "es-419";
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -419,7 +419,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = quoteAnime/quoteAnime.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEVELOPMENT_TEAM = 2436FLG37H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -439,7 +439,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gonzadev.quoteAnime;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -459,7 +459,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = quoteAnime/quoteAnime.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEVELOPMENT_TEAM = 2436FLG37H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -479,7 +479,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gonzadev.quoteAnime;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -557,7 +557,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EA8F96BD2F84D00300A074F8 /* Build configuration list for PBXProject "quoteAnime" */ = {
+		EA8F96BD2F84D00300A074F8 /* Build configuration list for PBXProject "quoteanime" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EA8F96CB2F84D00500A074F8 /* Debug */,
