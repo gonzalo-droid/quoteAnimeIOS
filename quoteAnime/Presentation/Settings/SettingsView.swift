@@ -4,6 +4,8 @@ import StoreKit
 struct SettingsView: View {
     @StateObject private var viewModel: SettingsViewModel
     @EnvironmentObject private var router: AppRouter
+    @State private var showPrivacyPolicy = false
+    @State private var showTerms = false
 
     init(
         getUserPreferences: GetUserPreferencesUseCase,
@@ -24,6 +26,7 @@ struct SettingsView: View {
             notificationsSection
             widgetSection
             ratingSection
+            socialSection
             versionSection
         }
         .listStyle(.insetGrouped)
@@ -33,6 +36,14 @@ struct SettingsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .onAppear { viewModel.onAppear() }
+        .sheet(isPresented: $showPrivacyPolicy) {
+            SafariView(url: URL(string: "https://quote-anime-web.vercel.app/privacy-policy")!)
+                .ignoresSafeArea()
+        }
+        .sheet(isPresented: $showTerms) {
+            SafariView(url: URL(string: "https://quote-anime-web.vercel.app/terms-and-conditions")!)
+                .ignoresSafeArea()
+        }
         .alert("Permiso de notificaciones", isPresented: $viewModel.showPermissionAlert) {
             Button("Ir a Ajustes") {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
@@ -128,19 +139,84 @@ struct SettingsView: View {
     }
 
     private var ratingSection: some View {
-        Section("Valorar") {
+        Section("Apóyanos") {
             Button {
                 requestReview()
             } label: {
-                Label("Calificar la app", systemImage: "star.fill")
+                Label("Déjanos una reseña", systemImage: "star.fill")
+                    .foregroundColor(.textPrimary)
+            }
+
+            ShareLink(
+                item: URL(string: "https://apps.apple.com/app/id6762100338")!,
+                subject: Text("QuoteAnime"),
+                message: Text("¡Descubre QuoteAnime! Las mejores frases de tus animes favoritos 🌟 Descárgala gratis:")
+            ) {
+                Label("Compartir la app", systemImage: "square.and.arrow.up")
                     .foregroundColor(.textPrimary)
             }
         }
         .listRowBackground(Color.surface)
     }
 
+    private var socialSection: some View {
+        Section("Síguenos") {
+            Button { openSocialURL("instagram://user?username=quoteanimeapp",
+                                   fallback: "https://www.instagram.com/animequoteapp/") } label: {
+                Label {
+                    Text("Instagram").foregroundColor(.textPrimary)
+                } icon: {
+                    Image("icon_instagram")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(.textPrimary)
+                }
+            }
+            Button { openSocialURL("fb://profile/quoteanimeapp",
+                                   fallback: "https://www.facebook.com/share/1Ay18mtNZh/?mibextid=wwXIfr") } label: {
+                Label {
+                    Text("Facebook").foregroundColor(.textPrimary)
+                } icon: {
+                    Image("icon_facebook")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(.textPrimary)
+                }
+            }
+            /*Button { openSocialURL("tiktok://user?username=quoteanimeapp",
+                                   fallback: "https://www.tiktok.com/@quoteanimeapp") } label: {
+                Label {
+                    Text("TikTok").foregroundColor(.textPrimary)
+                } icon: {
+                    Image("icon_tiktok")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(.textPrimary)
+                }
+            }*/
+        }
+        .listRowBackground(Color.surface)
+    }
+
     private var versionSection: some View {
         Section("Información") {
+            Button {
+                showPrivacyPolicy = true
+            } label: {
+                Label("Política de privacidad", systemImage: "hand.raised.fill")
+                    .foregroundColor(.textPrimary)
+            }
+
+            Button {
+                showTerms = true
+            } label: {
+                Label("Términos y condiciones", systemImage: "doc.text.fill")
+                    .foregroundColor(.textPrimary)
+            }
+
             HStack {
                 Text("Versión")
                     .foregroundColor(.textPrimary)
@@ -158,7 +234,22 @@ struct SettingsView: View {
         if let scene = UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
             SKStoreReviewController.requestReview(in: scene)
+        } else {
+            openAppStoreReview()
         }
+    }
+
+    private func openAppStoreReview() {
+        if let url = URL(string: "https://apps.apple.com/app/id6762100338?action=write-review") {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    private func openSocialURL(_ urlString: String, fallback: String) {
+        let deepLink = URL(string: urlString)
+        let canOpen = deepLink.map { UIApplication.shared.canOpenURL($0) } ?? false
+        let target = canOpen ? deepLink! : URL(string: fallback)!
+        UIApplication.shared.open(target)
     }
 }
 
