@@ -25,8 +25,9 @@ private extension Int {
 }
 
 // MARK: - Theme (inline — widget target has no access to app's Theme/)
+// Not `private`: `RoutineSummaryWidget.swift` (same target) reuses these.
 
-private extension Color {
+extension Color {
     static let wBgDark       = Color(red: 0.047, green: 0.047, blue: 0.118) // #0C0C1E
     static let wSurface      = Color(red: 0.094, green: 0.102, blue: 0.180) // #181A2E
     static let wAccentPurple = Color(red: 0.655, green: 0.545, blue: 0.980) // #A78BFA

@@ -125,6 +125,7 @@ final class RoutineViewModel: ObservableObject {
             let active = try await activeHabits
             uiState.activeCount = active.count
             uiState.globalStreak = try await streak
+            HabitWidgetDataWriter.write(habits: active, globalStreak: uiState.globalStreak.current)
 
             switch uiState.filter {
             case .active:

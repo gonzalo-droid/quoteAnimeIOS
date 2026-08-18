@@ -13,6 +13,7 @@ struct QuoteAnimeWidgetBundle: WidgetBundle {
     var body: some Widget {
         QuoteAnimeWidget()
         QuoteAnimeLockWidget()
+        RoutineSummaryWidget()
         QuoteAnimeWidgetControl()
         QuoteAnimeWidgetLiveActivity()
     }
