@@ -12,4 +12,9 @@ struct Habit: Identifiable, Hashable {
     var templateId: String?
     var coverAnimeSlug: String?
     let createdAt: Date
+    var reminderEnabled: Bool = false
+    /// `Calendar` weekday numbering: 1 = Sunday ... 7 = Saturday.
+    var reminderWeekdays: Set<Int> = []
+    var reminderHour: Int = 9
+    var reminderMinute: Int = 0
 }

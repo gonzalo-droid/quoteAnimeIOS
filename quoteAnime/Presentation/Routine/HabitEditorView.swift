@@ -14,13 +14,17 @@ struct HabitEditorView: View {
         createHabitUseCase: CreateHabitUseCase,
         updateHabitUseCase: UpdateHabitUseCase,
         habitRepository: HabitRepository,
+        habitReminderScheduler: HabitReminderScheduler,
+        notificationScheduler: NotificationScheduler,
         premiumGate: PremiumGate
     ) {
         _viewModel = StateObject(wrappedValue: HabitEditorViewModel(
             habitId: habitId,
             createHabitUseCase: createHabitUseCase,
             updateHabitUseCase: updateHabitUseCase,
-            habitRepository: habitRepository
+            habitRepository: habitRepository,
+            habitReminderScheduler: habitReminderScheduler,
+            notificationScheduler: notificationScheduler
         ))
         self.premiumGate = premiumGate
     }
@@ -39,6 +43,7 @@ struct HabitEditorView: View {
                     iconPicker
                     colorPicker
                     dateField
+                    reminderSection
                 }
                 .padding(16)
             }
@@ -215,6 +220,61 @@ struct HabitEditorView: View {
             .cornerRadius(12)
         }
     }
+
+    private var reminderSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                sectionLabel("Recordatorio")
+                Spacer()
+                Toggle(
+                    "",
+                    isOn: Binding(
+                        get: { viewModel.uiState.reminderEnabled },
+                        set: { viewModel.onReminderToggled($0) }
+                    )
+                )
+                .labelsHidden()
+                .tint(.accentPurple)
+            }
+
+            if viewModel.uiState.reminderEnabled {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(spacing: 6) {
+                        ForEach(Self.weekdaySymbols, id: \.weekday) { symbol in
+                            let isSelected = viewModel.uiState.reminderWeekdays.contains(symbol.weekday)
+                            Button {
+                                viewModel.onWeekdayToggled(symbol.weekday)
+                            } label: {
+                                Text(symbol.label)
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(isSelected ? .bgDark : .textPrimary)
+                                    .frame(width: 32, height: 32)
+                                    .background(isSelected ? Color.accentPurple : Color.surface)
+                                    .clipShape(Circle())
+                            }
+                        }
+                    }
+
+                    DatePicker(
+                        "",
+                        selection: $viewModel.uiState.reminderTime,
+                        displayedComponents: .hourAndMinute
+                    )
+                    .datePickerStyle(.compact)
+                    .labelsHidden()
+                    .colorScheme(.dark)
+                }
+                .padding(12)
+                .background(Color.surface)
+                .cornerRadius(12)
+            }
+        }
+    }
+
+    /// `Calendar` weekday numbering: 1 = Sunday ... 7 = Saturday.
+    private static let weekdaySymbols: [(weekday: Int, label: String)] = [
+        (1, "D"), (2, "L"), (3, "M"), (4, "X"), (5, "J"), (6, "V"), (7, "S")
+    ]
 
     private func sectionLabel(_ text: String) -> some View {
         Text(text)

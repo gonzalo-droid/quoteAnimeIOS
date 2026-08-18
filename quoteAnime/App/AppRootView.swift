@@ -118,6 +118,7 @@ struct MainContainerView: View {
                     archiveHabitUseCase: archiveHabit,
                     unarchiveHabitUseCase: unarchiveHabit,
                     deleteHabitUseCase: deleteHabit,
+                    habitReminderScheduler: deps.habitReminderScheduler,
                     premiumGate: deps.premiumGate
                 )
             } else {
@@ -133,6 +134,8 @@ struct MainContainerView: View {
                     createHabitUseCase: createHabit,
                     updateHabitUseCase: updateHabit,
                     habitRepository: habitRepository,
+                    habitReminderScheduler: deps.habitReminderScheduler,
+                    notificationScheduler: deps.notificationScheduler,
                     premiumGate: deps.premiumGate
                 )
             } else {

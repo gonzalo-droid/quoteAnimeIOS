@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import SwiftData
+import UserNotifications
 
 /// Composition root. Creates and wires all dependencies manually.
 /// Must be used as `@StateObject` at the App level.
@@ -41,6 +42,9 @@ final class AppDependencies: ObservableObject {
     var unarchiveHabitUseCase: UnarchiveHabitUseCase?
     var deleteHabitUseCase: DeleteHabitUseCase?
     var getHabitTemplatesUseCase = GetHabitTemplatesUseCase()
+    let habitReminderScheduler = HabitReminderScheduler()
+    /// Kept alive here — `UNUserNotificationCenter.current().delegate` is `weak`.
+    private var habitReminderNotificationDelegate: HabitReminderNotificationDelegate?
 
     init() {
         // ── Favorite storage (SwiftData on iOS 17+, UserDefaults fallback) ──
@@ -112,6 +116,13 @@ final class AppDependencies: ObservableObject {
             self.archiveHabitUseCase = ArchiveHabitUseCase(repository: habitRepo)
             self.unarchiveHabitUseCase = UnarchiveHabitUseCase(repository: habitRepo)
             self.deleteHabitUseCase = DeleteHabitUseCase(repository: habitRepo)
+
+            HabitReminderScheduler.registerCategory()
+            let delegate = HabitReminderNotificationDelegate(
+                toggleHabitCompletion: ToggleHabitCompletionUseCase(repository: habitRepo)
+            )
+            self.habitReminderNotificationDelegate = delegate
+            UNUserNotificationCenter.current().delegate = delegate
         }
     }
 }

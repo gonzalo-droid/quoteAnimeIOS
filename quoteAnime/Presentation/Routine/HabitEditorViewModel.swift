@@ -7,12 +7,14 @@ struct HabitEditorUiState {
     var iconKey: String = HabitIcons.allKeys.first ?? "task_alt"
     var colorIndex: Int = 0
     var startDate: Date = Date()
+    var reminderEnabled: Bool = false
+    var reminderWeekdays: Set<Int> = []
+    var reminderTime: Date = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date()) ?? Date()
     var isSaving: Bool = false
     var isEditing: Bool = false
     var canSave: Bool { !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 }
 
-/// Create/edit only — no delete or archive yet (see RoutineViewModel's doc comment for why).
 @MainActor
 final class HabitEditorViewModel: ObservableObject {
     @Published var uiState = HabitEditorUiState()
@@ -21,6 +23,8 @@ final class HabitEditorViewModel: ObservableObject {
     private let createHabitUseCase: CreateHabitUseCase
     private let updateHabitUseCase: UpdateHabitUseCase
     private let habitRepository: HabitRepository
+    private let habitReminderScheduler: HabitReminderScheduler
+    private let notificationScheduler: NotificationScheduler
     private let habitId: String?
     private var existingHabit: Habit?
 
@@ -28,12 +32,16 @@ final class HabitEditorViewModel: ObservableObject {
         habitId: String?,
         createHabitUseCase: CreateHabitUseCase,
         updateHabitUseCase: UpdateHabitUseCase,
-        habitRepository: HabitRepository
+        habitRepository: HabitRepository,
+        habitReminderScheduler: HabitReminderScheduler,
+        notificationScheduler: NotificationScheduler
     ) {
         self.habitId = habitId
         self.createHabitUseCase = createHabitUseCase
         self.updateHabitUseCase = updateHabitUseCase
         self.habitRepository = habitRepository
+        self.habitReminderScheduler = habitReminderScheduler
+        self.notificationScheduler = notificationScheduler
         self.uiState.isEditing = habitId != nil
     }
 
@@ -47,6 +55,11 @@ final class HabitEditorViewModel: ObservableObject {
                 uiState.iconKey = habit.iconKey
                 uiState.colorIndex = habit.colorIndex
                 uiState.startDate = habit.startDate
+                uiState.reminderEnabled = habit.reminderEnabled
+                uiState.reminderWeekdays = habit.reminderWeekdays
+                uiState.reminderTime = Calendar.current.date(
+                    bySettingHour: habit.reminderHour, minute: habit.reminderMinute, second: 0, of: Date()
+                ) ?? uiState.reminderTime
             }
         }
     }
@@ -61,12 +74,30 @@ final class HabitEditorViewModel: ObservableObject {
         }
     }
 
+    func onReminderToggled(_ enabled: Bool) {
+        uiState.reminderEnabled = enabled
+        guard enabled else { return }
+        Task {
+            let granted = await notificationScheduler.requestPermission()
+            if !granted { uiState.reminderEnabled = false }
+        }
+    }
+
+    func onWeekdayToggled(_ weekday: Int) {
+        if uiState.reminderWeekdays.contains(weekday) {
+            uiState.reminderWeekdays.remove(weekday)
+        } else {
+            uiState.reminderWeekdays.insert(weekday)
+        }
+    }
+
     func save(onSaved: @escaping () -> Void) {
         guard uiState.canSave, !uiState.isSaving else { return }
         uiState.isSaving = true
         Task {
             do {
                 let trimmedDescription = uiState.description.trimmingCharacters(in: .whitespacesAndNewlines)
+                let timeComponents = Calendar.current.dateComponents([.hour, .minute], from: uiState.reminderTime)
                 let habit = Habit(
                     id: existingHabit?.id ?? UUID().uuidString,
                     title: uiState.title.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -76,13 +107,18 @@ final class HabitEditorViewModel: ObservableObject {
                     startDate: uiState.startDate,
                     templateId: existingHabit?.templateId,
                     coverAnimeSlug: existingHabit?.coverAnimeSlug,
-                    createdAt: existingHabit?.createdAt ?? Date()
+                    createdAt: existingHabit?.createdAt ?? Date(),
+                    reminderEnabled: uiState.reminderEnabled,
+                    reminderWeekdays: uiState.reminderWeekdays,
+                    reminderHour: timeComponents.hour ?? 9,
+                    reminderMinute: timeComponents.minute ?? 0
                 )
                 if existingHabit != nil {
                     try await updateHabitUseCase.execute(habit)
                 } else {
                     try await createHabitUseCase.execute(habit)
                 }
+                await habitReminderScheduler.schedule(habit: habit)
                 uiState.isSaving = false
                 onSaved()
             } catch CreateHabitError.habitLimitReached {

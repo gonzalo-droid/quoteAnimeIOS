@@ -30,6 +30,7 @@ final class RoutineViewModel: ObservableObject {
     private let archiveHabitUseCase: ArchiveHabitUseCase
     private let unarchiveHabitUseCase: UnarchiveHabitUseCase
     private let deleteHabitUseCase: DeleteHabitUseCase
+    private let habitReminderScheduler: HabitReminderScheduler
     private let premiumGate: PremiumGate
 
     init(
@@ -40,6 +41,7 @@ final class RoutineViewModel: ObservableObject {
         archiveHabitUseCase: ArchiveHabitUseCase,
         unarchiveHabitUseCase: UnarchiveHabitUseCase,
         deleteHabitUseCase: DeleteHabitUseCase,
+        habitReminderScheduler: HabitReminderScheduler,
         premiumGate: PremiumGate
     ) {
         self.getActiveHabitsUseCase = getActiveHabitsUseCase
@@ -49,6 +51,7 @@ final class RoutineViewModel: ObservableObject {
         self.archiveHabitUseCase = archiveHabitUseCase
         self.unarchiveHabitUseCase = unarchiveHabitUseCase
         self.deleteHabitUseCase = deleteHabitUseCase
+        self.habitReminderScheduler = habitReminderScheduler
         self.premiumGate = premiumGate
         self.uiState.maxHabits = premiumGate.maxActiveHabits
     }
@@ -78,6 +81,7 @@ final class RoutineViewModel: ObservableObject {
         Task {
             do {
                 try await archiveHabitUseCase.execute(id: habitId)
+                await habitReminderScheduler.cancel(habitId: habitId)
                 await load()
             } catch {
                 print("[RoutineViewModel] archive error: \(error)")
@@ -100,6 +104,7 @@ final class RoutineViewModel: ObservableObject {
         Task {
             do {
                 try await deleteHabitUseCase.execute(id: habitId)
+                await habitReminderScheduler.cancel(habitId: habitId)
                 await load()
             } catch {
                 print("[RoutineViewModel] delete error: \(error)")
