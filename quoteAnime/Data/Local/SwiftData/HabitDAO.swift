@@ -20,6 +20,14 @@ final class HabitDAO: HabitRepository {
         return try context.fetch(descriptor).map { $0.toDomain() }
     }
 
+    func fetchArchivedHabits() async throws -> [Habit] {
+        let descriptor = FetchDescriptor<HabitModel>(
+            predicate: #Predicate { $0.isArchived },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        return try context.fetch(descriptor).map { $0.toDomain() }
+    }
+
     func fetchCompletions(habitId: String) async throws -> [Date] {
         let descriptor = FetchDescriptor<HabitCompletionModel>(
             predicate: #Predicate { $0.habitId == habitId }
@@ -82,5 +90,37 @@ final class HabitDAO: HabitRepository {
             predicate: #Predicate { $0.habitId == habitId && $0.date == day }
         )
         return try context.fetchCount(descriptor) > 0
+    }
+
+    func archiveHabit(id: String) async throws {
+        try setArchived(id: id, isArchived: true)
+    }
+
+    func unarchiveHabit(id: String) async throws {
+        try setArchived(id: id, isArchived: false)
+    }
+
+    func deleteHabit(id: String) async throws {
+        let habitDescriptor = FetchDescriptor<HabitModel>(
+            predicate: #Predicate { $0.id == id }
+        )
+        guard let habit = try context.fetch(habitDescriptor).first else { return }
+
+        let completionsDescriptor = FetchDescriptor<HabitCompletionModel>(
+            predicate: #Predicate { $0.habitId == id }
+        )
+        try context.fetch(completionsDescriptor).forEach { context.delete($0) }
+
+        context.delete(habit)
+        try context.save()
+    }
+
+    private func setArchived(id: String, isArchived: Bool) throws {
+        let descriptor = FetchDescriptor<HabitModel>(
+            predicate: #Predicate { $0.id == id }
+        )
+        guard let habit = try context.fetch(descriptor).first else { return }
+        habit.isArchived = isArchived
+        try context.save()
     }
 }

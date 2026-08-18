@@ -103,12 +103,20 @@ struct MainContainerView: View {
 
         case .routine:
             if let getActiveHabits = deps.getActiveHabitsUseCase,
+               let getArchivedHabits = deps.getArchivedHabitsUseCase,
                let getGlobalStreak = deps.getGlobalStreakUseCase,
-               let toggleCompletion = deps.toggleHabitCompletionUseCase {
+               let toggleCompletion = deps.toggleHabitCompletionUseCase,
+               let archiveHabit = deps.archiveHabitUseCase,
+               let unarchiveHabit = deps.unarchiveHabitUseCase,
+               let deleteHabit = deps.deleteHabitUseCase {
                 RoutineView(
                     getActiveHabitsUseCase: getActiveHabits,
+                    getArchivedHabitsUseCase: getArchivedHabits,
                     getGlobalStreakUseCase: getGlobalStreak,
                     toggleHabitCompletionUseCase: toggleCompletion,
+                    archiveHabitUseCase: archiveHabit,
+                    unarchiveHabitUseCase: unarchiveHabit,
+                    deleteHabitUseCase: deleteHabit,
                     premiumGate: deps.premiumGate
                 )
             } else {

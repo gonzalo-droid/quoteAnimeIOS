@@ -32,10 +32,14 @@ final class AppDependencies: ObservableObject {
     let habitRepository: HabitRepository?
     let premiumGate = PremiumGate()
     var getActiveHabitsUseCase: GetActiveHabitsUseCase?
+    var getArchivedHabitsUseCase: GetArchivedHabitsUseCase?
     var getGlobalStreakUseCase: GetGlobalStreakUseCase?
     var toggleHabitCompletionUseCase: ToggleHabitCompletionUseCase?
     var createHabitUseCase: CreateHabitUseCase?
     var updateHabitUseCase: UpdateHabitUseCase?
+    var archiveHabitUseCase: ArchiveHabitUseCase?
+    var unarchiveHabitUseCase: UnarchiveHabitUseCase?
+    var deleteHabitUseCase: DeleteHabitUseCase?
     var getHabitTemplatesUseCase = GetHabitTemplatesUseCase()
 
     init() {
@@ -100,10 +104,14 @@ final class AppDependencies: ObservableObject {
         self.habitRepository = habitRepo
         if let habitRepo {
             self.getActiveHabitsUseCase = GetActiveHabitsUseCase(repository: habitRepo)
+            self.getArchivedHabitsUseCase = GetArchivedHabitsUseCase(repository: habitRepo)
             self.getGlobalStreakUseCase = GetGlobalStreakUseCase(repository: habitRepo)
             self.toggleHabitCompletionUseCase = ToggleHabitCompletionUseCase(repository: habitRepo)
             self.createHabitUseCase = CreateHabitUseCase(repository: habitRepo, premiumGate: premiumGate)
             self.updateHabitUseCase = UpdateHabitUseCase(repository: habitRepo)
+            self.archiveHabitUseCase = ArchiveHabitUseCase(repository: habitRepo)
+            self.unarchiveHabitUseCase = UnarchiveHabitUseCase(repository: habitRepo)
+            self.deleteHabitUseCase = DeleteHabitUseCase(repository: habitRepo)
         }
     }
 }
