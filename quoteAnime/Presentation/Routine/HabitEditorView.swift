@@ -2,16 +2,19 @@ import SwiftUI
 
 struct HabitEditorView: View {
     @StateObject private var viewModel: HabitEditorViewModel
+    @EnvironmentObject private var router: AppRouter
     @Environment(\.dismiss) private var dismiss
     @State private var showIconPicker = false
 
     private let templates = DefaultHabitTemplates.all
+    private let premiumGate: PremiumGate
 
     init(
         habitId: String?,
         createHabitUseCase: CreateHabitUseCase,
         updateHabitUseCase: UpdateHabitUseCase,
-        habitRepository: HabitRepository
+        habitRepository: HabitRepository,
+        premiumGate: PremiumGate
     ) {
         _viewModel = StateObject(wrappedValue: HabitEditorViewModel(
             habitId: habitId,
@@ -19,6 +22,7 @@ struct HabitEditorView: View {
             updateHabitUseCase: updateHabitUseCase,
             habitRepository: habitRepository
         ))
+        self.premiumGate = premiumGate
     }
 
     var body: some View {
@@ -100,15 +104,20 @@ struct HabitEditorView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(templates) { template in
+                        let isLocked = template.isPremiumOnly && !premiumGate.isPremium
                         Button {
-                            viewModel.onTemplateSelected(template)
+                            if isLocked {
+                                router.push(.paywall)
+                            } else {
+                                viewModel.onTemplateSelected(template)
+                            }
                         } label: {
                             HStack(spacing: 6) {
-                                Image(systemName: HabitIcons.symbol(for: template.iconKey))
+                                Image(systemName: isLocked ? "lock.fill" : HabitIcons.symbol(for: template.iconKey))
                                 Text(template.title)
                                     .font(.system(size: 13, weight: .medium))
                             }
-                            .foregroundColor(.textPrimary)
+                            .foregroundColor(isLocked ? .textSecondary : .textPrimary)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
                             .background(Color.surface)

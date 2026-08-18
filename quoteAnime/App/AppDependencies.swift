@@ -30,7 +30,7 @@ final class AppDependencies: ObservableObject {
 
     // MARK: Habits ("Mi Rutina") — SwiftData-only, nil below iOS 17 (no legacy fallback yet)
     let habitRepository: HabitRepository?
-    let premiumGate = PremiumGate()
+    let premiumGate = PremiumGate.shared
     var getActiveHabitsUseCase: GetActiveHabitsUseCase?
     var getArchivedHabitsUseCase: GetArchivedHabitsUseCase?
     var getGlobalStreakUseCase: GetGlobalStreakUseCase?

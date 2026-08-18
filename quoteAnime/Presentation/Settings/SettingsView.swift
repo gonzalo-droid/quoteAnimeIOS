@@ -6,11 +6,14 @@ struct SettingsView: View {
     @State private var showPrivacyPolicy = false
     @State private var showTerms = false
 
+    let premiumGate: PremiumGate
+
     init(
         getUserPreferences: GetUserPreferencesUseCase,
         updateUserPreferences: UpdateUserPreferencesUseCase,
         notificationScheduler: NotificationScheduler,
-        getAllQuotes: GetAllQuotesUseCase
+        getAllQuotes: GetAllQuotesUseCase,
+        premiumGate: PremiumGate
     ) {
         _viewModel = StateObject(wrappedValue: SettingsViewModel(
             getUserPreferences: getUserPreferences,
@@ -18,10 +21,12 @@ struct SettingsView: View {
             notificationScheduler: notificationScheduler,
             getAllQuotes: getAllQuotes
         ))
+        self.premiumGate = premiumGate
     }
 
     var body: some View {
         List {
+            premiumSection
             notificationsSection
             widgetSection
             ratingSection
@@ -102,6 +107,21 @@ struct SettingsView: View {
                     )
                     .tint(.accentPurple)
                 }
+            }
+        }
+        .listRowBackground(Color.surface)
+    }
+
+    private var premiumSection: some View {
+        Section {
+            Button {
+                router.push(.paywall)
+            } label: {
+                Label(
+                    premiumGate.isPremium ? "Ya sos premium ✨" : "Hazte Premium",
+                    systemImage: "crown.fill"
+                )
+                .foregroundColor(.textPrimary)
             }
         }
         .listRowBackground(Color.surface)

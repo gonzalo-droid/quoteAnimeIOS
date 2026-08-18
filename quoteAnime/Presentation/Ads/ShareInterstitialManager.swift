@@ -21,10 +21,15 @@ final class ShareInterstitialManager: NSObject {
     // MARK: - Public
 
     /// Call when the user taps the share button from any screen.
+    /// - Premium users never see this ad — proceeds immediately.
     /// - If this is the Nth share (multiple of `sharesPerAd`) and an ad is ready: shows it, then calls `onProceed`.
     /// - Otherwise: calls `onProceed` immediately.
     /// The share always proceeds even if the ad fails.
     func onShareRequested(onProceed: @escaping () -> Void) {
+        guard !PremiumGate.shared.isPremium else {
+            onProceed()
+            return
+        }
         shareCount += 1
         if shareCount % sharesPerAd == 0, let ad = interstitial {
             interstitial = nil

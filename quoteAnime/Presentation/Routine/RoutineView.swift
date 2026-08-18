@@ -64,14 +64,13 @@ struct RoutineView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
 
                 Button {
-                    router.push(.habitEditor(habitId: nil))
+                    router.push(viewModel.uiState.canAddHabit ? .habitEditor(habitId: nil) : .paywall)
                 } label: {
                     Image(systemName: "plus")
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundColor(viewModel.uiState.canAddHabit ? .textPrimary : .textSecondary)
                         .frame(width: 44, height: 44)
                 }
-                .disabled(!viewModel.uiState.canAddHabit)
             }
             .frame(height: 52)
 

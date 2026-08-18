@@ -95,7 +95,8 @@ struct MainContainerView: View {
                 getUserPreferences: deps.getUserPreferencesUseCase,
                 updateUserPreferences: deps.updateUserPreferencesUseCase,
                 notificationScheduler: deps.notificationScheduler,
-                getAllQuotes: deps.getAllQuotesUseCase
+                getAllQuotes: deps.getAllQuotesUseCase,
+                premiumGate: deps.premiumGate
             )
 
         case .widgetTutorial:
@@ -131,11 +132,15 @@ struct MainContainerView: View {
                     habitId: habitId,
                     createHabitUseCase: createHabit,
                     updateHabitUseCase: updateHabit,
-                    habitRepository: habitRepository
+                    habitRepository: habitRepository,
+                    premiumGate: deps.premiumGate
                 )
             } else {
                 unavailableView(message: "Mi Rutina requiere iOS 17 o superior")
             }
+
+        case .paywall:
+            PaywallView(premiumGate: deps.premiumGate)
         }
     }
 

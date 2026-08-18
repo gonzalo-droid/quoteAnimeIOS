@@ -13,6 +13,7 @@ enum AppRoute: Hashable {
     case widgetTutorial
     case routine
     case habitEditor(habitId: String?)
+    case paywall
 }
 
 @MainActor
