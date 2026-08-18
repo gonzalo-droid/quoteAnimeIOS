@@ -50,10 +50,16 @@ private struct HomeContentView: View {
             }
             .ignoresSafeArea()
 
-            // Settings button — safe area handled naturally by the ZStack
+            // Routine + Settings buttons — safe area handled naturally by the ZStack
             VStack {
                 HStack {
                     Spacer()
+                    Button { router.push(.routine) } label: {
+                        Image(systemName: "flame.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white.opacity(0.7))
+                            .padding(14)
+                    }
                     Button { router.push(.settings) } label: {
                         Image(systemName: "gearshape.fill")
                             .font(.system(size: 20))

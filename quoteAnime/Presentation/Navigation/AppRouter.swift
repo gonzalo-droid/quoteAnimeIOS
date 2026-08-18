@@ -11,6 +11,8 @@ enum AppRoute: Hashable {
     case catalog
     case settings
     case widgetTutorial
+    case routine
+    case habitEditor(habitId: String?)
 }
 
 @MainActor

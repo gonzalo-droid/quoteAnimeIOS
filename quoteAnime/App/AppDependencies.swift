@@ -28,6 +28,16 @@ final class AppDependencies: ObservableObject {
     // MARK: Services
     let notificationScheduler: NotificationScheduler
 
+    // MARK: Habits ("Mi Rutina") — SwiftData-only, nil below iOS 17 (no legacy fallback yet)
+    let habitRepository: HabitRepository?
+    let premiumGate = PremiumGate()
+    var getActiveHabitsUseCase: GetActiveHabitsUseCase?
+    var getGlobalStreakUseCase: GetGlobalStreakUseCase?
+    var toggleHabitCompletionUseCase: ToggleHabitCompletionUseCase?
+    var createHabitUseCase: CreateHabitUseCase?
+    var updateHabitUseCase: UpdateHabitUseCase?
+    var getHabitTemplatesUseCase = GetHabitTemplatesUseCase()
+
     init() {
         // ── Favorite storage (SwiftData on iOS 17+, UserDefaults fallback) ──
         var favoriteStorage: FavoriteStorageProtocol = UserDefaultsFavoriteStorage()
@@ -74,5 +84,26 @@ final class AppDependencies: ObservableObject {
 
         // ── Services ──
         self.notificationScheduler = NotificationScheduler()
+
+        // ── Habits ("Mi Rutina") — SwiftData only, nil below iOS 17 ──
+        var habitRepo: HabitRepository?
+        if #available(iOS 17, *) {
+            do {
+                let schema = Schema([HabitModel.self, HabitCompletionModel.self])
+                let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+                let container = try ModelContainer(for: schema, configurations: [config])
+                habitRepo = HabitDAO(modelContext: ModelContext(container))
+            } catch {
+                print("[AppDependencies] Habit SwiftData unavailable: \(error)")
+            }
+        }
+        self.habitRepository = habitRepo
+        if let habitRepo {
+            self.getActiveHabitsUseCase = GetActiveHabitsUseCase(repository: habitRepo)
+            self.getGlobalStreakUseCase = GetGlobalStreakUseCase(repository: habitRepo)
+            self.toggleHabitCompletionUseCase = ToggleHabitCompletionUseCase(repository: habitRepo)
+            self.createHabitUseCase = CreateHabitUseCase(repository: habitRepo, premiumGate: premiumGate)
+            self.updateHabitUseCase = UpdateHabitUseCase(repository: habitRepo)
+        }
     }
 }

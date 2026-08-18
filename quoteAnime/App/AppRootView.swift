@@ -100,6 +100,48 @@ struct MainContainerView: View {
 
         case .widgetTutorial:
             WidgetTutorialView()
+
+        case .routine:
+            if let getActiveHabits = deps.getActiveHabitsUseCase,
+               let getGlobalStreak = deps.getGlobalStreakUseCase,
+               let toggleCompletion = deps.toggleHabitCompletionUseCase {
+                RoutineView(
+                    getActiveHabitsUseCase: getActiveHabits,
+                    getGlobalStreakUseCase: getGlobalStreak,
+                    toggleHabitCompletionUseCase: toggleCompletion,
+                    premiumGate: deps.premiumGate
+                )
+            } else {
+                unavailableView(message: "Mi Rutina requiere iOS 17 o superior")
+            }
+
+        case .habitEditor(let habitId):
+            if let habitRepository = deps.habitRepository,
+               let createHabit = deps.createHabitUseCase,
+               let updateHabit = deps.updateHabitUseCase {
+                HabitEditorView(
+                    habitId: habitId,
+                    createHabitUseCase: createHabit,
+                    updateHabitUseCase: updateHabit,
+                    habitRepository: habitRepository
+                )
+            } else {
+                unavailableView(message: "Mi Rutina requiere iOS 17 o superior")
+            }
         }
+    }
+
+    private func unavailableView(message: String) -> some View {
+        VStack {
+            Spacer()
+            Text(message)
+                .font(.system(size: 14))
+                .foregroundColor(.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.bgDark.ignoresSafeArea())
     }
 }
