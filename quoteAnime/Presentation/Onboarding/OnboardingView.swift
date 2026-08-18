@@ -3,24 +3,29 @@ import SwiftUI
 struct OnboardingView: View {
     @StateObject var viewModel: OnboardingViewModel
 
-    private let pages: [(image: String, phrase: String)] = [
+    private let quotePages: [(image: String, phrase: String)] = [
         ("onboarding_01", "Las mejores frases del anime, en la palma de tu mano."),
         ("onboarding_02", "Descubre personajes que te inspiran cada día."),
         ("onboarding_03", "Comparte lo que sientes a través de las palabras del anime."),
     ]
+
+    private var totalPages: Int { quotePages.count + 1 }
+    private var isLastPage: Bool { viewModel.currentPage == totalPages - 1 }
 
     var body: some View {
         GeometryReader { geo in
             ZStack {
                 // TabView fullscreen — ignores safe area so image fills the entire screen
                 TabView(selection: $viewModel.currentPage) {
-                    ForEach(pages.indices, id: \.self) { index in
+                    ForEach(quotePages.indices, id: \.self) { index in
                         OnboardingPageView(
-                            imageName: pages[index].image,
-                            phrase: pages[index].phrase
+                            imageName: quotePages[index].image,
+                            phrase: quotePages[index].phrase
                         )
                         .tag(index)
                     }
+                    HabitSelectionPageView(viewModel: viewModel)
+                        .tag(quotePages.count)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: viewModel.currentPage)
@@ -32,7 +37,7 @@ struct OnboardingView: View {
 
                     // Page indicators
                     HStack(spacing: 8) {
-                        ForEach(pages.indices, id: \.self) { index in
+                        ForEach(0..<totalPages, id: \.self) { index in
                             Capsule()
                                 .fill(viewModel.currentPage == index ? Color.accentPurple : Color.white.opacity(0.4))
                                 .frame(width: viewModel.currentPage == index ? 20 : 8, height: 8)
@@ -42,13 +47,13 @@ struct OnboardingView: View {
 
                     // Next / Start button
                     Button {
-                        if viewModel.currentPage < pages.count - 1 {
+                        if !isLastPage {
                             viewModel.currentPage += 1
                         } else {
                             viewModel.complete()
                         }
                     } label: {
-                        Text(viewModel.currentPage < pages.count - 1 ? "Siguiente" : "Comenzar")
+                        Text(isLastPage ? "Comenzar" : "Siguiente")
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundColor(.bgDark)
                             .frame(maxWidth: .infinity)
@@ -124,5 +129,81 @@ private struct OnboardingPageView: View {
             .frame(width: geo.size.width, height: geo.size.height)
         }
         .ignoresSafeArea()
+    }
+}
+
+/// 4th page — same visual language as the quote pages (dark gradient background, centered
+/// content, dots + button shared with the parent) but no bundled cover image per template
+/// yet on iOS, so the background is a plain themed gradient instead of anime art.
+private struct HabitSelectionPageView: View {
+    @ObservedObject var viewModel: OnboardingViewModel
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                LinearGradient(
+                    colors: [Color.bgDark, Color(hex: "#1A1040")],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+
+                VStack(spacing: 24) {
+                    Spacer()
+
+                    Text("Elegí tu primer hábito")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.textPrimary)
+                        .multilineTextAlignment(.center)
+
+                    Text("Podés cambiarlo o crear otro más tarde, desde Mi Rutina.")
+                        .font(.system(size: 14))
+                        .foregroundColor(.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+
+                    VStack(spacing: 12) {
+                        ForEach(viewModel.habitTemplates) { template in
+                            templateRow(template)
+                        }
+                    }
+                    .padding(.horizontal, 32)
+                    .padding(.top, 12)
+
+                    Spacer()
+                    Spacer()
+                }
+                .frame(width: geo.size.width)
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
+        }
+        .ignoresSafeArea()
+    }
+
+    private func templateRow(_ template: HabitTemplate) -> some View {
+        let isSelected = viewModel.selectedTemplateId == template.id
+        return Button {
+            viewModel.selectTemplate(template.id)
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: HabitIcons.symbol(for: template.iconKey))
+                    .font(.system(size: 18))
+                    .foregroundColor(HabitPalette.color(at: template.themeColorIndex ?? 0))
+                    .frame(width: 28)
+                Text(template.title)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.textPrimary)
+                Spacer()
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 18))
+                    .foregroundColor(isSelected ? .accentPurple : .textSecondary)
+            }
+            .padding(14)
+            .background(Color.surface.opacity(0.7))
+            .cornerRadius(14)
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? Color.accentPurple : Color.outline.opacity(0.3), lineWidth: isSelected ? 2 : 1)
+            )
+        }
     }
 }

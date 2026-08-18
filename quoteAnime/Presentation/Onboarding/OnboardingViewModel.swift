@@ -7,11 +7,16 @@ final class OnboardingViewModel: ObservableObject {
     @Published var selectedCategoryIds: Set<String> = []
     @Published var currentPage: Int = 0
     @Published var isLoading = false
+    @Published var selectedTemplateId: String?
+
+    let habitTemplates = DefaultHabitTemplates.all.filter { !$0.isPremiumOnly }
 
     private var getCategoriesUseCase: GetCategoriesUseCase?
     private var setOnboardingCompleted: SetOnboardingCompletedUseCase?
     private var updateUserPreferences: UpdateUserPreferencesUseCase?
     private var getUserPreferences: GetUserPreferencesUseCase?
+    /// Nil below iOS 17 — habit creation is simply skipped, quote preferences still save.
+    private var createHabitUseCase: CreateHabitUseCase?
     private var onComplete: (() -> Void)?
 
     private var setupDone = false
@@ -21,6 +26,7 @@ final class OnboardingViewModel: ObservableObject {
         setOnboardingCompleted: SetOnboardingCompletedUseCase,
         updateUserPreferences: UpdateUserPreferencesUseCase,
         getUserPreferences: GetUserPreferencesUseCase,
+        createHabitUseCase: CreateHabitUseCase?,
         onComplete: @escaping () -> Void
     ) {
         guard !setupDone else { return }
@@ -29,6 +35,7 @@ final class OnboardingViewModel: ObservableObject {
         self.setOnboardingCompleted = setOnboardingCompleted
         self.updateUserPreferences  = updateUserPreferences
         self.getUserPreferences     = getUserPreferences
+        self.createHabitUseCase     = createHabitUseCase
         self.onComplete             = onComplete
         Task { await loadCategories() }
     }
@@ -51,11 +58,36 @@ final class OnboardingViewModel: ObservableObject {
         }
     }
 
+    func selectTemplate(_ id: String) {
+        selectedTemplateId = (selectedTemplateId == id) ? nil : id
+    }
+
     func complete() {
         var prefs = getUserPreferences?.execute() ?? UserPreferences()
         prefs.selectedCategoryIds = selectedCategoryIds
         updateUserPreferences?.execute(prefs)
         setOnboardingCompleted?.execute(true)
-        onComplete?()
+
+        if let templateId = selectedTemplateId,
+           let template = habitTemplates.first(where: { $0.id == templateId }),
+           let createHabitUseCase {
+            Task {
+                let habit = Habit(
+                    id: UUID().uuidString,
+                    title: template.title,
+                    description: nil,
+                    iconKey: template.iconKey,
+                    colorIndex: template.themeColorIndex ?? 0,
+                    startDate: Date(),
+                    templateId: template.id,
+                    coverAnimeSlug: nil,
+                    createdAt: Date()
+                )
+                try? await createHabitUseCase.execute(habit)
+                onComplete?()
+            }
+        } else {
+            onComplete?()
+        }
     }
 }

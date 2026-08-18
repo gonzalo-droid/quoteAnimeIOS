@@ -59,6 +59,7 @@ struct OnboardingContainerView: View {
                     setOnboardingCompleted: deps.setOnboardingCompletedUseCase,
                     updateUserPreferences: deps.updateUserPreferencesUseCase,
                     getUserPreferences: deps.getUserPreferencesUseCase,
+                    createHabitUseCase: deps.createHabitUseCase,
                     onComplete: { router.navigateToMain() }
                 )
             }
