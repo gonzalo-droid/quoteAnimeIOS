@@ -25,7 +25,9 @@ final class HabitReminderNotificationDelegate: NSObject, UNUserNotificationCente
         }
 
         Task {
-            try? await toggleHabitCompletion.execute(habitId: habitId, date: Date())
+            // A rejection here (habit deleted, reminder fired past its end date) is silent on
+            // purpose: there is no UI to report it to from a notification action.
+            _ = try? await toggleHabitCompletion.execute(habitId: habitId, date: Date())
             completionHandler()
         }
     }

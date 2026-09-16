@@ -50,7 +50,7 @@ final class OnboardingViewModel: ObservableObject {
                     coverAnimeSlug: nil,
                     createdAt: Date()
                 )
-                try? await createHabitUseCase.execute(habit)
+                _ = try? await createHabitUseCase.execute(habit)
                 onComplete?()
             }
         } else {

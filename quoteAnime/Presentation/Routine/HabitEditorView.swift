@@ -42,7 +42,7 @@ struct HabitEditorView: View {
                     descriptionField
                     iconPicker
                     colorPicker
-                    dateField
+                    datesSection
                     reminderSection
                 }
                 .padding(16)
@@ -56,15 +56,15 @@ struct HabitEditorView: View {
             HabitIconPickerView(selectedKey: $viewModel.uiState.iconKey)
         }
         .alert(
-            "Límite alcanzado",
+            viewModel.alert?.title ?? "",
             isPresented: Binding(
-                get: { viewModel.limitReachedMessage != nil },
-                set: { if !$0 { viewModel.limitReachedMessage = nil } }
+                get: { viewModel.alert != nil },
+                set: { if !$0 { viewModel.alert = nil } }
             )
         ) {
             Button("Entendido", role: .cancel) {}
         } message: {
-            Text(viewModel.limitReachedMessage ?? "")
+            Text(viewModel.alert?.message ?? "")
         }
     }
 
@@ -204,12 +204,19 @@ struct HabitEditorView: View {
         }
     }
 
-    private var dateField: some View {
+    /// Start date plus an opt-in end date, mirroring Android's `habit_editor_has_end_date`
+    /// switch. The end picker's range starts at `startDate`, so an inverted range can't be
+    /// produced here at all — `CreateHabitUseCase`/`UpdateHabitUseCase` still reject one as
+    /// the backstop.
+    private var datesSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel("Fecha de inicio")
             DatePicker(
                 "",
-                selection: $viewModel.uiState.startDate,
+                selection: Binding(
+                    get: { viewModel.uiState.startDate },
+                    set: { viewModel.onStartDateChanged($0) }
+                ),
                 displayedComponents: .date
             )
             .datePickerStyle(.compact)
@@ -218,6 +225,37 @@ struct HabitEditorView: View {
             .padding(12)
             .background(Color.surface)
             .cornerRadius(12)
+
+            HStack {
+                sectionLabel("Ponerle fecha de fin")
+                Spacer()
+                Toggle(
+                    "",
+                    isOn: Binding(
+                        get: { viewModel.uiState.hasEndDate },
+                        set: { viewModel.onEndDateEnabled($0) }
+                    )
+                )
+                .labelsHidden()
+                .tint(.accentPurple)
+                .accessibilityLabel("Ponerle fecha de fin")
+            }
+            .padding(.top, 8)
+
+            if viewModel.uiState.hasEndDate {
+                DatePicker(
+                    "",
+                    selection: $viewModel.uiState.endDate,
+                    in: viewModel.uiState.startDate...,
+                    displayedComponents: .date
+                )
+                .datePickerStyle(.compact)
+                .labelsHidden()
+                .colorScheme(.dark)
+                .padding(12)
+                .background(Color.surface)
+                .cornerRadius(12)
+            }
         }
     }
 

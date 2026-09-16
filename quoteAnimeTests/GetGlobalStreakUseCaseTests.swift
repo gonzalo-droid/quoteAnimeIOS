@@ -6,21 +6,21 @@ import Testing
 /// same rule as Android's `GetGlobalStreakUseCase`, which maps over
 /// `repository.getAllCompletionDates()`.
 ///
-/// Note: iOS's use case reads `Date()` internally instead of taking `today` as a parameter
-/// (Android takes `today: LocalDate`), so these fixtures are built relative to the real
-/// current date rather than `TestCalendar.today`.
+/// `today` is injected (Android takes `today: LocalDate`), so every fixture below is pinned to
+/// `TestCalendar.today` instead of the real clock.
 @Suite("GetGlobalStreakUseCase")
 struct GetGlobalStreakUseCaseTests {
 
-    private func daysAgo(_ count: Int) -> Date {
-        Calendar.current.date(byAdding: .day, value: -count, to: Date())!
+    private func makeSUT() -> (GetGlobalStreakUseCase, FakeHabitRepository) {
+        let repository = FakeHabitRepository(calendar: TestCalendar.fixed)
+        return (GetGlobalStreakUseCase(repository: repository, calendar: TestCalendar.fixed), repository)
     }
 
     @Test("sin ningún hábito completado la racha global es cero")
     func noCompletions() async throws {
-        let repository = FakeHabitRepository()
+        let (useCase, _) = makeSUT()
 
-        let state = try await GetGlobalStreakUseCase(repository: repository).execute()
+        let state = try await useCase.execute(today: TestCalendar.today)
 
         #expect(state.current == 0)
         #expect(state.best == 0)
@@ -29,12 +29,12 @@ struct GetGlobalStreakUseCaseTests {
 
     @Test("dos hábitos distintos en días consecutivos forman una sola racha")
     func differentHabitsChainTheStreak() async throws {
-        let repository = FakeHabitRepository()
-        repository.seedCompletions(habitId: "meditar", dates: [daysAgo(0)])
-        repository.seedCompletions(habitId: "leer", dates: [daysAgo(1)])
-        repository.seedCompletions(habitId: "entrenar", dates: [daysAgo(2)])
+        let (useCase, repository) = makeSUT()
+        repository.seedCompletions(habitId: "meditar", dates: [TestCalendar.day(0)])
+        repository.seedCompletions(habitId: "leer", dates: [TestCalendar.day(-1)])
+        repository.seedCompletions(habitId: "entrenar", dates: [TestCalendar.day(-2)])
 
-        let state = try await GetGlobalStreakUseCase(repository: repository).execute()
+        let state = try await useCase.execute(today: TestCalendar.today)
 
         #expect(state.current == 3)
         #expect(state.best == 3)
@@ -43,12 +43,12 @@ struct GetGlobalStreakUseCaseTests {
 
     @Test("varios hábitos el mismo día cuentan como un solo día")
     func sameDayMultipleHabitsCountOnce() async throws {
-        let repository = FakeHabitRepository()
-        repository.seedCompletions(habitId: "meditar", dates: [daysAgo(0)])
-        repository.seedCompletions(habitId: "leer", dates: [daysAgo(0)])
-        repository.seedCompletions(habitId: "entrenar", dates: [daysAgo(0)])
+        let (useCase, repository) = makeSUT()
+        repository.seedCompletions(habitId: "meditar", dates: [TestCalendar.day(0)])
+        repository.seedCompletions(habitId: "leer", dates: [TestCalendar.day(0)])
+        repository.seedCompletions(habitId: "entrenar", dates: [TestCalendar.day(0)])
 
-        let state = try await GetGlobalStreakUseCase(repository: repository).execute()
+        let state = try await useCase.execute(today: TestCalendar.today)
 
         #expect(state.current == 1)
         #expect(state.best == 1)
@@ -56,12 +56,12 @@ struct GetGlobalStreakUseCaseTests {
 
     @Test("un día sin ningún hábito corta la racha global")
     func gapBreaksStreak() async throws {
-        let repository = FakeHabitRepository()
-        repository.seedCompletions(habitId: "meditar", dates: [daysAgo(0)])
-        // nothing on daysAgo(1)
-        repository.seedCompletions(habitId: "leer", dates: [daysAgo(2), daysAgo(3), daysAgo(4)])
+        let (useCase, repository) = makeSUT()
+        repository.seedCompletions(habitId: "meditar", dates: [TestCalendar.day(0)])
+        // nothing on day(-1)
+        repository.seedCompletions(habitId: "leer", dates: [TestCalendar.day(-2), TestCalendar.day(-3), TestCalendar.day(-4)])
 
-        let state = try await GetGlobalStreakUseCase(repository: repository).execute()
+        let state = try await useCase.execute(today: TestCalendar.today)
 
         #expect(state.current == 1)
         #expect(state.best == 3)
@@ -70,10 +70,10 @@ struct GetGlobalStreakUseCaseTests {
 
     @Test("la racha global sigue viva si el último día fue ayer")
     func aliveWhenLastWasYesterday() async throws {
-        let repository = FakeHabitRepository()
-        repository.seedCompletions(habitId: "meditar", dates: [daysAgo(1), daysAgo(2)])
+        let (useCase, repository) = makeSUT()
+        repository.seedCompletions(habitId: "meditar", dates: [TestCalendar.day(-1), TestCalendar.day(-2)])
 
-        let state = try await GetGlobalStreakUseCase(repository: repository).execute()
+        let state = try await useCase.execute(today: TestCalendar.today)
 
         #expect(state.current == 2)
         #expect(state.completedToday == false)
@@ -83,13 +83,37 @@ struct GetGlobalStreakUseCaseTests {
     func archivedHabitsStillCount() async throws {
         // `fetchAllCompletionDates` is not filtered by archive state on either platform:
         // archiving a habit must not retroactively rewrite the user's history.
-        let repository = FakeHabitRepository()
-        let archived = HabitFixture.make(id: "viejo")
-        repository.seed(habits: [archived], archived: ["viejo"])
-        repository.seedCompletions(habitId: "viejo", dates: [daysAgo(0), daysAgo(1)])
+        let (useCase, repository) = makeSUT()
+        repository.seed(habits: [HabitFixture.make(id: "viejo")], archived: ["viejo"])
+        repository.seedCompletions(habitId: "viejo", dates: [TestCalendar.day(0), TestCalendar.day(-1)])
 
-        let state = try await GetGlobalStreakUseCase(repository: repository).execute()
+        let state = try await useCase.execute(today: TestCalendar.today)
 
         #expect(state.current == 2)
+    }
+
+    // MARK: - `today` is honoured (the reason it became a parameter)
+
+    @Test(
+        "la misma historia da rachas distintas según qué día sea hoy",
+        arguments: [
+            (0, 3, true),   // hoy: racha viva de 3, completada hoy
+            (1, 3, false),  // mañana: sigue viva (el último fue ayer), pero no completada hoy
+            (2, 0, false),  // pasado mañana: ya se cortó
+            (10, 0, false)
+        ]
+    )
+    func streakDependsOnToday(todayOffset: Int, expectedCurrent: Int, expectedCompletedToday: Bool) async throws {
+        let (useCase, repository) = makeSUT()
+        repository.seedCompletions(
+            habitId: "meditar",
+            dates: [TestCalendar.day(0), TestCalendar.day(-1), TestCalendar.day(-2)]
+        )
+
+        let state = try await useCase.execute(today: TestCalendar.day(todayOffset))
+
+        #expect(state.current == expectedCurrent)
+        #expect(state.completedToday == expectedCompletedToday)
+        #expect(state.best == 3, "la mejor racha no depende de hoy")
     }
 }
