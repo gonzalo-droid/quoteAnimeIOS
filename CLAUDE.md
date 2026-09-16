@@ -56,6 +56,7 @@ quoteAnime/
 │   ├── Remote/             QuoteRemoteDataSource (Firebase) + DTOs
 │   ├── Local/
 │   │   ├── SwiftData/      FavoriteQuoteDAO (iOS 17+), UserDefaultsFavoriteStorage (iOS 16)
+│   │   │                   HabitDAO + HabitModel/HabitCompletionModel (iOS 17+, sin fallback)
 │   │   └── Preferences/    UserPreferencesStore (UserDefaults)
 │   └── Repository/         QuoteRepositoryImpl, UserPreferencesRepositoryImpl
 ├── Presentation/
@@ -66,6 +67,12 @@ quoteAnime/
 │   ├── Catalog/            CatalogView + CatalogViewModel
 │   ├── Settings/           SettingsView + SettingsViewModel + WidgetTutorialView
 │   │                       + CategorySelectionView/ViewModel (elegir animes)
+│   ├── Routine/            RoutineView/ViewModel (lista "Mi Rutina"),
+│   │                       HabitDetailView/ViewModel (heatmap 26 semanas + calendario
+│   │                       mensual con marcado retroactivo), HabitEditorView/ViewModel,
+│   │                       HabitCardView, HabitHeatmapView, HabitCalendarMonthView,
+│   │                       HeatmapGrid + CalendarMonthGrid (geometría pura), HabitPalette,
+│   │                       HabitIcons
 │   ├── Common/             AppLinks (URLs legales y de App Store, espejo de AppLinks.kt)
 │   └── Components/         QuoteCard, BannerAdView, ShareCardView, ActivityViewController
 ├── Notification/           NotificationScheduler + NotificationHelper
@@ -83,6 +90,14 @@ quoteAnime/
 - iOS 17+: `FavoriteQuoteDAO` backed by SwiftData (`FavoriteQuoteModel @Model`). The `ModelContext` is created inside `AppDependencies.init()` — not via the SwiftUI environment.
 - iOS 16: `UserDefaultsFavoriteStorage` (JSON-encoded `[Quote]` in UserDefaults).
 - Both conform to `FavoriteStorageProtocol`. Selection happens at runtime in `AppDependencies.init()`.
+
+**Habits storage ("Mi Rutina")**: `HabitDAO` over SwiftData, iOS 17+ only — there is no iOS 16 fallback, so `AppDependencies.habitRepository` is nil below 17 and every entry point checks `isRoutineAvailable` before offering the feature.
+
+**Two SwiftData stores, both named**: the app builds two `ModelContainer`s with different schemas (favorites, habits). Each `ModelConfiguration` **must** be given a name (`"Favorites"`, `"Habits"`). An anonymous configuration defaults every store to the same `default.store` file; with two schemas pointing at it, each container finds the file incompatible with its own model and SwiftData recreates it, so every cold launch wiped the other container's data. Never make either configuration anonymous again.
+
+**Habit schema migration**: adding `endDate` (optional) to `HabitModel` is resolved by SwiftData's implicit lightweight migration — verified by installing the previous build, creating habits and completions, and installing the new one over it. A rename, a removal, or an optional becoming non-optional would need a real `VersionedSchema` + `SchemaMigrationPlan`.
+
+**Habit validation lives in the use cases**, mirroring Android: `CreateHabitUseCase` / `UpdateHabitUseCase` own the blank-title and `endDate < startDate` checks plus the trimming, and `ToggleHabitCompletionUseCase` rejects an unknown habit, a future day and a day outside the habit's window (`Habit.isActiveOn`). Views must not duplicate these rules — `HabitCalendarMonthView` only *disables* the days the use case would reject.
 
 **Navigation**: `AppRouter` holds `currentScreen: AppScreen` (splash/onboarding/main) and `navigationPath: NavigationPath`. `AppRootView` switches the root; `MainContainerView` wraps `NavigationStack` for in-app push navigation using `AppRoute` enum cases.
 

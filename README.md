@@ -83,6 +83,8 @@ quoteAnime/
 │   ├── Catalog/                # Browse/filter quotes by anime
 │   ├── Settings/               # Preferences + anime selection + widget tutorial
 │   ├── Onboarding/             # First-launch flow
+│   ├── Routine/                # "Mi Rutina": habit list, detail (heatmap + month
+│   │                           #  calendar with retroactive marking), editor
 │   ├── Ads/                    # Interstitial ad manager
 │   ├── Common/                 # AppLinks (legal + App Store URLs)
 │   └── Components/             # Shared: QuoteDetailView, QuoteCard, ShareCardView
@@ -115,6 +117,12 @@ ViewModels are instantiated with `@StateObject` (empty defaults), then `setup(de
 Both conform to `FavoriteStorageProtocol`. Selection is made at runtime in `AppDependencies.init()` via `#available(iOS 17, *)`.
 
 **Why SwiftData:** Native persistence with `@Observable`-compatible models. The UserDefaults fallback keeps the iOS 16 minimum deployment target viable without shipping CoreData boilerplate.
+
+### Habits storage — SwiftData only, and a named store per schema
+
+"Mi Rutina" is iOS 17+ only: `HabitDAO` over SwiftData, with no UserDefaults fallback, so `AppDependencies.habitRepository` is nil below iOS 17 and the feature hides itself there.
+
+Both SwiftData containers (favorites and habits) pass a **named** `ModelConfiguration`. An anonymous one defaults to a shared `default.store`, which two different schemas cannot share: each container would find the file incompatible and recreate it, wiping the other's data on every cold launch.
 
 ### Navigation — AppRouter + NavigationPath
 

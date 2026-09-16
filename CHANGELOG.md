@@ -9,6 +9,11 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **Pantalla de detalle de cada hábito.** Tocá una tarjeta de Mi Rutina y se abre su detalle: el mapa de actividad de los últimos 6 meses, la racha actual, la mejor racha y los días marcados, más un calendario mensual que podés navegar mes a mes.
+- **Marcar días pasados.** Desde el calendario del detalle podés marcar o desmarcar cualquier día que te hayas olvidado, y la racha se recalcula sola. Los días futuros y los que quedan fuera del período del hábito se ven atenuados y no se pueden tocar.
+- **Archivar, restaurar y borrar desde el detalle**, en el menú de la barra superior. Borrar pide confirmación y avisa que se pierde todo el historial.
+- **Fecha de fin opcional en los hábitos.** Al crear o editar un hábito podés ponerle una fecha de fin; después de esa fecha deja de aceptar marcas. No se puede elegir una fecha de fin anterior a la de inicio.
+- Tests del detalle del hábito, del calendario mensual y de la fecha de fin (121 casos nuevos en `quoteAnimeTests`, 228 en total).
 - **Elegí de qué animes querés frases.** Nueva sección en Ajustes → Contenido → Animes: una lista con los 19 animes disponibles donde marcás los que te interesan. La elección se aplica al feed del inicio y a las frases que te llegan por notificación; si no elegís ninguno, seguís viendo todos.
 - Tests del filtro por animes, de su persistencia y del onboarding (49 casos nuevos en `quoteAnimeTests`, 107 en total).
 - Suite de tests (`quoteAnimeTests`, con Swift Testing): cubre el cálculo de racha actual y mejor racha, la racha global entre hábitos, el límite de 3 hábitos del plan gratuito y el marcado por día. Es el primer target de tests del proyecto.
@@ -18,6 +23,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
 ### Fixed
+- **Ya no se pierden los hábitos ni los favoritos al cerrar la app.** Las dos bases de datos internas compartían el mismo archivo sin querer, así que cada una borraba lo que había guardado la otra: al abrir la app de nuevo, todo lo del día anterior había desaparecido. Ahora cada una tiene el suyo y el historial se conserva.
+- **El mapa de actividad se dibuja completo.** Los días anteriores al comienzo del hábito quedaban en blanco y la grilla se veía cortada, sobre todo en el detalle.
 - **La política de privacidad y los términos abren la página correcta.** Seguían apuntando al dominio viejo; ahora van a animequote.app, igual que en Android.
 - **El onboarding ya no ofrece elegir un hábito donde no se puede guardar.** En iPhones con iOS 16 la última página dejaba elegir un primer hábito que después se perdía sin aviso; ahora esa página no aparece.
 - **El widget ya se puede instalar.** La extensión del widget exigía una versión de iOS mucho más nueva que la app, así que en la práctica no aparecía en la galería de widgets de casi ningún iPhone. Ahora pide lo mismo que la app: iOS 16.6.
@@ -33,6 +40,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - El botón "Quitar premium (solo pruebas)" ya no se incluye en las versiones publicadas; queda únicamente en compilaciones de desarrollo.
 
 ### Changed
+- **Tocar una tarjeta de Mi Rutina ahora abre el detalle**, no el editor. Para editar, usá el menú de la tarjeta o el del detalle — igual que en Android.
 - Removed decorative opening quote mark (`\u{201C}`) from `QuoteDetailView`, `OnboardingView`, widget Small/Medium/Inline views, and `ShareImageRenderer`.
 - Typography: `quoteSerif` changed from `Georgia` to `Didot`; `quoteSerifItalic` changed from `Georgia-Italic` to `Georgia`.
 
