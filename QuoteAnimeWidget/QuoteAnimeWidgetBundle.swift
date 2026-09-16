@@ -14,7 +14,5 @@ struct QuoteAnimeWidgetBundle: WidgetBundle {
         QuoteAnimeWidget()
         QuoteAnimeLockWidget()
         RoutineSummaryWidget()
-        QuoteAnimeWidgetControl()
-        QuoteAnimeWidgetLiveActivity()
     }
 }

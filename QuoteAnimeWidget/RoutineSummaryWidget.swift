@@ -175,18 +175,21 @@ struct RoutineSummaryWidget: Widget {
 
 // MARK: - Previews
 
+@available(iOS 17.0, *)
 #Preview("Small", as: .systemSmall) {
     RoutineSummaryWidget()
 } timeline: {
     RoutineSummaryEntry.placeholder
 }
 
+@available(iOS 17.0, *)
 #Preview("Medium", as: .systemMedium) {
     RoutineSummaryWidget()
 } timeline: {
     RoutineSummaryEntry.placeholder
 }
 
+@available(iOS 17.0, *)
 #Preview("Empty", as: .systemMedium) {
     RoutineSummaryWidget()
 } timeline: {

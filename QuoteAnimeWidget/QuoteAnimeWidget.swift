@@ -361,8 +361,15 @@ struct QuoteAnimeLockWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: QuoteProvider()) { entry in
-            QuoteAnimeLockWidgetEntryView(entry: entry)
-                .containerBackground(for: .widget) { Color.clear }
+            // iOS 17+ requires an explicit container background; on iOS 16 the system
+            // renders accessory widgets with its own vibrant treatment and the modifier
+            // does not exist yet.
+            if #available(iOS 17.0, *) {
+                QuoteAnimeLockWidgetEntryView(entry: entry)
+                    .containerBackground(for: .widget) { Color.clear }
+            } else {
+                QuoteAnimeLockWidgetEntryView(entry: entry)
+            }
         }
         .configurationDisplayName("Quote Anime — Lock Screen")
         .description("Una frase de anime en tu pantalla de bloqueo.")
@@ -372,24 +379,28 @@ struct QuoteAnimeLockWidget: Widget {
 
 // MARK: - Previews
 
+@available(iOS 17.0, *)
 #Preview("Small", as: .systemSmall) {
     QuoteAnimeWidget()
 } timeline: {
     QuoteEntry.placeholder
 }
 
+@available(iOS 17.0, *)
 #Preview("Medium", as: .systemMedium) {
     QuoteAnimeWidget()
 } timeline: {
     QuoteEntry.placeholder
 }
 
+@available(iOS 17.0, *)
 #Preview("Lock Rectangular", as: .accessoryRectangular) {
     QuoteAnimeLockWidget()
 } timeline: {
     QuoteEntry.placeholder
 }
 
+@available(iOS 17.0, *)
 #Preview("Lock Inline", as: .accessoryInline) {
     QuoteAnimeLockWidget()
 } timeline: {
