@@ -23,7 +23,7 @@ struct HabitDetailView: View {
         archiveHabitUseCase: ArchiveHabitUseCase,
         unarchiveHabitUseCase: UnarchiveHabitUseCase,
         deleteHabitUseCase: DeleteHabitUseCase,
-        habitReminderScheduler: HabitReminderScheduler
+        habitReminderScheduler: HabitReminderScheduling
     ) {
         _viewModel = StateObject(wrappedValue: HabitDetailViewModel(
             habitId: habitId,

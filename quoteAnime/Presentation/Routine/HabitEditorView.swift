@@ -14,7 +14,7 @@ struct HabitEditorView: View {
         createHabitUseCase: CreateHabitUseCase,
         updateHabitUseCase: UpdateHabitUseCase,
         habitRepository: HabitRepository,
-        habitReminderScheduler: HabitReminderScheduler,
+        habitReminderScheduler: HabitReminderScheduling,
         notificationScheduler: NotificationScheduler,
         premiumGate: PremiumGate
     ) {

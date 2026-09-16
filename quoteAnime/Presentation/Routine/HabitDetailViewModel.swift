@@ -27,7 +27,7 @@ final class HabitDetailViewModel: ObservableObject {
     private let archiveHabitUseCase: ArchiveHabitUseCase
     private let unarchiveHabitUseCase: UnarchiveHabitUseCase
     private let deleteHabitUseCase: DeleteHabitUseCase
-    private let habitReminderScheduler: HabitReminderScheduler
+    private let habitReminderScheduler: HabitReminderScheduling
     private let calculateStreak: CalculateStreakUseCase
     private let calendar: Calendar
     /// Injected so the screen can be tested at a fixed date, the same reason Android's view
@@ -41,7 +41,7 @@ final class HabitDetailViewModel: ObservableObject {
         archiveHabitUseCase: ArchiveHabitUseCase,
         unarchiveHabitUseCase: UnarchiveHabitUseCase,
         deleteHabitUseCase: DeleteHabitUseCase,
-        habitReminderScheduler: HabitReminderScheduler,
+        habitReminderScheduler: HabitReminderScheduling,
         today: Date = Date(),
         calendar: Calendar = .current
     ) {

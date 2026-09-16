@@ -35,7 +35,7 @@ final class HabitEditorViewModel: ObservableObject {
     private let createHabitUseCase: CreateHabitUseCase
     private let updateHabitUseCase: UpdateHabitUseCase
     private let habitRepository: HabitRepository
-    private let habitReminderScheduler: HabitReminderScheduler
+    private let habitReminderScheduler: HabitReminderScheduling
     private let notificationScheduler: NotificationScheduler
     private let habitId: String?
     private var existingHabit: Habit?
@@ -45,7 +45,7 @@ final class HabitEditorViewModel: ObservableObject {
         createHabitUseCase: CreateHabitUseCase,
         updateHabitUseCase: UpdateHabitUseCase,
         habitRepository: HabitRepository,
-        habitReminderScheduler: HabitReminderScheduler,
+        habitReminderScheduler: HabitReminderScheduling,
         notificationScheduler: NotificationScheduler
     ) {
         self.habitId = habitId

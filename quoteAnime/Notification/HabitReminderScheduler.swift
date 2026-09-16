@@ -1,9 +1,17 @@
 import Foundation
 import UserNotifications
 
+/// What the view models actually need from the reminder scheduler. Exists so they can be
+/// tested without `UNUserNotificationCenter`, whose round trips are slow and whose behaviour
+/// depends on the host app's notification authorisation.
+protocol HabitReminderScheduling {
+    func schedule(habit: Habit) async
+    func cancel(habitId: String) async
+}
+
 /// Per-habit local notifications, one per selected weekday (`UNCalendarNotificationTrigger`
 /// repeats natively on a matching weekday when only `weekday`/`hour`/`minute` are set).
-final class HabitReminderScheduler {
+final class HabitReminderScheduler: HabitReminderScheduling {
     static let categoryIdentifier = "HABIT_REMINDER"
     static let markDoneActionIdentifier = "MARK_DONE_ACTION"
 

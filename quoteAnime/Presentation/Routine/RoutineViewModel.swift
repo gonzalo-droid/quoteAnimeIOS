@@ -30,7 +30,7 @@ final class RoutineViewModel: ObservableObject {
     private let archiveHabitUseCase: ArchiveHabitUseCase
     private let unarchiveHabitUseCase: UnarchiveHabitUseCase
     private let deleteHabitUseCase: DeleteHabitUseCase
-    private let habitReminderScheduler: HabitReminderScheduler
+    private let habitReminderScheduler: HabitReminderScheduling
     private let premiumGate: PremiumGate
 
     init(
@@ -41,7 +41,7 @@ final class RoutineViewModel: ObservableObject {
         archiveHabitUseCase: ArchiveHabitUseCase,
         unarchiveHabitUseCase: UnarchiveHabitUseCase,
         deleteHabitUseCase: DeleteHabitUseCase,
-        habitReminderScheduler: HabitReminderScheduler,
+        habitReminderScheduler: HabitReminderScheduling,
         premiumGate: PremiumGate
     ) {
         self.getActiveHabitsUseCase = getActiveHabitsUseCase
