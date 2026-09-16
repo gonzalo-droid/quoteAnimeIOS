@@ -1,12 +1,14 @@
 import SwiftUI
 
-/// Tapping the card opens the editor (no detail screen in this phase — see RoutineView).
-/// Trailing controls consume their own tap first so they never also open the editor.
+/// Tapping the card opens the habit detail, same as Android; editing moved into the card's
+/// overflow menu (and the detail's toolbar menu) so the primary tap goes to the richer screen.
+/// Trailing controls consume their own tap first so they never also open the detail.
 struct HabitCardView: View {
     let item: HabitWithProgress
     var isArchived: Bool = false
     let onToggleToday: () -> Void
     let onTap: () -> Void
+    var onEdit: () -> Void = {}
     var onArchive: () -> Void = {}
     var onUnarchive: () -> Void = {}
     var onDelete: () -> Void = {}
@@ -96,13 +98,15 @@ struct HabitCardView: View {
             .buttonStyle(.plain)
 
             Menu {
+                Button("Editar", systemImage: "pencil", action: onEdit)
                 Button("Archivar", systemImage: "archivebox", action: onArchive)
             } label: {
                 Image(systemName: "ellipsis")
                     .font(.system(size: 18))
                     .foregroundColor(.textSecondary)
-                    .frame(width: 28, height: 28)
+                    .frame(width: 32, height: 32)
             }
+            .accessibilityLabel("Acciones de \(item.habit.title)")
         }
     }
 }

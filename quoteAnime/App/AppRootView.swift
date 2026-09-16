@@ -135,6 +135,25 @@ struct MainContainerView: View {
                 unavailableView(message: "Mi Rutina requiere iOS 17 o superior")
             }
 
+        case .habitDetail(let habitId):
+            if let habitRepository = deps.habitRepository,
+               let toggleCompletion = deps.toggleHabitCompletionUseCase,
+               let archiveHabit = deps.archiveHabitUseCase,
+               let unarchiveHabit = deps.unarchiveHabitUseCase,
+               let deleteHabit = deps.deleteHabitUseCase {
+                HabitDetailView(
+                    habitId: habitId,
+                    repository: habitRepository,
+                    toggleHabitCompletionUseCase: toggleCompletion,
+                    archiveHabitUseCase: archiveHabit,
+                    unarchiveHabitUseCase: unarchiveHabit,
+                    deleteHabitUseCase: deleteHabit,
+                    habitReminderScheduler: deps.habitReminderScheduler
+                )
+            } else {
+                unavailableView(message: "Mi Rutina requiere iOS 17 o superior")
+            }
+
         case .habitEditor(let habitId):
             if let habitRepository = deps.habitRepository,
                let createHabit = deps.createHabitUseCase,

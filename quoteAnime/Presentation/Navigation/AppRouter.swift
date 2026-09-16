@@ -13,6 +13,7 @@ enum AppRoute: Hashable {
     case categorySelection
     case widgetTutorial
     case routine
+    case habitDetail(habitId: String)
     case habitEditor(habitId: String?)
     case paywall
 }

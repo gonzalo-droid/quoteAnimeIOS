@@ -153,7 +153,8 @@ struct RoutineView: View {
                         item: item,
                         isArchived: viewModel.uiState.filter == .archived,
                         onToggleToday: { viewModel.onToggleToday(item.habit.id) },
-                        onTap: { router.push(.habitEditor(habitId: item.habit.id)) },
+                        onTap: { router.push(.habitDetail(habitId: item.habit.id)) },
+                        onEdit: { router.push(.habitEditor(habitId: item.habit.id)) },
                         onArchive: { viewModel.onArchive(item.habit.id) },
                         onUnarchive: { viewModel.onUnarchive(item.habit.id) },
                         onDelete: { viewModel.onDelete(item.habit.id) }
