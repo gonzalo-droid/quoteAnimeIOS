@@ -8,6 +8,7 @@ iOS app that displays anime quotes in a full-screen, swipeable feed. Users can s
 
 - Full-screen vertical swipe feed of anime quotes
 - Filter by anime category
+- Pick which animes the feed and the notifications draw from (Settings → Contenido → Animes)
 - Favorites (persisted locally)
 - Share quote as a generated image card
 - WidgetKit integration — current quote on the home screen
@@ -80,9 +81,10 @@ quoteAnime/
 │   ├── Navigation/             # AppRouter (NavigationPath + screen enum)
 │   ├── Home/                   # Full-screen quote feed
 │   ├── Catalog/                # Browse/filter quotes by anime
-│   ├── Settings/               # Preferences + widget tutorial
+│   ├── Settings/               # Preferences + anime selection + widget tutorial
 │   ├── Onboarding/             # First-launch flow
 │   ├── Ads/                    # Interstitial ad manager
+│   ├── Common/                 # AppLinks (legal + App Store URLs)
 │   └── Components/             # Shared: QuoteDetailView, QuoteCard, ShareCardView
 ├── Notification/               # Local notification scheduling
 ├── Widget/                     # WidgetDataWriter (main) + QuoteWidget (extension)

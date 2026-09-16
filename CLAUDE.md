@@ -65,6 +65,8 @@ quoteAnime/
 │   ├── Home/               HomeContainerView → HomeContentView + HomeViewModel
 │   ├── Catalog/            CatalogView + CatalogViewModel
 │   ├── Settings/           SettingsView + SettingsViewModel + WidgetTutorialView
+│   │                       + CategorySelectionView/ViewModel (elegir animes)
+│   ├── Common/             AppLinks (URLs legales y de App Store, espejo de AppLinks.kt)
 │   └── Components/         QuoteCard, BannerAdView, ShareCardView, ActivityViewController
 ├── Notification/           NotificationScheduler + NotificationHelper
 ├── Widget/                 QuoteWidget.swift (widget target) + WidgetDataWriter.swift (main target)
@@ -99,7 +101,11 @@ struct UserPreferences { selectedCategoryIds, notificationsEnabled, notification
 
 - Node `/quotes` — flat array of `{ id, quote, author, anime }` objects
 - `QuoteRemoteDataSource` handles both array and dictionary root structures
-- Categories derived dynamically from unique `anime` field values
+- Categories derived dynamically from unique `anime` field values (19 hoy, 307 frases)
+- `selectedCategoryIds` guarda **nombres de anime**, no ids remotos. Set vacío = todos, igual que
+  en Android. Se aplica en `GetAllQuotesUseCase.filtered` (feed) y en
+  `RescheduleQuoteNotificationsUseCase` (pozo de notificaciones); se elige en
+  Ajustes → Contenido → Animes
 
 ### Theme
 

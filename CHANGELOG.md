@@ -9,6 +9,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **Elegí de qué animes querés frases.** Nueva sección en Ajustes → Contenido → Animes: una lista con los 19 animes disponibles donde marcás los que te interesan. La elección se aplica al feed del inicio y a las frases que te llegan por notificación; si no elegís ninguno, seguís viendo todos.
+- Tests del filtro por animes, de su persistencia y del onboarding (49 casos nuevos en `quoteAnimeTests`, 107 en total).
 - Suite de tests (`quoteAnimeTests`, con Swift Testing): cubre el cálculo de racha actual y mejor racha, la racha global entre hábitos, el límite de 3 hábitos del plan gratuito y el marcado por día. Es el primer target de tests del proyecto.
 - SwiftUI `#Preview` blocks added to all presentation views: `QuoteCard`, `QuoteDetailView`, `SplashView`, `WidgetTutorialView`, `OnboardingView`, `SettingsView`, `CatalogView`. Views with ViewModels use inline mock repositories.
 - **Settings — Apóyanos section**: "Déjanos una reseña" abre directamente la App Store (`?action=write-review`), y "Compartir la app" via `ShareLink` con mensaje de invitación personalizado.
@@ -16,6 +18,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
 ### Fixed
+- **La política de privacidad y los términos abren la página correcta.** Seguían apuntando al dominio viejo; ahora van a animequote.app, igual que en Android.
+- **El onboarding ya no ofrece elegir un hábito donde no se puede guardar.** En iPhones con iOS 16 la última página dejaba elegir un primer hábito que después se perdía sin aviso; ahora esa página no aparece.
 - **El widget ya se puede instalar.** La extensión del widget exigía una versión de iOS mucho más nueva que la app, así que en la práctica no aparecía en la galería de widgets de casi ningún iPhone. Ahora pide lo mismo que la app: iOS 16.6.
 - **Mi Rutina ya no se ofrece donde no funciona.** En iPhones con iOS 16 el botón 🔥 del inicio llevaba a una pantalla que solo avisaba que la función no estaba disponible. Ahora el botón directamente no aparece en esas versiones.
 - **Tutorial del widget**: el paso 2 decía "Toca el botón" sin mostrar el signo `+` que hay que tocar.
