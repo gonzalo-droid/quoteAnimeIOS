@@ -118,9 +118,11 @@ struct HabitHeatmapView: View {
                 let isOutsideRange = !isActive(date)
                 let isCompleted = completions.contains(date) && !isFuture && !isOutsideRange
 
-                let color: Color = isCompleted
-                    ? accentColor
-                    : (isFuture || isOutsideRange ? Color.clear : Color.outline.opacity(0.35))
+                // Every cell is drawn, even outside the habit's window — same rule as Android's
+                // `HabitHeatmap`. Leaving them transparent (what this view used to do) turns the
+                // 26-week grid on the detail screen into a lopsided block floating on the right,
+                // which reads as a rendering bug rather than as "the habit started in August".
+                let color: Color = isCompleted ? accentColor : Color.outline.opacity(0.35)
 
                 let rect = CGRect(
                     x: CGFloat(column) * (cellSize + cellSpacing),
