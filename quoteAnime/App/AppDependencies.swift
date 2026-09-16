@@ -43,6 +43,12 @@ final class AppDependencies: ObservableObject {
     var deleteHabitUseCase: DeleteHabitUseCase?
     var getHabitTemplatesUseCase = GetHabitTemplatesUseCase()
     let habitReminderScheduler = HabitReminderScheduler()
+
+    /// Whether "Mi Rutina" can run at all. False below iOS 17 (SwiftData) and also when the
+    /// `ModelContainer` fails to build. Entry points to the feature must check this and hide
+    /// themselves rather than navigating to a screen that can only apologise.
+    var isRoutineAvailable: Bool { habitRepository != nil }
+
     /// Kept alive here — `UNUserNotificationCenter.current().delegate` is `weak`.
     private var habitReminderNotificationDelegate: HabitReminderNotificationDelegate?
 

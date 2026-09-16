@@ -11,7 +11,7 @@ struct WidgetTutorialView: View {
         ),
         (
             "Toca el botón +",
-            "En la esquina superior izquierda aparece un botón "+" para añadir widgets.",
+            "En la esquina superior izquierda aparece un botón \"+\" para añadir widgets.",
             "plus.circle.fill"
         ),
         (

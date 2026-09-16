@@ -86,9 +86,12 @@ struct PaywallView: View {
                 Text("✨ Ya sos premium")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundColor(.textPrimary)
+                #if DEBUG
+                // QA affordance only — Android keeps the same control behind BuildConfig.DEBUG.
                 Button("Quitar premium (solo pruebas)", action: viewModel.onRemovePremiumForTesting)
                     .font(.system(size: 13))
                     .foregroundColor(.textSecondary)
+                #endif
             }
         } else {
             VStack(spacing: 12) {

@@ -8,7 +8,7 @@ struct HomeContainerView: View {
     @StateObject private var viewModel = HomeViewModel()
 
     var body: some View {
-        HomeContentView(viewModel: viewModel)
+        HomeContentView(viewModel: viewModel, isRoutineAvailable: deps.isRoutineAvailable)
             .task { viewModel.setup(
                 getAllQuotes: deps.getAllQuotesUseCase,
                 toggleFavorite: deps.toggleFavoriteUseCase,
@@ -29,6 +29,9 @@ struct HomeContainerView: View {
 
 private struct HomeContentView: View {
     @ObservedObject var viewModel: HomeViewModel
+    /// Hides the Routine entry point where the feature can't run (iOS 16) instead of
+    /// letting it push a screen that only says the feature is unavailable.
+    let isRoutineAvailable: Bool
     @EnvironmentObject private var router: AppRouter
 
     var body: some View {
@@ -54,11 +57,13 @@ private struct HomeContentView: View {
             VStack {
                 HStack {
                     Spacer()
-                    Button { router.push(.routine) } label: {
-                        Image(systemName: "flame.fill")
-                            .font(.system(size: 20))
-                            .foregroundColor(.white.opacity(0.7))
-                            .padding(14)
+                    if isRoutineAvailable {
+                        Button { router.push(.routine) } label: {
+                            Image(systemName: "flame.fill")
+                                .font(.system(size: 20))
+                                .foregroundColor(.white.opacity(0.7))
+                                .padding(14)
+                        }
                     }
                     Button { router.push(.settings) } label: {
                         Image(systemName: "gearshape.fill")
