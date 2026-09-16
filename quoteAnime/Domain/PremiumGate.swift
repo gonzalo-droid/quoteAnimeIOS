@@ -11,8 +11,13 @@ final class PremiumGate {
     static let shared = PremiumGate()
     static let freeHabitLimit = 3
 
-    private let defaults = UserDefaults.standard
+    private let defaults: UserDefaults
     private let key = "pref_is_premium"
+
+    /// Tests pass their own suite so they never touch (or race on) the real user's flag.
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
 
     var isPremium: Bool {
         get { defaults.bool(forKey: key) }

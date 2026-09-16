@@ -4,7 +4,14 @@ import Foundation
 /// streak stays alive while the most recent completion is today or yesterday. Mirrors the
 /// Android use case of the same name exactly (descending sort, alive check, run lengths).
 struct CalculateStreakUseCase {
-    private let calendar = Calendar.current
+    private let calendar: Calendar
+
+    /// The calendar is injectable so tests can pin a timezone. Android takes `LocalDate`,
+    /// which has no timezone at all, so on iOS the calendar is what decides which day an
+    /// instant belongs to — that makes it worth being explicit about in tests.
+    init(calendar: Calendar = .current) {
+        self.calendar = calendar
+    }
 
     func execute(dates: [Date], today: Date) -> StreakState {
         let days = Set(dates.map { calendar.startOfDay(for: $0) }).sorted(by: >)
