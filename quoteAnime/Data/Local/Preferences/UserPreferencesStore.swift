@@ -14,7 +14,13 @@ final class UserPreferencesStore {
         static let onboardingCompleted     = "pref_onboarding_completed"
     }
 
-    private let defaults = UserDefaults.standard
+    private let defaults: UserDefaults
+
+    /// `defaults` is injectable for the same reason `PremiumGate`'s is: tests get their own
+    /// suite instead of writing into the real app's preferences.
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
 
     func load() -> UserPreferences {
         var prefs = UserPreferences()
