@@ -53,13 +53,25 @@ final class AppDependencies: ObservableObject {
     /// Kept alive here — `UNUserNotificationCenter.current().delegate` is `weak`.
     private var habitReminderNotificationDelegate: HabitReminderNotificationDelegate?
 
+    /// One file per schema. Changing either string points the app at a different (empty) store,
+    /// so treat them as data, not as labels.
+    private static let favoritesStoreName = "Favorites"
+    private static let habitsStoreName = "Habits"
+
     init() {
         // ── Favorite storage (SwiftData on iOS 17+, UserDefaults fallback) ──
+        //
+        // The store is NAMED. An unnamed `ModelConfiguration` defaults every store to the same
+        // file ("default.store"), and this app builds two containers with two different
+        // schemas — favorites here, habits below. Both opened that one file, each found it
+        // incompatible with its own model, and SwiftData recreated it from scratch: every
+        // launch wiped whatever the other container had written the session before. Naming
+        // them gives each its own file. Never make either configuration anonymous again.
         var favoriteStorage: FavoriteStorageProtocol = UserDefaultsFavoriteStorage()
         if #available(iOS 17, *) {
             do {
                 let schema = Schema([FavoriteQuoteModel.self])
-                let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+                let config = ModelConfiguration(Self.favoritesStoreName, schema: schema)
                 let container = try ModelContainer(for: schema, configurations: [config])
                 let context = ModelContext(container)
                 favoriteStorage = FavoriteQuoteDAO(modelContext: context)
@@ -110,7 +122,8 @@ final class AppDependencies: ObservableObject {
         if #available(iOS 17, *) {
             do {
                 let schema = Schema([HabitModel.self, HabitCompletionModel.self])
-                let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+                // Named for the same reason as the favorites store above — see that comment.
+                let config = ModelConfiguration(Self.habitsStoreName, schema: schema)
                 let container = try ModelContainer(for: schema, configurations: [config])
                 habitRepo = HabitDAO(modelContext: ModelContext(container))
             } catch {
