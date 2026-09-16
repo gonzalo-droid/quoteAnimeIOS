@@ -3,13 +3,18 @@ import SwiftUI
 struct OnboardingView: View {
     @StateObject var viewModel: OnboardingViewModel
 
+    /// False on iOS 16, where "Mi Rutina" can't run (SwiftData). The habit page is then not
+    /// offered at all — otherwise the user picks a habit that nothing can save, the same
+    /// dead end the Home flame button had.
+    let isHabitSelectionAvailable: Bool
+
     private let quotePages: [(image: String, phrase: String)] = [
         ("onboarding_01", "Las mejores frases del anime, en la palma de tu mano."),
         ("onboarding_02", "Descubre personajes que te inspiran cada día."),
         ("onboarding_03", "Comparte lo que sientes a través de las palabras del anime."),
     ]
 
-    private var totalPages: Int { quotePages.count + 1 }
+    private var totalPages: Int { quotePages.count + (isHabitSelectionAvailable ? 1 : 0) }
     private var isLastPage: Bool { viewModel.currentPage == totalPages - 1 }
 
     var body: some View {
@@ -24,8 +29,10 @@ struct OnboardingView: View {
                         )
                         .tag(index)
                     }
-                    HabitSelectionPageView(viewModel: viewModel)
-                        .tag(quotePages.count)
+                    if isHabitSelectionAvailable {
+                        HabitSelectionPageView(viewModel: viewModel)
+                            .tag(quotePages.count)
+                    }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: viewModel.currentPage)
@@ -79,8 +86,12 @@ struct OnboardingView: View {
     }
 }
 
-#Preview {
-    OnboardingView(viewModel: OnboardingViewModel())
+#Preview("Con hábitos (iOS 17+)") {
+    OnboardingView(viewModel: OnboardingViewModel(), isHabitSelectionAvailable: true)
+}
+
+#Preview("Sin hábitos (iOS 16)") {
+    OnboardingView(viewModel: OnboardingViewModel(), isHabitSelectionAvailable: false)
 }
 
 private struct OnboardingPageView: View {

@@ -52,17 +52,17 @@ struct OnboardingContainerView: View {
     @StateObject private var viewModel = OnboardingViewModel()
 
     var body: some View {
-        OnboardingView(viewModel: viewModel)
-            .task {
-                viewModel.setup(
-                    getCategoriesUseCase: deps.getCategoriesUseCase,
-                    setOnboardingCompleted: deps.setOnboardingCompletedUseCase,
-                    updateUserPreferences: deps.updateUserPreferencesUseCase,
-                    getUserPreferences: deps.getUserPreferencesUseCase,
-                    createHabitUseCase: deps.createHabitUseCase,
-                    onComplete: { router.navigateToMain() }
-                )
-            }
+        OnboardingView(
+            viewModel: viewModel,
+            isHabitSelectionAvailable: deps.isRoutineAvailable
+        )
+        .task {
+            viewModel.setup(
+                setOnboardingCompleted: deps.setOnboardingCompletedUseCase,
+                createHabitUseCase: deps.createHabitUseCase,
+                onComplete: { router.navigateToMain() }
+            )
+        }
     }
 }
 
