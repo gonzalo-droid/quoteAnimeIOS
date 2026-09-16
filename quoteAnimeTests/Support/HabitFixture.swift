@@ -5,21 +5,30 @@ enum HabitFixture {
     static func make(
         id: String = UUID().uuidString,
         title: String = "Meditar",
+        description: String? = nil,
         iconKey: String = "leaf",
         colorIndex: Int = 0,
         startDate: Date = TestCalendar.day(-30),
-        createdAt: Date = TestCalendar.day(-30)
+        endDate: Date? = nil,
+        isArchived: Bool = false,
+        createdAt: Date = TestCalendar.day(-30),
+        reminderEnabled: Bool = false,
+        reminderWeekdays: Set<Int> = []
     ) -> Habit {
         Habit(
             id: id,
             title: title,
-            description: nil,
+            description: description,
             iconKey: iconKey,
             colorIndex: colorIndex,
             startDate: startDate,
+            endDate: endDate,
             templateId: nil,
             coverAnimeSlug: nil,
-            createdAt: createdAt
+            isArchived: isArchived,
+            createdAt: createdAt,
+            reminderEnabled: reminderEnabled,
+            reminderWeekdays: reminderWeekdays
         )
     }
 

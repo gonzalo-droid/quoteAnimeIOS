@@ -1,14 +1,15 @@
 import Foundation
 @testable import quoteAnime
 
-/// Hand-written stand-in for `HabitRepository`. Mirrors the two behaviours of `HabitDAO`
-/// the domain layer actually depends on: completions are keyed by `startOfDay`, and
-/// `countActiveHabits` excludes archived habits.
+/// Hand-written stand-in for `HabitRepository`. Mirrors the behaviours of `HabitDAO` the
+/// domain layer actually depends on: completions are keyed by `startOfDay`,
+/// `countActiveHabits` excludes archived habits, and `saveHabit` upserts the whole habit —
+/// `isArchived` included — exactly like `HabitModel.apply`.
 final class FakeHabitRepository: HabitRepository {
 
-    /// Habits keyed by id, in insertion order.
+    /// Habits keyed by id, in insertion order. Archive state lives on the habit itself, the
+    /// same single source of truth the SwiftData model uses.
     private(set) var habits: [Habit] = []
-    private(set) var archivedIds: Set<String> = []
     /// habitId -> set of normalised (start-of-day) completion dates.
     private(set) var completions: [String: Set<Date>] = [:]
 
@@ -18,11 +19,16 @@ final class FakeHabitRepository: HabitRepository {
         self.calendar = calendar
     }
 
+    var archivedIds: Set<String> { Set(habits.filter(\.isArchived).map(\.id)) }
+
     // MARK: Seeding helpers (test-side only)
 
     func seed(habits newHabits: [Habit], archived: Set<String> = []) {
-        habits = newHabits
-        archivedIds = archived
+        habits = newHabits.map { habit in
+            var copy = habit
+            if archived.contains(habit.id) { copy.isArchived = true }
+            return copy
+        }
     }
 
     func seedCompletions(habitId: String, dates: [Date]) {
@@ -36,11 +42,11 @@ final class FakeHabitRepository: HabitRepository {
     // MARK: HabitRepository
 
     func fetchActiveHabits() async throws -> [Habit] {
-        habits.filter { !archivedIds.contains($0.id) }
+        habits.filter { !$0.isArchived }
     }
 
     func fetchArchivedHabits() async throws -> [Habit] {
-        habits.filter { archivedIds.contains($0.id) }
+        habits.filter(\.isArchived)
     }
 
     func fetchCompletions(habitId: String) async throws -> [Date] {
@@ -52,7 +58,7 @@ final class FakeHabitRepository: HabitRepository {
     }
 
     func countActiveHabits() async throws -> Int {
-        habits.filter { !archivedIds.contains($0.id) }.count
+        habits.filter { !$0.isArchived }.count
     }
 
     func fetchHabit(id: String) async throws -> Habit? {
@@ -81,16 +87,20 @@ final class FakeHabitRepository: HabitRepository {
     }
 
     func archiveHabit(id: String) async throws {
-        archivedIds.insert(id)
+        setArchived(id: id, isArchived: true)
     }
 
     func unarchiveHabit(id: String) async throws {
-        archivedIds.remove(id)
+        setArchived(id: id, isArchived: false)
     }
 
     func deleteHabit(id: String) async throws {
         habits.removeAll { $0.id == id }
         completions[id] = nil
-        archivedIds.remove(id)
+    }
+
+    private func setArchived(id: String, isArchived: Bool) {
+        guard let index = habits.firstIndex(where: { $0.id == id }) else { return }
+        habits[index].isArchived = isArchived
     }
 }
