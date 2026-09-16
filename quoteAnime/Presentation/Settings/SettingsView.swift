@@ -41,11 +41,11 @@ struct SettingsView: View {
         .toolbarColorScheme(.dark, for: .navigationBar)
         .onAppear { viewModel.onAppear() }
         .sheet(isPresented: $showPrivacyPolicy) {
-            SafariView(url: URL(string: "https://quote-anime-web.vercel.app/privacy-policy")!)
+            SafariView(url: AppLinks.privacyPolicy)
                 .ignoresSafeArea()
         }
         .sheet(isPresented: $showTerms) {
-            SafariView(url: URL(string: "https://quote-anime-web.vercel.app/terms-and-conditions")!)
+            SafariView(url: AppLinks.termsAndConditions)
                 .ignoresSafeArea()
         }
         .alert("Permiso de notificaciones", isPresented: $viewModel.showPermissionAlert) {
@@ -167,7 +167,7 @@ struct SettingsView: View {
             }
 
             ShareLink(
-                item: URL(string: "https://apps.apple.com/app/id6762100338")!,
+                item: AppLinks.appStore,
                 subject: Text("QuoteAnime"),
                 message: Text("¡Descubre QuoteAnime! Las mejores frases de tus animes favoritos 🌟 Descárgala gratis:")
             ) {
@@ -250,9 +250,7 @@ struct SettingsView: View {
     // MARK: - Review
 
     private func requestReview() {
-        if let url = URL(string: "https://apps.apple.com/app/id6762100338?action=write-review") {
-            UIApplication.shared.open(url)
-        }
+        UIApplication.shared.open(AppLinks.appStoreReview)
     }
 
     private func openSocialURL(_ urlString: String, fallback: String) {
