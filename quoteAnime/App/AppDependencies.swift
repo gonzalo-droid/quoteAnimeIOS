@@ -28,6 +28,7 @@ final class AppDependencies: ObservableObject {
 
     // MARK: Services
     let notificationScheduler: NotificationScheduler
+    let rescheduleQuoteNotificationsUseCase: RescheduleQuoteNotificationsUseCase
 
     // MARK: Habits ("Mi Rutina") — SwiftData-only, nil below iOS 17 (no legacy fallback yet)
     let habitRepository: HabitRepository?
@@ -97,7 +98,12 @@ final class AppDependencies: ObservableObject {
         self.setOnboardingCompletedUseCase  = SetOnboardingCompletedUseCase(repository: prefRepo)
 
         // ── Services ──
-        self.notificationScheduler = NotificationScheduler()
+        let scheduler = NotificationScheduler()
+        self.notificationScheduler = scheduler
+        self.rescheduleQuoteNotificationsUseCase = RescheduleQuoteNotificationsUseCase(
+            getAllQuotes: self.getAllQuotesUseCase,
+            scheduler: scheduler
+        )
 
         // ── Habits ("Mi Rutina") — SwiftData only, nil below iOS 17 ──
         var habitRepo: HabitRepository?

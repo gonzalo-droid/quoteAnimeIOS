@@ -97,7 +97,16 @@ struct MainContainerView: View {
                 updateUserPreferences: deps.updateUserPreferencesUseCase,
                 notificationScheduler: deps.notificationScheduler,
                 getAllQuotes: deps.getAllQuotesUseCase,
+                rescheduleNotifications: deps.rescheduleQuoteNotificationsUseCase,
                 premiumGate: deps.premiumGate
+            )
+
+        case .categorySelection:
+            CategorySelectionView(
+                getCategories: deps.getCategoriesUseCase,
+                getUserPreferences: deps.getUserPreferencesUseCase,
+                updateUserPreferences: deps.updateUserPreferencesUseCase,
+                rescheduleNotifications: deps.rescheduleQuoteNotificationsUseCase
             )
 
         case .widgetTutorial:

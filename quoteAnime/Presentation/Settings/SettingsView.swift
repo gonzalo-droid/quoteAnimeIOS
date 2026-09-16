@@ -11,15 +11,17 @@ struct SettingsView: View {
     init(
         getUserPreferences: GetUserPreferencesUseCase,
         updateUserPreferences: UpdateUserPreferencesUseCase,
-        notificationScheduler: NotificationScheduler,
+        notificationScheduler: QuoteNotificationScheduling,
         getAllQuotes: GetAllQuotesUseCase,
+        rescheduleNotifications: RescheduleQuoteNotificationsUseCase,
         premiumGate: PremiumGate
     ) {
         _viewModel = StateObject(wrappedValue: SettingsViewModel(
             getUserPreferences: getUserPreferences,
             updateUserPreferences: updateUserPreferences,
             notificationScheduler: notificationScheduler,
-            getAllQuotes: getAllQuotes
+            getAllQuotes: getAllQuotes,
+            rescheduleNotifications: rescheduleNotifications
         ))
         self.premiumGate = premiumGate
     }
@@ -27,6 +29,7 @@ struct SettingsView: View {
     var body: some View {
         List {
             premiumSection
+            contentSection
             notificationsSection
             widgetSection
             ratingSection
@@ -61,6 +64,30 @@ struct SettingsView: View {
     }
 
     // MARK: - Sections
+
+    /// Entry point to the anime selection. Android renders the same choice inline as a
+    /// `FlowRow` of `FilterChip`s; on iOS a Settings row with its current value, pushing a
+    /// list of checkmarks, is the native shape for a multiple choice of this size.
+    private var contentSection: some View {
+        Section("Contenido") {
+            Button {
+                router.push(.categorySelection)
+            } label: {
+                HStack {
+                    Label("Animes", systemImage: "sparkles")
+                        .foregroundColor(.textPrimary)
+                    Spacer()
+                    Text(viewModel.categorySelectionSummary)
+                        .foregroundColor(.textSecondary)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.textSecondary)
+                }
+                .contentShape(Rectangle())
+            }
+        }
+        .listRowBackground(Color.surface)
+    }
 
     private var notificationsSection: some View {
         Section("Notificaciones") {

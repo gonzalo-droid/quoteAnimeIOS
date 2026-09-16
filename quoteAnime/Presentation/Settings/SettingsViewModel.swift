@@ -10,25 +10,42 @@ final class SettingsViewModel: ObservableObject {
 
     private let getUserPreferences: GetUserPreferencesUseCase
     private let updateUserPreferences: UpdateUserPreferencesUseCase
-    private let notificationScheduler: NotificationScheduler
+    private let notificationScheduler: QuoteNotificationScheduling
     private let getAllQuotes: GetAllQuotesUseCase
+    private let rescheduleNotifications: RescheduleQuoteNotificationsUseCase
     private var setupDone = false
 
     init(
         getUserPreferences: GetUserPreferencesUseCase,
         updateUserPreferences: UpdateUserPreferencesUseCase,
-        notificationScheduler: NotificationScheduler,
-        getAllQuotes: GetAllQuotesUseCase
+        notificationScheduler: QuoteNotificationScheduling,
+        getAllQuotes: GetAllQuotesUseCase,
+        rescheduleNotifications: RescheduleQuoteNotificationsUseCase
     ) {
         self.getUserPreferences    = getUserPreferences
         self.updateUserPreferences = updateUserPreferences
         self.notificationScheduler = notificationScheduler
         self.getAllQuotes           = getAllQuotes
+        self.rescheduleNotifications = rescheduleNotifications
     }
 
+    /// Re-read on every appearance — the anime selection screen writes straight to the store,
+    /// so coming back from it has to pick the new selection up for the summary row.
     func onAppear() {
         preferences = getUserPreferences.execute()
         Task { permissionStatus = await notificationScheduler.authorizationStatus() }
+    }
+
+    // MARK: - Anime selection
+
+    /// Detail text for the row that opens the anime selection. Empty set means "all animes",
+    /// exactly as on Android (`SettingsUiState.allCategoriesSelected`).
+    var categorySelectionSummary: String {
+        switch preferences.selectedCategoryIds.count {
+        case 0:  return "Todos"
+        case 1:  return "1 anime"
+        case let count: return "\(count) animes"
+        }
     }
 
     // MARK: - Notifications
@@ -61,9 +78,7 @@ final class SettingsViewModel: ObservableObject {
     }
 
     private func reschedule() async {
-        guard let quotes = try? await getAllQuotes.execute(filteredBy: []),
-              !quotes.isEmpty else { return }
-        await notificationScheduler.reschedule(preferences: preferences, quotes: quotes)
+        await rescheduleNotifications.execute(preferences: preferences)
     }
 
     // MARK: - Test notifications
@@ -79,7 +94,8 @@ final class SettingsViewModel: ObservableObject {
             return
         }
 
-        guard let quotes = try? await getAllQuotes.execute(filteredBy: []),
+        // Same pool the real schedule uses, so a test notification shows what the user picked.
+        guard let quotes = try? await getAllQuotes.execute(filteredBy: preferences.selectedCategoryIds),
               !quotes.isEmpty else {
             testNotificationMessage = "No hay frases disponibles."
             return

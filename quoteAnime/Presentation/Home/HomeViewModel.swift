@@ -12,29 +12,30 @@ final class HomeViewModel: ObservableObject {
 
     private var getAllQuotes: GetAllQuotesUseCase?
     private var toggleFavoriteUseCase: ToggleFavoriteUseCase?
-    private var getCategoriesUseCase: GetCategoriesUseCase?
     private var getUserPreferences: GetUserPreferencesUseCase?
-    private var notificationScheduler: NotificationScheduler?
+    private var rescheduleNotifications: RescheduleQuoteNotificationsUseCase?
     private var router: AppRouter?
     private var setupDone = false
+
+    /// Anime selection the currently loaded feed was built from, so returning from Settings
+    /// can tell whether the feed is stale without refetching every time.
+    private var appliedCategoryIds: Set<String>?
 
     // MARK: - Setup
 
     func setup(
         getAllQuotes: GetAllQuotesUseCase,
         toggleFavorite: ToggleFavoriteUseCase,
-        getCategoriesUseCase: GetCategoriesUseCase,
         getUserPreferences: GetUserPreferencesUseCase,
-        notificationScheduler: NotificationScheduler,
+        rescheduleNotifications: RescheduleQuoteNotificationsUseCase,
         router: AppRouter
     ) {
         guard !setupDone else { return }
         setupDone = true
         self.getAllQuotes           = getAllQuotes
         self.toggleFavoriteUseCase = toggleFavorite
-        self.getCategoriesUseCase  = getCategoriesUseCase
         self.getUserPreferences    = getUserPreferences
-        self.notificationScheduler = notificationScheduler
+        self.rescheduleNotifications = rescheduleNotifications
         self.router                = router
         Task { await loadQuotes() }
     }
@@ -44,22 +45,30 @@ final class HomeViewModel: ObservableObject {
     func loadQuotes() async {
         isLoading = true
         loadError = nil
+        let prefs = getUserPreferences?.execute() ?? UserPreferences()
         do {
-            let prefs = getUserPreferences?.execute() ?? UserPreferences()
             let fetched = try await getAllQuotes?.execute(filteredBy: prefs.selectedCategoryIds) ?? []
             quotes       = fetched.shuffled()
             currentIndex = 0
+            appliedCategoryIds = prefs.selectedCategoryIds
         } catch {
             loadError = error.localizedDescription
         }
         isLoading = false
 
         // Refill notification budget on every app launch
-        // (iOS allows max 64 pending notifications; with high frequency they drain in days)
-        let prefs = getUserPreferences?.execute() ?? UserPreferences()
-        if prefs.notificationsEnabled, !quotes.isEmpty {
-            await notificationScheduler?.reschedule(preferences: prefs, quotes: quotes)
-        }
+        // (iOS allows max 64 pending notifications; with high frequency they drain in days).
+        // Reuses the feed we just loaded instead of hitting the network a second time.
+        guard !quotes.isEmpty else { return }
+        await rescheduleNotifications?.execute(preferences: prefs, pool: quotes)
+    }
+
+    /// Called when Home comes back to the front. The anime selection lives in Settings and is
+    /// written straight to the store, so the feed has to notice it changed while we were away.
+    func reloadIfCategorySelectionChanged() async {
+        guard setupDone, let prefs = getUserPreferences?.execute() else { return }
+        guard prefs.selectedCategoryIds != appliedCategoryIds else { return }
+        await loadQuotes()
     }
 
     // MARK: - Favorites

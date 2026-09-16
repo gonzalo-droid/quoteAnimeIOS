@@ -1,7 +1,17 @@
 import Foundation
 import UserNotifications
 
-final class NotificationScheduler {
+/// What the quote-notification callers actually need from the scheduler. Exists so the
+/// domain layer can be exercised with a hand-written fake instead of the real
+/// `UNUserNotificationCenter`, which a unit-test target can't drive.
+protocol QuoteNotificationScheduling {
+    func requestPermission() async -> Bool
+    func authorizationStatus() async -> UNAuthorizationStatus
+    func reschedule(preferences: UserPreferences, quotes: [Quote]) async
+    func cancelAll() async
+}
+
+final class NotificationScheduler: QuoteNotificationScheduling {
     private let center = UNUserNotificationCenter.current()
 
     // MARK: - Permission

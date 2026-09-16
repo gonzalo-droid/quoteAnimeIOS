@@ -12,11 +12,12 @@ struct HomeContainerView: View {
             .task { viewModel.setup(
                 getAllQuotes: deps.getAllQuotesUseCase,
                 toggleFavorite: deps.toggleFavoriteUseCase,
-                getCategoriesUseCase: deps.getCategoriesUseCase,
                 getUserPreferences: deps.getUserPreferencesUseCase,
-                notificationScheduler: deps.notificationScheduler,
+                rescheduleNotifications: deps.rescheduleQuoteNotificationsUseCase,
                 router: router
             )}
+            // Fires again when Settings is popped — reloads only if the anime selection changed.
+            .onAppear { Task { await viewModel.reloadIfCategorySelectionChanged() } }
             .sheet(isPresented: $viewModel.showShareSheet) {
                 if let img = viewModel.shareImage {
                     ActivityViewController(activityItems: [img])

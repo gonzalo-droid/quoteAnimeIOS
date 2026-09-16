@@ -10,6 +10,7 @@ enum AppScreen: Equatable {
 enum AppRoute: Hashable {
     case catalog
     case settings
+    case categorySelection
     case widgetTutorial
     case routine
     case habitEditor(habitId: String?)
