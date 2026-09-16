@@ -9,16 +9,24 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- Suite de tests (`quoteAnimeTests`, con Swift Testing): cubre el cálculo de racha actual y mejor racha, la racha global entre hábitos, el límite de 3 hábitos del plan gratuito y el marcado por día. Es el primer target de tests del proyecto.
 - SwiftUI `#Preview` blocks added to all presentation views: `QuoteCard`, `QuoteDetailView`, `SplashView`, `WidgetTutorialView`, `OnboardingView`, `SettingsView`, `CatalogView`. Views with ViewModels use inline mock repositories.
 - **Settings — Apóyanos section**: "Déjanos una reseña" abre directamente la App Store (`?action=write-review`), y "Compartir la app" via `ShareLink` con mensaje de invitación personalizado.
 - **Settings — Síguenos section**: Instagram and Facebook links with deep-link-first strategy (opens native app if installed, browser otherwise). Custom SVG brand icons added to `Assets.xcassets` (`icon_instagram`, `icon_facebook`, `icon_tiktok`).
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
 ### Fixed
+- **El widget ya se puede instalar.** La extensión del widget exigía una versión de iOS mucho más nueva que la app, así que en la práctica no aparecía en la galería de widgets de casi ningún iPhone. Ahora pide lo mismo que la app: iOS 16.6.
+- **Mi Rutina ya no se ofrece donde no funciona.** En iPhones con iOS 16 el botón 🔥 del inicio llevaba a una pantalla que solo avisaba que la función no estaba disponible. Ahora el botón directamente no aparece en esas versiones.
+- **Tutorial del widget**: el paso 2 decía "Toca el botón" sin mostrar el signo `+` que hay que tocar.
 - Settings button in Home overlapping the status bar (safe area not respected).
 - Back button in QuoteDetailView moved to `.overlay` so SwiftUI manages safe area automatically instead of manual `geo.safeAreaInsets.top` calculation.
 - Widget always showing placeholder quote — Firebase REST query was missing required `orderBy=%22%24key%22` parameter when using `limitToFirst`, causing Firebase to return an error response that parsed as empty.
 - Widget update frequency (set in Settings) now correctly controls the timeline refresh interval — `reloadAllTimelines()` is only called when the user changes the frequency, not on every app launch or quote swipe.
+
+### Removed
+- Se quitaron dos controles de ejemplo que habían quedado de la plantilla de Xcode y llegaban al usuario: un control "Start Timer" en el Centro de Control y una Live Activity de prueba, ninguno de los dos hacía nada.
+- El botón "Quitar premium (solo pruebas)" ya no se incluye en las versiones publicadas; queda únicamente en compilaciones de desarrollo.
 
 ### Changed
 - Removed decorative opening quote mark (`\u{201C}`) from `QuoteDetailView`, `OnboardingView`, widget Small/Medium/Inline views, and `ShareImageRenderer`.
