@@ -147,8 +147,9 @@ struct HabitHeatmapView: View {
     // MARK: - Labels
 
     private func weekdayInitial(row: Int) -> String {
-        // `veryShortWeekdaySymbols` is Sunday-first; row 0 is Monday.
-        let symbols = calendar.veryShortWeekdaySymbols
+        // Sunday-first; row 0 is Monday. Standalone symbols, because the format-context ones are
+        // lowercase in Spanish ("l m v") and wouldn't match the calendar below.
+        let symbols = calendar.veryShortStandaloneWeekdaySymbols
         return symbols[(row + 1) % 7]
     }
 

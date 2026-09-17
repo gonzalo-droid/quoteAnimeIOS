@@ -24,10 +24,11 @@ struct HabitCalendarMonthView: View {
     private var days: [Date] { CalendarMonthGrid.days(for: month, calendar: calendar) }
 
     private var weekdaySymbols: [String] {
-        // `shortWeekdaySymbols` is Sunday-first; the grid is Monday-first. The symbols come from
-        // `calendar.locale`, so the initials follow the user's language ("L M X" / "M T W").
-        let symbols = calendar.shortWeekdaySymbols
-        return (0..<7).map { symbols[($0 + 1) % 7].prefix(1).uppercased() }
+        // Sunday-first in `Calendar`; the grid is Monday-first. The standalone very-short symbols
+        // are the locale's own initials ("L M X" in es-ES, "L M M" in es-419, "M T W" in
+        // English), the same ones the reminder editor and the heatmap use.
+        let symbols = calendar.veryShortStandaloneWeekdaySymbols
+        return (0..<7).map { symbols[($0 + 1) % 7] }
     }
 
     var body: some View {
