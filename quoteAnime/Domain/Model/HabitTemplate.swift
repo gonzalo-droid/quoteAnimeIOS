@@ -26,6 +26,6 @@ enum DefaultHabitTemplates {
         HabitTemplate(id: "theme_one_piece", title: String(localized: "Buscar el One Piece"), iconKey: "directions_walk", order: 2, themeColorIndex: 11, themeKey: "one_piece"),
         HabitTemplate(id: "theme_saiyan", title: String(localized: "Sé un saiyan"), iconKey: "self_improvement", order: 3, themeColorIndex: 3, themeKey: "saiyan"),
         HabitTemplate(id: "theme_pokemon", title: String(localized: "Sé un maestro Pokémon"), iconKey: "emoji_events", order: 4, themeColorIndex: 4, themeKey: "pokemon", isPremiumOnly: true),
-        HabitTemplate(id: "theme_black_clover", title: String(localized: "Sé el Rey Mago"), iconKey: "local_fire_department", order: 5, themeColorIndex: 7, themeKey: "black_clover", isPremiumOnly: true)
+        HabitTemplate(id: "theme_black_clover", title: String(localized: "Sé el Rey Mago"), iconKey: "local_fire_department", order: 5, themeColorIndex: 9, themeKey: "black_clover", isPremiumOnly: true)
     ]
 }

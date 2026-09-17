@@ -33,10 +33,14 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Todos los textos en español tratan de "tú".** Antes la app mezclaba "vos" y "tú" ("Creá", "Ya sos premium" junto a "Puedes"); ahora habla igual en todas las pantallas, como la app de Android.
 - Las fechas, los meses y los días de la semana del calendario, del mapa de actividad y del recordatorio siguen el idioma y la región del iPhone (por ejemplo, "L M X J V S D" en España y "M T W T F S S" en inglés).
 - En Ajustes, la frecuencia del widget ahora dice "Nueva frase 2 veces al día", el mismo texto que en Android.
+- **Tocar una tarjeta de Mi Rutina ahora abre el detalle**, no el editor. Para editar, usa el menú de la tarjeta o el del detalle — igual que en Android.
+- Removed decorative opening quote mark (`\u{201C}`) from `QuoteDetailView`, `OnboardingView`, widget Small/Medium/Inline views, and `ShareImageRenderer`.
+- Typography: `quoteSerif` changed from `Georgia` to `Didot`; `quoteSerifItalic` changed from `Georgia-Italic` to `Georgia`.
 
 ### Fixed
 - **Las sugerencias de hábito muestran su ícono.** Camino ninja, Buscar el One Piece, Sé un saiyan y las demás sugerencias mostraban un check genérico en el onboarding, el editor y la tarjeta; ahora tienen su ícono, el mismo que en Android. Los hábitos que ya habías creado desde una sugerencia también lo recuperan.
 - **"1 días seguidos" ahora dice "1 día seguido".**
+- La sugerencia "Sé el Rey Mago" usaba un color distinto al de Android; ahora los hábitos creados desde ella nacen del mismo color en las dos apps.
 - **Las filas de beneficios del paywall quedan alineadas.** Cada fila se centraba según el largo de su texto y los íconos no coincidían.
 - El recordatorio de un hábito se muestra en el idioma que tenga el iPhone cuando llega, aunque lo hayas creado con otro idioma.
 - La descripción del mapa de actividad para VoiceOver decía "los últimos 26 semanas".
@@ -55,11 +59,6 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ### Removed
 - Se quitaron dos controles de ejemplo que habían quedado de la plantilla de Xcode y llegaban al usuario: un control "Start Timer" en el Centro de Control y una Live Activity de prueba, ninguno de los dos hacía nada.
 - El botón "Quitar premium (solo pruebas)" ya no se incluye en las versiones publicadas; queda únicamente en compilaciones de desarrollo.
-
-### Changed
-- **Tocar una tarjeta de Mi Rutina ahora abre el detalle**, no el editor. Para editar, usá el menú de la tarjeta o el del detalle — igual que en Android.
-- Removed decorative opening quote mark (`\u{201C}`) from `QuoteDetailView`, `OnboardingView`, widget Small/Medium/Inline views, and `ShareImageRenderer`.
-- Typography: `quoteSerif` changed from `Georgia` to `Didot`; `quoteSerifItalic` changed from `Georgia-Italic` to `Georgia`.
 
 ---
 

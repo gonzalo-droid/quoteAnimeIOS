@@ -26,6 +26,23 @@ struct HabitIconKeyTests {
         #expect(template.iconKey == expectedKey)
     }
 
+    /// Same palette indices as Android's `DefaultHabitTemplates.kt`. The index is what gets
+    /// persisted, so a mismatch paints a template's habits in the wrong colour on one platform.
+    @Test(
+        "cada plantilla usa el color de Android",
+        arguments: [
+            ("theme_ninja", 10),
+            ("theme_one_piece", 11),
+            ("theme_saiyan", 3),
+            ("theme_pokemon", 4),
+            ("theme_black_clover", 9),
+        ]
+    )
+    func templateUsesAndroidColour(templateId: String, expectedIndex: Int) throws {
+        let template = try #require(DefaultHabitTemplates.all.first { $0.id == templateId })
+        #expect(template.themeColorIndex == expectedIndex)
+    }
+
     @Test("ninguna plantilla cae en el ícono genérico")
     func everyTemplateHasAThemedIcon() {
         for template in DefaultHabitTemplates.all {
