@@ -15,11 +15,34 @@ final class UserPreferencesStore {
     }
 
     private let defaults: UserDefaults
+    /// The App Group suite the widget extension reads. Nil only if the group is unavailable.
+    private let sharedDefaults: UserDefaults?
 
-    /// `defaults` is injectable for the same reason `PremiumGate`'s is: tests get their own
-    /// suite instead of writing into the real app's preferences.
-    init(defaults: UserDefaults = .standard) {
+    /// Both stores are injectable for the same reason `PremiumGate`'s is: tests get their own
+    /// suites instead of writing into the real app's preferences — or, worse, into the real
+    /// App Group, which the widgets on the device are reading.
+    init(
+        defaults: UserDefaults = .standard,
+        sharedDefaults: UserDefaults? = UserDefaults(suiteName: WidgetSharedKeys.suiteName)
+    ) {
         self.defaults = defaults
+        self.sharedDefaults = sharedDefaults
+        migrateSelectionToAppGroupIfNeeded()
+    }
+
+    /// The anime selection has always lived in `UserDefaults.standard`, which a widget extension
+    /// cannot read. Now that the quote widget honours it, it has to be in the App Group too —
+    /// and someone who chose their animes before this shipped must not be silently reset to
+    /// "all animes". Copying happens once: after it, `save` keeps both in step.
+    ///
+    /// `object(forKey:)`, not `stringArray(forKey:)`, is what decides whether the copy already
+    /// happened. An empty selection is a real, meaningful value ("all animes"), so it must be
+    /// distinguishable from "never written".
+    private func migrateSelectionToAppGroupIfNeeded() {
+        guard let sharedDefaults else { return }
+        guard sharedDefaults.object(forKey: WidgetSharedKeys.selectedCategoryIds) == nil else { return }
+        guard let existing = defaults.stringArray(forKey: Keys.selectedCategoryIds) else { return }
+        sharedDefaults.set(existing, forKey: WidgetSharedKeys.selectedCategoryIds)
     }
 
     func load() -> UserPreferences {
@@ -45,9 +68,10 @@ final class UserPreferencesStore {
         defaults.set(preferences.widgetUpdateTimesPerDay, forKey: Keys.widgetUpdateTimesPerDay)
         defaults.set(Array(preferences.selectedCategoryIds), forKey: Keys.selectedCategoryIds)
 
-        // Share widget frequency with the widget extension via App Group
-        UserDefaults(suiteName: "group.com.gonzadev.quoteAnime")?
-            .set(preferences.widgetUpdateTimesPerDay, forKey: "widget_update_times_per_day")
+        // Shared with the widget extension via the App Group: the refresh frequency, and the
+        // anime selection the quote widget filters its own fetch with.
+        sharedDefaults?.set(preferences.widgetUpdateTimesPerDay, forKey: WidgetSharedKeys.widgetUpdateTimesPerDay)
+        sharedDefaults?.set(Array(preferences.selectedCategoryIds), forKey: WidgetSharedKeys.selectedCategoryIds)
 
         WidgetCenter.shared.reloadAllTimelines()
     }

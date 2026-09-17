@@ -71,8 +71,12 @@ private enum WidgetNetworkService {
 
     private static func fetchRandomQuote() async
         -> (text: String, author: String, anime: String, animeSlug: String?)? {
-        // orderBy is required by Firebase REST when using limitToFirst
-        guard let url = URL(string: "\(kFirebaseDatabaseURL)/quotes.json?orderBy=%22%24key%22&limitToFirst=100") else { return nil }
+        // The whole node, with no `limitToFirst`. It used to ask for the first 100 keys, which
+        // meant the widget could only ever show quotes from that fixed slice — and, now that the
+        // anime selection is honoured, would have shown nothing at all to anyone whose animes
+        // happened to live outside it. (`orderBy` was only there because Firebase REST demands it
+        // alongside `limitToFirst`, so it goes away with it.)
+        guard let url = URL(string: "\(kFirebaseDatabaseURL)/quotes.json") else { return nil }
         guard let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
         guard let json = try? JSONSerialization.jsonObject(with: data) else { return nil }
 
@@ -84,13 +88,37 @@ private enum WidgetNetworkService {
         }
 
         guard
-            let q      = quotes.randomElement(),
+            let q      = pick(from: quotes, matching: selectedAnimes()),
             let text   = q["quote"]  as? String,
             let author = q["author"] as? String,
             let anime  = q["anime"]  as? String
         else { return nil }
 
         return (text, author, anime, q["animeSlug"] as? String)
+    }
+
+    /// The animes the user picked in Ajustes → Contenido → Animes, mirrored into the App Group by
+    /// `UserPreferencesStore`. Empty (or absent) means "all animes" — never "no animes".
+    static func selectedAnimes() -> Set<String> {
+        let stored = UserDefaults(suiteName: kAppGroupSuite)?
+            .stringArray(forKey: WidgetSharedKey.selectedCategoryIds) ?? []
+        return Set(stored)
+    }
+
+    /// Same rule as the app's `GetAllQuotesUseCase.filtered` and Android's
+    /// `UpdateQuoteWidgetWorker` (`getRandomQuote(preferences.selectedCategoryIds)`): an empty
+    /// selection means everything, and the id is the anime's exact name.
+    ///
+    /// The fallback matters. If the selection matches nothing in the catalogue — an anime that was
+    /// renamed or withdrawn remotely — the widget shows a quote from the whole pool rather than an
+    /// error, because a stale filter is not a reason to leave the home screen blank.
+    static func pick(from quotes: [[String: Any]], matching selection: Set<String>) -> [String: Any]? {
+        guard !selection.isEmpty else { return quotes.randomElement() }
+        let filtered = quotes.filter { quote in
+            guard let anime = quote["anime"] as? String else { return false }
+            return selection.contains(anime)
+        }
+        return filtered.randomElement() ?? quotes.randomElement()
     }
 
     static func fetchImageData(forSlug slug: String) async -> Data? {
@@ -157,7 +185,7 @@ struct QuoteProvider: TimelineProvider {
     /// Falls back to 2 times/day (720 min) if not set.
     private func refreshIntervalMinutes() -> Int {
         let timesPerDay = UserDefaults(suiteName: kAppGroupSuite)?
-            .integer(forKey: "widget_update_times_per_day")
+            .integer(forKey: WidgetSharedKey.updateTimesPerDay)
             .nonZero ?? 2
         return max(1, (24 * 60) / timesPerDay)
     }
