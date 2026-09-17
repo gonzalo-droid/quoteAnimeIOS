@@ -8,8 +8,8 @@ import AppIntents
 /// Android has to ship that Activity because an app widget's only way to be configured is to
 /// launch one (`android:configure`) the moment it lands on the home screen. iOS already has the
 /// affordance: `AppIntentConfiguration` turns the `@Parameter` below into a native row in the
-/// widget's own edit sheet, with a picker fed by `HabitEntityQuery`. So the port is a configuration
-/// intent, not a screen — there is nothing here to build a UI for.
+/// widget's own edit sheet, with a picker fed by `HabitOptionsProvider`. So the port is a
+/// configuration intent, not a screen — there is nothing here to build a UI for.
 ///
 /// **iOS 17+.** `AppIntentConfiguration` does not exist on iOS 16, which the app and the rest of
 /// the extension still support; the `@available` lives on the `WidgetBundle` member so the other
@@ -19,71 +19,42 @@ import AppIntents
 /// The extension cannot open the app's SwiftData store, so both the picker and the heatmap read the
 /// App Group snapshot `RoutineWidgetRefresher` writes — see `WidgetSharedModel.swift`.
 
-// MARK: - Entity
-
-@available(iOS 17.0, *)
-struct HabitEntity: AppEntity {
-    let id: String
-    let title: String
-    let colorIndex: Int
-    let symbolName: String
-
-    static var typeDisplayRepresentation: TypeDisplayRepresentation { "Hábito" }
-    static var defaultQuery = HabitEntityQuery()
-
-    var displayRepresentation: DisplayRepresentation {
-        // The habit's title is the user's own words: it goes through `stringLiteral`, which uses
-        // the text as-is instead of looking it up, the `Text(verbatim:)` of this API.
-        DisplayRepresentation(
-            title: LocalizedStringResource(stringLiteral: title),
-            image: .init(systemName: symbolName)
-        )
-    }
-
-    init(id: String, title: String, colorIndex: Int, symbolName: String) {
-        self.id = id
-        self.title = title
-        self.colorIndex = colorIndex
-        self.symbolName = symbolName
-    }
-
-    init(_ item: HabitWidgetSnapshotItem) {
-        self.init(id: item.id, title: item.title, colorIndex: item.colorIndex, symbolName: item.symbol)
-    }
-}
-
-// MARK: - Query
-
-/// Feeds the picker in the widget's edit sheet. Reads the App Group snapshot, the only habit data
-/// an extension can reach — which also means the list is empty until the app has run once, the same
-/// way Android's configure screen is empty until a habit exists.
-@available(iOS 17.0, *)
-struct HabitEntityQuery: EntityQuery {
-
-    /// Resolving an id that is no longer in the snapshot returns nothing on purpose: the widget
-    /// then renders its "this habit no longer exists" state instead of a stale title.
-    func entities(for identifiers: [HabitEntity.ID]) async throws -> [HabitEntity] {
-        guard let snapshot = HabitWidgetSnapshot.read() else { return [] }
-        return identifiers.compactMap { id in snapshot.habit(id: id).map(HabitEntity.init) }
-    }
-
-    /// Only active habits are offered, exactly like Android's configure screen
-    /// (`repository.getActiveHabits()`). An archived one already bound to a widget still resolves
-    /// through `entities(for:)`, so it keeps rendering.
-    func suggestedEntities() async throws -> [HabitEntity] {
-        (HabitWidgetSnapshot.read()?.activeHabits ?? []).map(HabitEntity.init)
-    }
-
-    /// Pre-selects the first habit so a freshly added widget shows something instead of an empty
-    /// frame. Android reaches the same place from the other side: its configure Activity forces a
-    /// choice before the widget is ever placed.
-    func defaultResult() async -> HabitEntity? {
-        try? await suggestedEntities().first
-    }
-}
-
 // MARK: - Configuration intent
 
+/// Fills the picker in the widget's edit sheet: one row per active habit, with its name and its
+/// glyph — the same list Android's `HabitWidgetConfigureActivity` shows. Reads the App Group
+/// snapshot, the only habit data an extension can reach, so the list is empty until the app has run
+/// once (Android's screen is likewise empty until a habit exists).
+///
+/// Only **active** habits are offered, exactly like Android (`repository.getActiveHabits()`). A
+/// habit that is archived later keeps rendering, because the widget stores its id and looks it up
+/// in the whole snapshot, not in this list.
+@available(iOS 17.0, *)
+struct HabitOptionsProvider: DynamicOptionsProvider {
+    func results() async throws -> ItemCollection<String> {
+        let habits = HabitWidgetSnapshot.read()?.activeHabits ?? []
+        return ItemCollection {
+            ItemSection(items: habits.map { habit in
+                IntentItem<String>(
+                    habit.id,
+                    // The habit's title is the user's own words — `stringLiteral` uses the text
+                    // as-is instead of looking it up, the `Text(verbatim:)` of this API.
+                    title: LocalizedStringResource(stringLiteral: habit.title),
+                    image: .init(systemName: habit.symbol)
+                )
+            })
+        }
+    }
+}
+
+/// The widget stores the habit's **id**, not an `AppEntity`.
+///
+/// An `AppEntity` + `EntityQuery` is the richer way to model this, and it was the first attempt —
+/// but the entity has to survive a round trip through the stored configuration, and it did not:
+/// the edit sheet showed the chosen habit while the extension's timeline provider received `nil`
+/// and `entities(for:)` was never called, so every widget rendered the wrong habit (or the prompt).
+/// A `String` cannot fail to resolve, and `DynamicOptionsProvider` gives the same native picker,
+/// titles and icons included. Nothing about the feature is lost.
 @available(iOS 17.0, *)
 struct SelectHabitIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource { "Elige un hábito" }
@@ -91,14 +62,10 @@ struct SelectHabitIntent: WidgetConfigurationIntent {
         IntentDescription("Sigue el progreso de un hábito desde la pantalla de inicio")
     }
 
-    @Parameter(title: "Hábito")
-    var habit: HabitEntity?
+    @Parameter(title: "Hábito", optionsProvider: HabitOptionsProvider())
+    var habitId: String?
 
     init() {}
-
-    init(habit: HabitEntity?) {
-        self.habit = habit
-    }
 }
 
 // MARK: - Entry
@@ -168,10 +135,13 @@ struct HabitWidgetProvider: AppIntentTimelineProvider {
     }
 
     private func entry(for configuration: SelectHabitIntent) -> HabitWidgetEntry {
-        guard let selected = configuration.habit else {
+        guard let habitId = configuration.habitId, !habitId.isEmpty else {
             return HabitWidgetEntry(date: .now, content: .unconfigured)
         }
-        guard let item = HabitWidgetSnapshot.read()?.habit(id: selected.id) else {
+        // Looked up in the whole snapshot, archived habits included: a widget bound to a habit the
+        // user later archives keeps drawing its history, as Android's worker does. Only a real
+        // delete takes it out of the snapshot, and that is what `.missing` is for.
+        guard let item = HabitWidgetSnapshot.read()?.habit(id: habitId) else {
             return HabitWidgetEntry(date: .now, content: .missing)
         }
         return HabitWidgetEntry(date: .now, content: .habit(item))
@@ -289,6 +259,10 @@ struct HabitWidgetEntryView: View {
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.wTextPrimary)
                     .lineLimit(1)
+                    // A name like "Find the One Piece" is cut to "Find the O…" on the small size
+                    // next to the icon; shrinking a little buys the whole title back without
+                    // letting a very long one take over the widget.
+                    .minimumScaleFactor(0.75)
             }
             HStack(spacing: 4) {
                 Text("\(habit.currentStreak) días")
