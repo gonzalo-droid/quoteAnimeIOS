@@ -58,6 +58,22 @@ struct HabitWidgetSnapshot: Codable {
     /// Fewer weeks than the in-app heatmap (17 on the card, 26 on the detail) — a widget has far
     /// less room. Same number Android's `HabitWidget` uses, so both platforms show the same span.
     static let heatmapWeeks = 9
+
+    // The two lookups below are the contract the extension's `HabitEntityQuery` and
+    // `RoutineSummaryProvider` implement, mirrored here so they can be pinned by tests — the test
+    // target can't import the widget extension. They have no caller inside the app on purpose;
+    // if the rule changes, it changes in both copies. Same arrangement as `HabitPalette`, in the
+    // other direction.
+
+    /// What the habit picker offers and what the summary widget lists: habits the user is still
+    /// keeping. Archived ones stay in the snapshot only so a widget already bound to one keeps
+    /// rendering its history.
+    var activeHabits: [HabitWidgetSnapshotItem] { habits.filter { !$0.archived } }
+
+    /// Resolution by id, archived included — a widget bound to a habit that was later archived must
+    /// keep working. `nil` for a habit that was deleted, which is what puts the widget into its
+    /// "this habit no longer exists" state.
+    func habit(id: String) -> HabitWidgetSnapshotItem? { habits.first { $0.id == id } }
 }
 
 /// Writes the habit snapshot to the shared App Group so the widget extension can render without
