@@ -40,7 +40,7 @@ xcrun simctl launch booted com.gonzadev.quoteAnime -AppleLanguages "(en)" -Apple
 
 5. **App Group** for widget data sharing: Add capability `group.com.gonzadev.quoteAnime` to both the main app target and the widget extension target.
 
-6. **Widget Extension target**: Create via File → New → Target → Widget Extension, name `QuoteAnimeWidget`. Move `quoteAnime/Widget/QuoteWidget.swift` to that target (remove from main target). `WidgetDataWriter.swift` stays in the main target.
+6. **Widget Extension target** (`QuoteAnimeWidgetExtension`, carpeta `QuoteAnimeWidget/`): ya existe. Sus fuentes viven en esa carpeta sincronizada; los *writers* (`WidgetDataWriter`, `HabitWidgetDataWriter`, `RoutineWidgetRefresher`) se quedan en el target de la app, en `quoteAnime/Widget/`. Deployment target 16.6, igual que la app.
 
 ---
 
@@ -82,7 +82,9 @@ quoteAnime/
 │   ├── Common/             AppLinks (URLs legales y de App Store, espejo de AppLinks.kt)
 │   └── Components/         QuoteCard, BannerAdView, ShareCardView, ActivityViewController
 ├── Notification/           NotificationScheduler + NotificationHelper
-├── Widget/                 QuoteWidget.swift (widget target) + WidgetDataWriter.swift (main target)
+├── Widget/                 WidgetDataWriter (frase actual) + HabitWidgetDataWriter (snapshot de
+│                           hábitos) + RoutineWidgetRefresher — todos en el target de la app
+
 └── Theme/                  Colors.swift (Color extensions), Typography.swift (Font extensions)
 ```
 
@@ -107,7 +109,31 @@ quoteAnime/
 
 **Navigation**: `AppRouter` holds `currentScreen: AppScreen` (splash/onboarding/main) and `navigationPath: NavigationPath`. `AppRootView` switches the root; `MainContainerView` wraps `NavigationStack` for in-app push navigation using `AppRoute` enum cases.
 
-**Widget data**: `WidgetDataWriter.write(_:)` writes the current quote to `UserDefaults(suiteName: "group.com.gonzadev.quoteAnime")` and calls `WidgetCenter.shared.reloadAllTimelines()`. The Widget extension (`QuoteWidget.swift`) reads from the same App Group.
+**Widget data**: todo viaja por el App Group `group.com.gonzadev.quoteAnime`, porque la extensión
+es otro binario y no puede abrir ni SwiftData ni `UserDefaults.standard` de la app.
+
+- **Frase actual** — `WidgetDataWriter.write(_:)` escribe la frase que muestra Home.
+- **Animes elegidos** — `UserPreferencesStore` espeja `pref_selected_category_ids` al grupo (misma
+  clave), y migra una sola vez lo que ya estaba en `.standard` para no resetear a nadie. La
+  extensión filtra con eso su fetch REST a Firebase, como `UpdateQuoteWidgetWorker` en Android.
+- **Hábitos** — `HabitWidgetDataWriter` escribe un snapshot JSON (`habit_widget_snapshot`) con,
+  por hábito: título, color, ícono ya resuelto a SF Symbol, racha, si está archivado y los días
+  marcados de las últimas 9 semanas como texto `yyyy-MM-dd`. Los campos posteriores a la primera
+  versión son opcionales: un snapshot viejo se sigue leyendo. **Único punto de entrada para
+  reescribirlo: `RoutineWidgetRefresher`** (equivalente a `RoutineWidgetScheduler` de Android),
+  inyectado en los view models de rutina, el editor, el onboarding y el delegate de notificaciones.
+
+**Widgets de la extensión** (`QuoteAnimeWidget/`): `QuoteAnimeWidget` + `QuoteAnimeLockWidget`
+(frases), `RoutineSummaryWidget` (hábitos activos) y `HabitWidget` (un hábito por instancia, con su
+heatmap de 9 semanas). `HabitWidget` usa `AppIntentConfiguration` + `HabitEntity`/`HabitEntityQuery`
+— el equivalente iOS de `HabitWidgetConfigureActivity` — y por eso **requiere iOS 17**; el
+`@available` va en el miembro del `WidgetBundle` para que el resto siga en 16.6.
+
+**Duplicación deliberada en el target del widget**: `QuoteAnimeWidget/WidgetSharedModel.swift`
+reúne las copias a mano del App Group, el snapshot, `HeatmapGrid` y `HabitPalette`; los tokens de
+color (`w`-prefijados) viven en `QuoteAnimeWidget.swift`. **Cuando cambies un lado, cambia el
+otro.** `HabitWidgetSnapshot.activeHabits` / `habit(id:)` existen también en el target de la app,
+sin llamador, sólo para que los tests puedan fijar lo que decide la `EntityQuery`.
 
 ### Domain models (identical to Android)
 
