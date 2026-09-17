@@ -136,8 +136,15 @@ enum HabitIcons {
         "military_tech": "medal.fill", "flag": "flag.fill"
     ]
 
+    /// Resolves legacy keys too (`HabitIconAliases`), so no caller can ever show the generic check
+    /// for a habit that was created from a template before the key fix.
     static func symbol(for key: String) -> String {
-        symbolByKey[key] ?? "checkmark.circle.fill"
+        symbolByKey[HabitIconAliases.canonical(key)] ?? "checkmark.circle.fill"
+    }
+
+    /// True when `key` resolves to a real glyph instead of the generic fallback.
+    static func isKnown(_ key: String) -> Bool {
+        symbolByKey[HabitIconAliases.canonical(key)] != nil
     }
 
     static let allKeys: [String] = categories.flatMap { $0.keys }

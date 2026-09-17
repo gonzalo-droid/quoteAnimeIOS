@@ -3,6 +3,7 @@ import Foundation
 struct HabitTemplate: Identifiable, Hashable {
     let id: String
     let title: String
+    /// A stable `HabitIcons` key, never an SF Symbol name — same keys as Android's templates.
     let iconKey: String
     let order: Int
     /// Suggested HabitPalette index, for themed templates.
@@ -21,10 +22,10 @@ struct HabitTemplate: Identifiable, Hashable {
 /// its title into `Habit.title`, which is the user's own text from then on and never re-translated.
 enum DefaultHabitTemplates {
     static let all: [HabitTemplate] = [
-        HabitTemplate(id: "theme_ninja", title: String(localized: "Camino ninja"), iconKey: "figure.strengthtraining.traditional", order: 1, themeColorIndex: 10, themeKey: "ninja"),
-        HabitTemplate(id: "theme_one_piece", title: String(localized: "Buscar el One Piece"), iconKey: "figure.walk", order: 2, themeColorIndex: 11, themeKey: "one_piece"),
-        HabitTemplate(id: "theme_saiyan", title: String(localized: "Sé un saiyan"), iconKey: "figure.mind.and.body", order: 3, themeColorIndex: 3, themeKey: "saiyan"),
-        HabitTemplate(id: "theme_pokemon", title: String(localized: "Sé un maestro Pokémon"), iconKey: "sportscourt", order: 4, themeColorIndex: 4, themeKey: "pokemon", isPremiumOnly: true),
-        HabitTemplate(id: "theme_black_clover", title: String(localized: "Sé el Rey Mago"), iconKey: "sparkles", order: 5, themeColorIndex: 7, themeKey: "black_clover", isPremiumOnly: true)
+        HabitTemplate(id: "theme_ninja", title: String(localized: "Camino ninja"), iconKey: "dumbbell", order: 1, themeColorIndex: 10, themeKey: "ninja"),
+        HabitTemplate(id: "theme_one_piece", title: String(localized: "Buscar el One Piece"), iconKey: "directions_walk", order: 2, themeColorIndex: 11, themeKey: "one_piece"),
+        HabitTemplate(id: "theme_saiyan", title: String(localized: "Sé un saiyan"), iconKey: "self_improvement", order: 3, themeColorIndex: 3, themeKey: "saiyan"),
+        HabitTemplate(id: "theme_pokemon", title: String(localized: "Sé un maestro Pokémon"), iconKey: "emoji_events", order: 4, themeColorIndex: 4, themeKey: "pokemon", isPremiumOnly: true),
+        HabitTemplate(id: "theme_black_clover", title: String(localized: "Sé el Rey Mago"), iconKey: "local_fire_department", order: 5, themeColorIndex: 7, themeKey: "black_clover", isPremiumOnly: true)
     ]
 }

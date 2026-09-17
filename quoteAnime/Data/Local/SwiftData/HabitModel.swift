@@ -75,12 +75,14 @@ final class HabitModel {
         self.reminderMinute = habit.reminderMinute
     }
 
+    /// `iconKey` is normalised on the way out: habits created from a template before the fix
+    /// were stored with an SF Symbol name (see `HabitIconAliases`).
     func toDomain() -> Habit {
         Habit(
             id: id,
             title: title,
             description: habitDescription,
-            iconKey: iconKey,
+            iconKey: HabitIconAliases.canonical(iconKey),
             colorIndex: colorIndex,
             startDate: startDate,
             endDate: endDate,
