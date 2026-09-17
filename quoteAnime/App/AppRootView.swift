@@ -164,7 +164,6 @@ struct MainContainerView: View {
                     updateHabitUseCase: updateHabit,
                     habitRepository: habitRepository,
                     habitReminderScheduler: deps.habitReminderScheduler,
-                    notificationScheduler: deps.notificationScheduler,
                     premiumGate: deps.premiumGate
                 )
             } else {

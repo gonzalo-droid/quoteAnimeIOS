@@ -19,14 +19,18 @@ struct HabitEditorUiState {
     var canSave: Bool { !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 }
 
-/// One alert slot for every reason a save can be refused — the limit, a blank title, an
-/// inverted date range. Each maps to one of `CreateHabitError` / `UpdateHabitError`.
+/// One alert slot for everything the editor has to tell the user: every reason a save can be
+/// refused (each maps to one of `CreateHabitError` / `UpdateHabitError`), plus a reminder that
+/// can't be turned on because notifications are denied.
 struct HabitEditorAlert: Identifiable, Equatable {
     enum Reason: Equatable {
         case habitLimitReached(max: Int)
         case blankTitle
         case invalidDateRange
         case habitNotFound
+        /// Android shows `habit_editor_reminder_permission_denied_message` in a snackbar with a
+        /// "Settings" action; iOS has no snackbar, so it's an alert with the same two choices.
+        case reminderPermissionDenied
     }
 
     let id = UUID()
@@ -39,6 +43,7 @@ struct HabitEditorAlert: Identifiable, Equatable {
         case .blankTitle: return String(localized: "Falta el nombre")
         case .invalidDateRange: return String(localized: "Fechas inválidas")
         case .habitNotFound: return String(localized: "No se pudo guardar")
+        case .reminderPermissionDenied: return String(localized: "Permiso de notificaciones")
         }
     }
 
@@ -52,8 +57,13 @@ struct HabitEditorAlert: Identifiable, Equatable {
             return String(localized: "La fecha de fin no puede ser anterior a la de inicio.")
         case .habitNotFound:
             return String(localized: "Este hábito ya no existe.")
+        case .reminderPermissionDenied:
+            return String(localized: "Las notificaciones están desactivadas, así que el recordatorio no funcionará. Actívalas desde Ajustes.")
         }
     }
+
+    /// Only a denied permission can be fixed outside the app, so only that alert links to Settings.
+    var offersSystemSettings: Bool { reason == .reminderPermissionDenied }
 }
 
 @MainActor
@@ -65,7 +75,6 @@ final class HabitEditorViewModel: ObservableObject {
     private let updateHabitUseCase: UpdateHabitUseCase
     private let habitRepository: HabitRepository
     private let habitReminderScheduler: HabitReminderScheduling
-    private let notificationScheduler: NotificationScheduler
     private let habitId: String?
     private var existingHabit: Habit?
 
@@ -74,15 +83,13 @@ final class HabitEditorViewModel: ObservableObject {
         createHabitUseCase: CreateHabitUseCase,
         updateHabitUseCase: UpdateHabitUseCase,
         habitRepository: HabitRepository,
-        habitReminderScheduler: HabitReminderScheduling,
-        notificationScheduler: NotificationScheduler
+        habitReminderScheduler: HabitReminderScheduling
     ) {
         self.habitId = habitId
         self.createHabitUseCase = createHabitUseCase
         self.updateHabitUseCase = updateHabitUseCase
         self.habitRepository = habitRepository
         self.habitReminderScheduler = habitReminderScheduler
-        self.notificationScheduler = notificationScheduler
         self.uiState.isEditing = habitId != nil
     }
 
@@ -133,12 +140,16 @@ final class HabitEditorViewModel: ObservableObject {
         }
     }
 
+    /// The switch turns on optimistically and turns back off if notifications are denied — and
+    /// then says why, instead of silently flipping back.
     func onReminderToggled(_ enabled: Bool) {
         uiState.reminderEnabled = enabled
         guard enabled else { return }
         Task {
-            let granted = await notificationScheduler.requestPermission()
-            if !granted { uiState.reminderEnabled = false }
+            let granted = await habitReminderScheduler.requestPermission()
+            guard !granted else { return }
+            uiState.reminderEnabled = false
+            alert = HabitEditorAlert(reason: .reminderPermissionDenied)
         }
     }
 

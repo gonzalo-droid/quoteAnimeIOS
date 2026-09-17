@@ -1644,6 +1644,23 @@
         }
       }
     },
+    "Las notificaciones están desactivadas, así que el recordatorio no funcionará. Actívalas desde Ajustes." : {
+      "comment" : "Habit editor alert: the reminder can't be enabled because notifications are denied",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications are off, so the reminder won't work. Enable them in Settings."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las notificaciones están desactivadas, así que el recordatorio no funcionará. Actívalas desde Ajustes."
+          }
+        }
+      }
+    },
     "Las notificaciones están desactivadas. Actívalas en Ajustes del sistema." : {
       "localizations" : {
         "en" : {

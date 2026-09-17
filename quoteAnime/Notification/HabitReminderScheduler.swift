@@ -5,6 +5,9 @@ import UserNotifications
 /// tested without `UNUserNotificationCenter`, whose round trips are slow and whose behaviour
 /// depends on the host app's notification authorisation.
 protocol HabitReminderScheduling {
+    /// Whether reminders can be delivered at all — prompts the first time. The editor calls it
+    /// when the reminder switch is turned on, like Android's `POST_NOTIFICATIONS` launcher.
+    func requestPermission() async -> Bool
     func schedule(habit: Habit) async
     func cancel(habitId: String) async
 }
@@ -35,6 +38,10 @@ final class HabitReminderScheduler: HabitReminderScheduling {
             options: []
         )
         UNUserNotificationCenter.current().setNotificationCategories([category])
+    }
+
+    func requestPermission() async -> Bool {
+        await center.requestAppAuthorization()
     }
 
     func schedule(habit: Habit) async {

@@ -7,6 +7,15 @@ import Foundation
 final class FakeHabitReminderScheduler: HabitReminderScheduling {
     private(set) var scheduledHabitIds: [String] = []
     private(set) var cancelledHabitIds: [String] = []
+    private(set) var requestPermissionCount = 0
+
+    /// What the next `requestPermission()` answers.
+    var permissionGranted = true
+
+    func requestPermission() async -> Bool {
+        requestPermissionCount += 1
+        return permissionGranted
+    }
 
     func schedule(habit: Habit) async {
         scheduledHabitIds.append(habit.id)

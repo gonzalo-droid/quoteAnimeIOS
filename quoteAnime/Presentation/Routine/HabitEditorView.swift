@@ -15,7 +15,6 @@ struct HabitEditorView: View {
         updateHabitUseCase: UpdateHabitUseCase,
         habitRepository: HabitRepository,
         habitReminderScheduler: HabitReminderScheduling,
-        notificationScheduler: NotificationScheduler,
         premiumGate: PremiumGate
     ) {
         _viewModel = StateObject(wrappedValue: HabitEditorViewModel(
@@ -23,8 +22,7 @@ struct HabitEditorView: View {
             createHabitUseCase: createHabitUseCase,
             updateHabitUseCase: updateHabitUseCase,
             habitRepository: habitRepository,
-            habitReminderScheduler: habitReminderScheduler,
-            notificationScheduler: notificationScheduler
+            habitReminderScheduler: habitReminderScheduler
         ))
         self.premiumGate = premiumGate
     }
@@ -62,10 +60,23 @@ struct HabitEditorView: View {
                 set: { if !$0 { viewModel.alert = nil } }
             )
         ) {
-            Button("Entendido", role: .cancel) {}
+            if viewModel.alert?.offersSystemSettings == true {
+                Button("Ajustes") { openNotificationSettings() }
+                    .keyboardShortcut(.defaultAction)
+                Button("Cancelar", role: .cancel) {}
+            } else {
+                Button("Entendido", role: .cancel) {}
+            }
         } message: {
             Text(viewModel.alert?.message ?? "")
         }
+    }
+
+    /// Lands on this app's notification page in Settings (iOS 16+), one tap closer than the
+    /// app's general page Android opens.
+    private func openNotificationSettings() {
+        guard let url = URL(string: UIApplication.openNotificationSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 
     // MARK: - Sections

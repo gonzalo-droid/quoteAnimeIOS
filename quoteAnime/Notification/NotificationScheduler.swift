@@ -11,21 +11,28 @@ protocol QuoteNotificationScheduling {
     func cancelAll() async
 }
 
+extension UNUserNotificationCenter {
+    /// Asks only while the user hasn't decided yet; afterwards it just reports the decision,
+    /// because iOS never shows the system prompt twice. Shared by the quote and habit schedulers.
+    func requestAppAuthorization() async -> Bool {
+        switch await notificationSettings().authorizationStatus {
+        case .notDetermined:
+            return (try? await requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+        case .authorized, .provisional, .ephemeral:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 final class NotificationScheduler: QuoteNotificationScheduling {
     private let center = UNUserNotificationCenter.current()
 
     // MARK: - Permission
 
     func requestPermission() async -> Bool {
-        let settings = await center.notificationSettings()
-        switch settings.authorizationStatus {
-        case .notDetermined:
-            return (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
-        case .authorized, .provisional:
-            return true
-        default:
-            return false
-        }
+        await center.requestAppAuthorization()
     }
 
     func authorizationStatus() async -> UNAuthorizationStatus {

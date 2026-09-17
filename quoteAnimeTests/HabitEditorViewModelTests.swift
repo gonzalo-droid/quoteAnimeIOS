@@ -8,8 +8,11 @@ import Testing
 @MainActor
 struct HabitEditorViewModelTests {
 
-    private static func makeSUT(habitId: String? = nil, seed: [Habit] = [])
-        -> (HabitEditorViewModel, FakeHabitRepository, String) {
+    private static func makeSUT(
+        habitId: String? = nil,
+        seed: [Habit] = [],
+        reminderScheduler: FakeHabitReminderScheduler = FakeHabitReminderScheduler()
+    ) -> (HabitEditorViewModel, FakeHabitRepository, String) {
         let suiteName = "test.habiteditor.\(UUID().uuidString)"
         let gate = PremiumGate(defaults: UserDefaults(suiteName: suiteName)!)
         let repository = FakeHabitRepository(calendar: TestCalendar.fixed)
@@ -21,8 +24,7 @@ struct HabitEditorViewModelTests {
             ),
             updateHabitUseCase: UpdateHabitUseCase(repository: repository, calendar: TestCalendar.fixed),
             habitRepository: repository,
-            habitReminderScheduler: FakeHabitReminderScheduler(),
-            notificationScheduler: NotificationScheduler()
+            habitReminderScheduler: reminderScheduler
         )
         return (viewModel, repository, suiteName)
     }
@@ -177,5 +179,61 @@ struct HabitEditorViewModelTests {
 
         #expect(viewModel.uiState.hasEndDate)
         #expect(viewModel.uiState.endDate == TestCalendar.day(20))
+    }
+
+    // MARK: - Reminder permission
+
+    @Test("con el permiso concedido el recordatorio queda activo y sin aviso")
+    func reminderStaysOnWhenGranted() async {
+        let scheduler = FakeHabitReminderScheduler()
+        let (viewModel, _, suite) = Self.makeSUT(reminderScheduler: scheduler)
+        defer { Self.tearDown(suite) }
+
+        viewModel.onReminderToggled(true)
+        await settle()
+
+        #expect(scheduler.requestPermissionCount == 1)
+        #expect(viewModel.uiState.reminderEnabled)
+        #expect(viewModel.alert == nil)
+    }
+
+    @Test("con el permiso denegado el recordatorio se apaga y avisa con enlace a Ajustes")
+    func reminderTurnsOffAndExplainsWhenDenied() async {
+        let scheduler = FakeHabitReminderScheduler()
+        scheduler.permissionGranted = false
+        let (viewModel, _, suite) = Self.makeSUT(reminderScheduler: scheduler)
+        defer { Self.tearDown(suite) }
+
+        viewModel.onReminderToggled(true)
+        await settle()
+
+        #expect(scheduler.requestPermissionCount == 1)
+        #expect(viewModel.uiState.reminderEnabled == false)
+        #expect(viewModel.alert?.reason == .reminderPermissionDenied)
+        #expect(viewModel.alert?.offersSystemSettings == true)
+        #expect(viewModel.alert?.message.isEmpty == false)
+    }
+
+    @Test("apagar el recordatorio no pide permiso ni avisa")
+    func turningReminderOffNeverAsks() async {
+        let scheduler = FakeHabitReminderScheduler()
+        scheduler.permissionGranted = false
+        let (viewModel, _, suite) = Self.makeSUT(reminderScheduler: scheduler)
+        defer { Self.tearDown(suite) }
+        viewModel.uiState.reminderEnabled = true
+
+        viewModel.onReminderToggled(false)
+        await settle()
+
+        #expect(scheduler.requestPermissionCount == 0)
+        #expect(viewModel.uiState.reminderEnabled == false)
+        #expect(viewModel.alert == nil)
+    }
+
+    @Test("los avisos de guardado no ofrecen ir a Ajustes", arguments: [
+        HabitEditorAlert.Reason.habitLimitReached(max: 3), .blankTitle, .invalidDateRange, .habitNotFound,
+    ])
+    func saveAlertsDontOfferSettings(reason: HabitEditorAlert.Reason) {
+        #expect(HabitEditorAlert(reason: reason).offersSystemSettings == false)
     }
 }
