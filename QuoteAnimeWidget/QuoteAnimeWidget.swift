@@ -8,14 +8,7 @@ import UIKit
 // or in GoogleService-Info.plist → DATABASE_URL
 private let kFirebaseDatabaseURL = "https://quoteanime-76a76-default-rtdb.firebaseio.com"
 
-private let kAppGroupSuite = "group.com.gonzadev.quoteAnime"
-
-private enum SharedKey {
-    static let quoteText   = "widget_quote_text"
-    static let quoteAuthor = "widget_quote_author"
-    static let quoteAnime  = "widget_quote_anime"
-    static let imageUrl    = "widget_image_url"
-}
+// App Group suite and keys: `WidgetSharedModel.swift`.
 
 // MARK: - Helpers
 
@@ -125,14 +118,14 @@ private enum WidgetNetworkService {
     static func readAppGroup() -> QuoteEntry {
         let d = UserDefaults(suiteName: kAppGroupSuite)
         var imageData: Data? = nil
-        if let urlStr = d?.string(forKey: SharedKey.imageUrl), let url = URL(string: urlStr) {
+        if let urlStr = d?.string(forKey: WidgetSharedKey.imageUrl), let url = URL(string: urlStr) {
             imageData = try? Data(contentsOf: url) // only works for local/cached URLs
         }
         return QuoteEntry(
             date: .now,
-            quoteText: d?.string(forKey: SharedKey.quoteText)   ?? QuoteEntry.placeholder.quoteText,
-            author:    d?.string(forKey: SharedKey.quoteAuthor) ?? QuoteEntry.placeholder.author,
-            anime:     d?.string(forKey: SharedKey.quoteAnime)  ?? QuoteEntry.placeholder.anime,
+            quoteText: d?.string(forKey: WidgetSharedKey.quoteText)   ?? QuoteEntry.placeholder.quoteText,
+            author:    d?.string(forKey: WidgetSharedKey.quoteAuthor) ?? QuoteEntry.placeholder.author,
+            anime:     d?.string(forKey: WidgetSharedKey.quoteAnime)  ?? QuoteEntry.placeholder.anime,
             backgroundImageData: imageData
         )
     }

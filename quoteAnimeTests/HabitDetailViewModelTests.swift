@@ -10,7 +10,8 @@ struct HabitDetailViewModelTests {
 
     private func makeSUT(
         habit: Habit? = nil,
-        completions: [Date] = []
+        completions: [Date] = [],
+        widgetRefresher: FakeRoutineWidgetRefresher = FakeRoutineWidgetRefresher()
     ) -> (HabitDetailViewModel, FakeHabitRepository) {
         let habit = habit ?? HabitFixture.make(id: "meditar")
         let repository = FakeHabitRepository(calendar: TestCalendar.fixed)
@@ -28,6 +29,7 @@ struct HabitDetailViewModelTests {
             unarchiveHabitUseCase: UnarchiveHabitUseCase(repository: repository),
             deleteHabitUseCase: DeleteHabitUseCase(repository: repository),
             habitReminderScheduler: FakeHabitReminderScheduler(),
+            routineWidgetRefresher: widgetRefresher,
             today: TestCalendar.today,
             calendar: TestCalendar.fixed
         )
@@ -274,5 +276,44 @@ struct HabitDetailViewModelTests {
         await settle()
 
         #expect(repository.completionCount(habitId: "meditar") == 3)
+    }
+
+    // MARK: - Home-screen widgets
+
+    /// Android calls `RoutineWidgetScheduler.triggerImmediateUpdate()` after every one of these,
+    /// so the home screen doesn't wait for the next periodic refresh. These pin the same
+    /// guarantee here: what changed the data also asks the widgets to redraw.
+    @Test("marcar un día pide refrescar los widgets")
+    func togglingADayRefreshesTheWidgets() async {
+        let refresher = FakeRoutineWidgetRefresher()
+        let (viewModel, _) = makeSUT(widgetRefresher: refresher)
+        viewModel.onAppear()
+        await settle()
+        let before = refresher.refreshCount
+
+        viewModel.onDayTap(TestCalendar.day(-1))
+        await settle()
+
+        #expect(refresher.refreshCount > before)
+    }
+
+    @Test("archivar, restaurar y borrar también refrescan los widgets")
+    func lifecycleActionsRefreshTheWidgets() async {
+        for action in ["archive", "unarchive", "delete"] {
+            let refresher = FakeRoutineWidgetRefresher()
+            let (viewModel, _) = makeSUT(widgetRefresher: refresher)
+            viewModel.onAppear()
+            await settle()
+            let before = refresher.refreshCount
+
+            switch action {
+            case "archive": viewModel.onArchive()
+            case "unarchive": viewModel.onUnarchive()
+            default: viewModel.onDelete()
+            }
+            await settle()
+
+            #expect(refresher.refreshCount > before, "\(action) no refrescó los widgets")
+        }
     }
 }

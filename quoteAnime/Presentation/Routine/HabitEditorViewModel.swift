@@ -75,6 +75,7 @@ final class HabitEditorViewModel: ObservableObject {
     private let updateHabitUseCase: UpdateHabitUseCase
     private let habitRepository: HabitRepository
     private let habitReminderScheduler: HabitReminderScheduling
+    private let routineWidgetRefresher: RoutineWidgetRefreshing
     private let habitId: String?
     private var existingHabit: Habit?
 
@@ -83,13 +84,15 @@ final class HabitEditorViewModel: ObservableObject {
         createHabitUseCase: CreateHabitUseCase,
         updateHabitUseCase: UpdateHabitUseCase,
         habitRepository: HabitRepository,
-        habitReminderScheduler: HabitReminderScheduling
+        habitReminderScheduler: HabitReminderScheduling,
+        routineWidgetRefresher: RoutineWidgetRefreshing
     ) {
         self.habitId = habitId
         self.createHabitUseCase = createHabitUseCase
         self.updateHabitUseCase = updateHabitUseCase
         self.habitRepository = habitRepository
         self.habitReminderScheduler = habitReminderScheduler
+        self.routineWidgetRefresher = routineWidgetRefresher
         self.uiState.isEditing = habitId != nil
     }
 
@@ -173,6 +176,7 @@ final class HabitEditorViewModel: ObservableObject {
                     ? try await updateHabitUseCase.execute(habit)
                     : try await createHabitUseCase.execute(habit)
                 await habitReminderScheduler.schedule(habit: saved)
+                await routineWidgetRefresher.refresh()
                 uiState.isSaving = false
                 onSaved()
             } catch let error as CreateHabitError {

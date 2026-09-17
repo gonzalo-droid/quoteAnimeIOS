@@ -11,7 +11,8 @@ struct HabitEditorViewModelTests {
     private static func makeSUT(
         habitId: String? = nil,
         seed: [Habit] = [],
-        reminderScheduler: FakeHabitReminderScheduler = FakeHabitReminderScheduler()
+        reminderScheduler: FakeHabitReminderScheduler = FakeHabitReminderScheduler(),
+        widgetRefresher: FakeRoutineWidgetRefresher = FakeRoutineWidgetRefresher()
     ) -> (HabitEditorViewModel, FakeHabitRepository, String) {
         let suiteName = "test.habiteditor.\(UUID().uuidString)"
         let gate = PremiumGate(defaults: UserDefaults(suiteName: suiteName)!)
@@ -24,7 +25,8 @@ struct HabitEditorViewModelTests {
             ),
             updateHabitUseCase: UpdateHabitUseCase(repository: repository, calendar: TestCalendar.fixed),
             habitRepository: repository,
-            habitReminderScheduler: reminderScheduler
+            habitReminderScheduler: reminderScheduler,
+            routineWidgetRefresher: widgetRefresher
         )
         return (viewModel, repository, suiteName)
     }
@@ -235,5 +237,37 @@ struct HabitEditorViewModelTests {
     ])
     func saveAlertsDontOfferSettings(reason: HabitEditorAlert.Reason) {
         #expect(HabitEditorAlert(reason: reason).offersSystemSettings == false)
+    }
+
+    // MARK: - Home-screen widgets
+
+    @Test("guardar un hábito pide refrescar los widgets")
+    func savingRefreshesTheWidgets() async {
+        let refresher = FakeRoutineWidgetRefresher()
+        let (viewModel, _, suite) = Self.makeSUT(widgetRefresher: refresher)
+        defer { Self.tearDown(suite) }
+        viewModel.uiState.title = "Meditar"
+
+        viewModel.save(onSaved: {})
+        await settle()
+
+        #expect(refresher.refreshCount == 1)
+    }
+
+    @Test("un guardado rechazado no refresca los widgets")
+    func rejectedSaveDoesNotRefresh() async {
+        let refresher = FakeRoutineWidgetRefresher()
+        let (viewModel, _, suite) = Self.makeSUT(
+            seed: HabitFixture.makeMany(PremiumGate.freeHabitLimit),
+            widgetRefresher: refresher
+        )
+        defer { Self.tearDown(suite) }
+        viewModel.uiState.title = "Uno más"
+
+        viewModel.save(onSaved: {})
+        await settle()
+
+        #expect(viewModel.alert?.reason == .habitLimitReached(max: PremiumGate.freeHabitLimit))
+        #expect(refresher.refreshCount == 0)
     }
 }

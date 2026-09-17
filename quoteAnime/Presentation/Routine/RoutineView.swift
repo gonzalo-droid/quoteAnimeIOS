@@ -14,6 +14,7 @@ struct RoutineView: View {
         unarchiveHabitUseCase: UnarchiveHabitUseCase,
         deleteHabitUseCase: DeleteHabitUseCase,
         habitReminderScheduler: HabitReminderScheduling,
+        routineWidgetRefresher: RoutineWidgetRefreshing,
         premiumGate: PremiumGate
     ) {
         _viewModel = StateObject(wrappedValue: RoutineViewModel(
@@ -25,6 +26,7 @@ struct RoutineView: View {
             unarchiveHabitUseCase: unarchiveHabitUseCase,
             deleteHabitUseCase: deleteHabitUseCase,
             habitReminderScheduler: habitReminderScheduler,
+            routineWidgetRefresher: routineWidgetRefresher,
             premiumGate: premiumGate
         ))
     }

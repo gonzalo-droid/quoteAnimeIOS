@@ -6,9 +6,14 @@ import UserNotifications
 /// `AppDependencies` exists (needs `ToggleHabitCompletionUseCase`, nil below iOS 17).
 final class HabitReminderNotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     private let toggleHabitCompletion: ToggleHabitCompletionUseCase
+    private let routineWidgetRefresher: RoutineWidgetRefreshing
 
-    init(toggleHabitCompletion: ToggleHabitCompletionUseCase) {
+    init(
+        toggleHabitCompletion: ToggleHabitCompletionUseCase,
+        routineWidgetRefresher: RoutineWidgetRefreshing = NoopRoutineWidgetRefresher()
+    ) {
         self.toggleHabitCompletion = toggleHabitCompletion
+        self.routineWidgetRefresher = routineWidgetRefresher
     }
 
     func userNotificationCenter(
@@ -28,6 +33,11 @@ final class HabitReminderNotificationDelegate: NSObject, UNUserNotificationCente
             // A rejection here (habit deleted, reminder fired past its end date) is silent on
             // purpose: there is no UI to report it to from a notification action.
             _ = try? await toggleHabitCompletion.execute(habitId: habitId, date: Date())
+            // The app is usually not on screen when this runs, so nothing else would refresh the
+            // widgets. Android doesn't do this from its own "Done" action — reported as a gap
+            // there rather than mirrored here, since the widget would otherwise show yesterday's
+            // state until the app is opened.
+            await routineWidgetRefresher.refresh()
             completionHandler()
         }
     }
