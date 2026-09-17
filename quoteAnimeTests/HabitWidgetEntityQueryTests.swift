@@ -2,13 +2,14 @@ import Foundation
 import Testing
 @testable import quoteAnime
 
-/// The picker in the per-habit widget's edit sheet is `HabitEntityQuery`, which lives in the widget
-/// extension — a separate binary this test target cannot import. What the query actually *decides*
-/// is not in the extension though: it delegates to `activeHabits` and `habit(id:)` on the snapshot,
-/// mirrored into the app target precisely so those three rules can be pinned here.
+/// The picker in the per-habit widget's edit sheet (`HabitOptionsProvider`) and the widget's own
+/// lookup both live in the widget extension — a separate binary this test target cannot import.
+/// What they actually *decide* is not in the extension though: both delegate to `activeHabits` and
+/// `habit(id:)` on the snapshot, mirrored into the app target precisely so those three rules can be
+/// pinned here.
 ///
-/// The untestable remainder is the plumbing: reading the App Group and handing AppIntents the
-/// `HabitEntity`. That is exercised in the simulator instead.
+/// The untestable remainder is the plumbing: reading the App Group and handing AppIntents the list.
+/// That is exercised in the simulator instead.
 @Suite("Selector de hábito del widget")
 struct HabitWidgetEntityQueryTests {
 
