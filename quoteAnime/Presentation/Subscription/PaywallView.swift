@@ -132,5 +132,8 @@ struct PaywallView: View {
                     .foregroundColor(.textSecondary)
             }
         }
+        // Without this each row is only as wide as its text and gets centred on its own, so the
+        // icons stop lining up as soon as one body wraps differently (visible in English).
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
