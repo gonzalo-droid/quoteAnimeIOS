@@ -1,6 +1,7 @@
 import WidgetKit
 import SwiftUI
 import UIKit
+import ImageIO
 
 // MARK: - Configuration
 // ⚠️ Fill in your Firebase project URL.
@@ -139,7 +140,36 @@ private enum WidgetNetworkService {
         }
 
         guard let first = urls.first, let imageURL = URL(string: first) else { return nil }
-        return try? await URLSession.shared.data(from: imageURL).0
+        guard let full = try? await URLSession.shared.data(from: imageURL).0 else { return nil }
+        // Downsampled, never used at full size — see `downsampled(_:maxPixel:)`.
+        return downsampled(full) ?? nil
+    }
+
+    /// Shrinks the artwork before it goes into a timeline entry.
+    ///
+    /// WidgetKit refuses to archive a timeline that carries an image much bigger than the widget
+    /// itself: the anime covers come back at 1080×1350 and every single refresh failed with
+    /// `ArchivingError.imageTooLarge(size: (1080, 1350), maximumSize: (1084.6, 986))`, so the
+    /// widget never left its grey placeholder — the quote it had fetched was simply thrown away.
+    /// 600px on the long side still covers a 3× `systemMedium` and is a quarter of the bytes.
+    /// Android downsamples for the same reason (`optimizedForDisplay()` plus an 85% JPEG in
+    /// `UpdateQuoteWidgetWorker`).
+    private static func downsampled(_ data: Data, maxPixel: CGFloat = 600) -> Data? {
+        guard let source = CGImageSourceCreateWithData(
+            data as CFData,
+            [kCGImageSourceShouldCache: false] as CFDictionary
+        ) else { return nil }
+
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixel
+        ]
+        guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+            return nil
+        }
+        return UIImage(cgImage: thumbnail).jpegData(compressionQuality: 0.85)
     }
 
     /// Reads the last quote written by the main app from the shared App Group.
@@ -147,7 +177,9 @@ private enum WidgetNetworkService {
         let d = UserDefaults(suiteName: kAppGroupSuite)
         var imageData: Data? = nil
         if let urlStr = d?.string(forKey: WidgetSharedKey.imageUrl), let url = URL(string: urlStr) {
-            imageData = try? Data(contentsOf: url) // only works for local/cached URLs
+            // Only works for local/cached URLs — and it gets the same downsampling, for the same
+            // archiving limit.
+            imageData = (try? Data(contentsOf: url)).flatMap { downsampled($0) }
         }
         return QuoteEntry(
             date: .now,

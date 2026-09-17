@@ -43,6 +43,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - Typography: `quoteSerif` changed from `Georgia` to `Didot`; `quoteSerifItalic` changed from `Georgia-Italic` to `Georgia`.
 
 ### Fixed
+- **El widget de frases volvía a quedarse en gris.** Descargaba la ilustración del anime a tamaño completo y iOS se negaba a guardar el widget con una imagen tan grande, así que descartaba la frase que acababa de traer. Ahora la reduce antes de mostrarla.
 - **Las sugerencias de hábito muestran su ícono.** Camino ninja, Buscar el One Piece, Sé un saiyan y las demás sugerencias mostraban un check genérico en el onboarding, el editor y la tarjeta; ahora tienen su ícono, el mismo que en Android. Los hábitos que ya habías creado desde una sugerencia también lo recuperan.
 - **"1 días seguidos" ahora dice "1 día seguido".**
 - La sugerencia "Sé el Rey Mago" usaba un color distinto al de Android; ahora los hábitos creados desde ella nacen del mismo color en las dos apps.
