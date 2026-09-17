@@ -10,7 +10,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ### Added
 - **Widget de un solo hábito.** Un widget nuevo que sigue el hábito que elijas: muestra su nombre, su racha y el mapa de actividad de las últimas 9 semanas con su color. Puedes poner varios, uno por hábito. Para elegirlo, mantén pulsado el widget y toca "Editar widget". Necesita iOS 17; los demás widgets siguen funcionando desde iOS 16.6.
-- Tests del snapshot que alimenta los widgets, del selector de hábito y de la selección de animes compartida con la extensión (44 casos nuevos, 208 en total).
+- Tests del snapshot que alimenta los widgets, del selector de hábito y de la selección de animes compartida con la extensión (40 casos nuevos, 208 en total).
 - **Aviso cuando el recordatorio no se puede activar.** Si las notificaciones están desactivadas, el editor de hábitos te lo explica y te ofrece un botón para ir a Ajustes, como en Android.
 - Tests de los íconos de las plantillas, del aviso de permiso y del idioma de respaldo (40 casos nuevos, 307 en total).
 - **La app ahora está en inglés y en español.** Usa el idioma del iPhone, como en Android; también puedes elegirlo solo para QuoteAnime en Ajustes del sistema → Apps → QuoteAnime → Idioma. Las frases y los nombres de los animes se muestran tal cual vienen.
