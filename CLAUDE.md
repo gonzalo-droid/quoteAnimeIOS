@@ -128,18 +128,30 @@ struct UserPreferences { selectedCategoryIds, notificationsEnabled, notification
   `RescheduleQuoteNotificationsUseCase` (pozo de notificaciones); se elige en
   Ajustes → Contenido → Animes
 
-### Localization — String Catalogs, Spanish source, "tú"
+### Localization — String Catalogs, English source, Spanish keys, "tú"
 
-The app ships **Spanish (source/development language, `es`) and English**, and follows the
-device language (plus iOS's per-app language setting). There is no in-app language picker, same
-as Android. **Nothing user-visible is hardcoded any more**: every string goes through a catalog.
+The app ships **English and Spanish**, and follows the device language (plus iOS's per-app
+language setting). There is no in-app language picker, same as Android. **Nothing user-visible is
+hardcoded any more**: every string goes through a catalog.
+
+- **English is the development region and the catalogs' `sourceLanguage`** (`developmentRegion =
+  en` in the pbxproj → `CFBundleDevelopmentRegion = en`). That is what makes a phone in any other
+  language (pt-BR, fr, de…) fall back to **English**, as Android does with `values/`. Every
+  Spanish variant (`es`, `es-ES`, `es-419`, `es-MX`) still resolves to `es.lproj`.
+- **Both languages carry an explicit value for every key** — English is the source language but
+  its value is never the key. If a key ever lacked its Spanish value, a Spanish speaker would get
+  the English one: `LocalizationTests` checks the catalogs *and* the compiled `es.lproj`/`en.lproj`
+  tables, and pins the fallback for a table of device languages.
 
 - `quoteAnime/Localizable.xcstrings` — app strings. `QuoteAnimeWidget/Localizable.xcstrings` —
   the widget extension's own catalog (an extension bundle can't read the app's; both targets are
   synchronised folders, so each catalog belongs to its folder's target with no pbxproj change).
   A string used in both places lives in both catalogs.
   `quoteAnime/InfoPlist.xcstrings` — `CFBundleDisplayName`/`CFBundleName`.
-- **Keys are the Spanish text itself** (Xcode's default). A literal in `Text("…")`, `Button("…")`,
+- **Keys are the Spanish text itself** (a leftover of the Spanish-source era, kept on purpose:
+  migrating ~180 keys across every view was more likely to lose a string than to fix anything).
+  In Xcode's catalog editor the English column is therefore an *override* of the key, and a new
+  string starts with no English value until you add one. A literal in `Text("…")`, `Button("…")`,
   `Label`, `.navigationTitle`, `.accessibilityLabel`, `Toggle`, `LocalizedStringKey` or
   `LocalizedStringResource` is extracted automatically. Text that lives in a `String` (view
   models, models, notification content, alert bodies) must be built with
@@ -163,8 +175,10 @@ as Android. **Nothing user-visible is hardcoded any more**: every string goes th
 - Persistence keys, Firestore ids (`"motivación"`), `print("[Type] …")` logs and `#Preview` data
   stay as they are.
 - To check that everything the compiler extracts is in the catalogs, run
-  `xcodebuild -exportLocalizations -project quoteanime.xcodeproj -localizationPath /tmp/l10n -exportLanguage en`
-  and look for units without a `<target>` in `en.xcloc/Localized Contents/en.xliff`.
+  `xcodebuild -exportLocalizations -project quoteanime.xcodeproj -localizationPath /tmp/l10n -exportLanguage en -exportLanguage es`
+  and look for units without a `<target>` in both `.xliff` files. The only expected gaps are the
+  widget extension's `InfoPlist` keys (`CFBundleDisplayName`, `CFBundleName`,
+  `NSHumanReadableCopyright`), which have no catalog.
 
 ### Theme
 

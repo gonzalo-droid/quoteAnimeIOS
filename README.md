@@ -153,9 +153,9 @@ A banner ad was evaluated and removed. Instead, `ShareInterstitialManager` shows
 
 **Why not CloudKit / background fetch:** The widget only needs to reflect what the user is currently reading. App Group UserDefaults is synchronous, requires no network, and reloads immediately.
 
-### Localization — String Catalogs with Spanish as the source language
+### Localization — String Catalogs, English source language, Spanish keys
 
-`Localizable.xcstrings` in the app and a separate one in the widget extension (an extension can't read the app bundle's catalog). Keys are the Spanish text; English translations reuse the Android app's wording where one exists. Plurals ("1 día seguido" / "5 días seguidos") are catalog plural variations, not `if` branches. The Spanish register is "tú" throughout. `LocalizationTests` fails if any key is missing its Spanish or English value. See `CLAUDE.md` → Localization for the rules.
+`Localizable.xcstrings` in the app and a separate one in the widget extension (an extension can't read the app bundle's catalog). English is the development/source language, so any device language other than Spanish or English falls back to English, as on Android. Keys are still the Spanish text, and both languages have an explicit value for every key; English translations reuse the Android app's wording where one exists. Plurals ("1 día seguido" / "5 días seguidos") are catalog plural variations, not `if` branches. The Spanish register is "tú" throughout. `LocalizationTests` fails if any key is missing its Spanish or English value. See `CLAUDE.md` → Localization for the rules.
 
 ### UI — always dark, portrait only
 

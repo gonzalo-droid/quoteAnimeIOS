@@ -1,5 +1,5 @@
 {
-  "sourceLanguage" : "es",
+  "sourceLanguage" : "en",
   "strings" : {
     "%@, completado" : {
       "comment" : "VoiceOver label of a calendar day. %@ is the formatted date.",

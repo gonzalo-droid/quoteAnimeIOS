@@ -2,7 +2,9 @@ import Foundation
 import Testing
 @testable import quoteAnime
 
-/// The app ships Spanish (source language) and English through String Catalogs.
+/// The app ships English (development/source language, and therefore the fallback for every
+/// other device language, as on Android) and Spanish through String Catalogs. Keys are still the
+/// Spanish text; both languages carry an explicit value for every key.
 ///
 /// Two kinds of check live here:
 /// - **Resolution**: what the compiled catalog in the app bundle actually returns for a given
@@ -151,10 +153,59 @@ struct LocalizationTests {
         #expect(value == expected)
     }
 
-    @Test("la app declara español como idioma de desarrollo y trae inglés")
+    @Test("la app declara inglés como idioma de desarrollo y trae español")
     func bundleLocalizations() {
-        #expect(Bundle.main.developmentLocalization == "es")
+        #expect(Bundle.main.developmentLocalization == "en")
         #expect(Set(Bundle.main.localizations).isSuperset(of: ["es", "en"]))
+    }
+
+    /// The decision behind the development region: a phone in any language the app doesn't ship
+    /// gets English, and every Spanish variant still gets Spanish. This is the same resolution
+    /// `Bundle.main` does at launch, run against the real bundle's localizations.
+    @Test(
+        "el idioma del teléfono elige la tabla correcta y el respaldo es inglés",
+        arguments: [
+            (["pt-BR"], "en"),
+            (["fr"], "en"),
+            (["de-DE"], "en"),
+            (["ja"], "en"),
+            (["en"], "en"),
+            (["en-GB"], "en"),
+            (["es"], "es"),
+            (["es-ES"], "es"),
+            (["es-419"], "es"),
+            (["es-MX"], "es"),
+            (["pt-BR", "es-419"], "es"),
+            (["fr", "en"], "en"),
+        ]
+    )
+    func fallbackLanguage(preferences: [String], expected: String) {
+        let resolved = Bundle.preferredLocalizations(from: Bundle.main.localizations, forPreferences: preferences)
+        #expect(resolved.first == expected)
+    }
+
+    /// Moving the source language to English is only safe if the compiled Spanish table still has
+    /// every key — a key missing there would fall through to the English table and show English
+    /// to a Spanish speaker. Checks the tables that actually ship in the app bundle.
+    @Test("cada clave del catálogo está en la tabla compilada de cada idioma", arguments: ["es", "en"])
+    func compiledTableIsComplete(language: String) throws {
+        let path = try #require(Bundle.main.path(forResource: language, ofType: "lproj"))
+        let bundle = try #require(Bundle(path: path))
+        let catalog = try StringCatalog.load(Self.repoRoot.appendingPathComponent("quoteAnime/Localizable.xcstrings"))
+        let sentinel = "∅missing∅"
+
+        var missing: [String] = []
+        var wrong: [String] = []
+        for (key, entry) in catalog.strings {
+            let value = bundle.localizedString(forKey: key, value: sentinel, table: nil)
+            if value == sentinel {
+                missing.append(key)
+            } else if let expected = entry.localizations?[language]?.stringUnit?.value, value != expected {
+                wrong.append("\(key): \(value) ≠ \(expected)")
+            }
+        }
+        #expect(missing.isEmpty, "Faltan en \(language).lproj:\n\(missing.sorted().joined(separator: "\n"))")
+        #expect(wrong.isEmpty, "Valor distinto en \(language).lproj:\n\(wrong.sorted().joined(separator: "\n"))")
     }
 
     // MARK: - Catalog completeness
@@ -173,7 +224,7 @@ struct LocalizationTests {
     func catalogIsComplete(path: String) throws {
         let catalog = try StringCatalog.load(Self.repoRoot.appendingPathComponent(path))
 
-        #expect(catalog.sourceLanguage == "es")
+        #expect(catalog.sourceLanguage == "en")
         #expect(!catalog.strings.isEmpty)
 
         var problems: [String] = []
