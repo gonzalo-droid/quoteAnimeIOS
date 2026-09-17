@@ -1,49 +1,8 @@
 import WidgetKit
 import SwiftUI
 
-// MARK: - Shared snapshot shape
-// Duplicated from `HabitWidgetDataWriter.swift` (app target) — a widget extension can't
-// import the app target's types, same reason `QuoteAnimeWidget.swift` redeclares its own theme.
-
-private let kAppGroupSuite = "group.com.gonzadev.quoteAnime"
-private let kSnapshotKey = "habit_widget_snapshot"
-
-struct HabitWidgetSnapshotItem: Codable {
-    let id: String
-    let title: String
-    let colorIndex: Int
-    let currentStreak: Int
-    let completedToday: Bool
-}
-
-struct HabitWidgetSnapshot: Codable {
-    let habits: [HabitWidgetSnapshotItem]
-    let globalStreak: Int
-}
-
-// MARK: - Palette (14 colors, same order/index as HabitPalette.swift in the app target)
-
-private let habitPaletteColors: [Color] = [
-    Color(red: 0.655, green: 0.545, blue: 0.980), // 0 purple
-    Color(red: 1.000, green: 0.420, blue: 0.541), // 1 rose
-    Color(red: 0.290, green: 0.871, blue: 0.502), // 2 green
-    Color(red: 0.220, green: 0.741, blue: 0.973), // 3 sky
-    Color(red: 0.984, green: 0.749, blue: 0.141), // 4 amber
-    Color(red: 0.984, green: 0.447, blue: 0.522), // 5 coral
-    Color(red: 0.176, green: 0.831, blue: 0.749), // 6 teal
-    Color(red: 0.910, green: 0.475, blue: 0.980), // 7 fuchsia
-    Color(red: 0.510, green: 0.549, blue: 0.976), // 8 indigo
-    Color(red: 0.639, green: 0.902, blue: 0.208), // 9 lime
-    Color(red: 0.984, green: 0.573, blue: 0.235), // 10 orange
-    Color(red: 0.973, green: 0.443, blue: 0.443), // 11 red
-    Color(red: 0.404, green: 0.910, blue: 0.976), // 12 cyan
-    Color(red: 0.957, green: 0.447, blue: 0.714)  // 13 pink
-]
-
-private func habitColor(at index: Int) -> Color {
-    let count = habitPaletteColors.count
-    return habitPaletteColors[((index % count) + count) % count]
-}
+// Snapshot shape, palette and App Group keys live in `WidgetSharedModel.swift` — all
+// hand-kept copies of app-target code, since a widget extension can't import the app target.
 
 // MARK: - Entry
 
@@ -55,9 +14,15 @@ struct RoutineSummaryEntry: TimelineEntry {
     static let placeholder = RoutineSummaryEntry(
         date: .now,
         habits: [
-            HabitWidgetSnapshotItem(id: "1", title: "Meditar", colorIndex: 0, currentStreak: 5, completedToday: true),
-            HabitWidgetSnapshotItem(id: "2", title: "Leer", colorIndex: 2, currentStreak: 2, completedToday: false),
-            HabitWidgetSnapshotItem(id: "3", title: "Entrenar", colorIndex: 10, currentStreak: 12, completedToday: true)
+            HabitWidgetSnapshotItem(id: "1", title: "Meditar", colorIndex: 0, currentStreak: 5,
+                                    completedToday: true, symbolName: "figure.mind.and.body",
+                                    isArchived: false, completions: nil),
+            HabitWidgetSnapshotItem(id: "2", title: "Leer", colorIndex: 2, currentStreak: 2,
+                                    completedToday: false, symbolName: "book.fill",
+                                    isArchived: false, completions: nil),
+            HabitWidgetSnapshotItem(id: "3", title: "Entrenar", colorIndex: 10, currentStreak: 12,
+                                    completedToday: true, symbolName: "dumbbell.fill",
+                                    isArchived: false, completions: nil)
         ],
         globalStreak: 5
     )
@@ -83,14 +48,11 @@ struct RoutineSummaryProvider: TimelineProvider {
     }
 
     private func readSnapshot() -> RoutineSummaryEntry {
-        guard
-            let defaults = UserDefaults(suiteName: kAppGroupSuite),
-            let data = defaults.data(forKey: kSnapshotKey),
-            let snapshot = try? JSONDecoder().decode(HabitWidgetSnapshot.self, from: data)
-        else {
-            return .empty
-        }
-        return RoutineSummaryEntry(date: .now, habits: snapshot.habits, globalStreak: snapshot.globalStreak)
+        guard let snapshot = HabitWidgetSnapshot.read() else { return .empty }
+        // `activeHabits`, not `habits`: since the per-habit widget shipped, the snapshot also
+        // carries archived habits so a widget bound to one keeps rendering. This summary is about
+        // what the user is keeping up with today, so archived ones stay out of it.
+        return RoutineSummaryEntry(date: .now, habits: snapshot.activeHabits, globalStreak: snapshot.globalStreak)
     }
 }
 

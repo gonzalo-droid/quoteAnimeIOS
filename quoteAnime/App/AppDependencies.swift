@@ -44,6 +44,9 @@ final class AppDependencies: ObservableObject {
     var deleteHabitUseCase: DeleteHabitUseCase?
     var getHabitTemplatesUseCase = GetHabitTemplatesUseCase()
     let habitReminderScheduler = HabitReminderScheduler()
+    /// Single entry point for keeping the home-screen widgets in sync, mirroring Android's
+    /// `RoutineWidgetScheduler`. A no-op below iOS 17, where there is no habit store to read.
+    var routineWidgetRefresher: RoutineWidgetRefreshing = NoopRoutineWidgetRefresher()
 
     /// Whether "Mi Rutina" can run at all. False below iOS 17 (SwiftData) and also when the
     /// `ModelContainer` fails to build. Entry points to the feature must check this and hide
@@ -142,9 +145,17 @@ final class AppDependencies: ObservableObject {
             self.unarchiveHabitUseCase = UnarchiveHabitUseCase(repository: habitRepo)
             self.deleteHabitUseCase = DeleteHabitUseCase(repository: habitRepo)
 
+            let refresher = RoutineWidgetRefresher(
+                getActiveHabits: GetActiveHabitsUseCase(repository: habitRepo),
+                getArchivedHabits: GetArchivedHabitsUseCase(repository: habitRepo),
+                getGlobalStreak: GetGlobalStreakUseCase(repository: habitRepo)
+            )
+            self.routineWidgetRefresher = refresher
+
             HabitReminderScheduler.registerCategory()
             let delegate = HabitReminderNotificationDelegate(
-                toggleHabitCompletion: ToggleHabitCompletionUseCase(repository: habitRepo)
+                toggleHabitCompletion: ToggleHabitCompletionUseCase(repository: habitRepo),
+                routineWidgetRefresher: refresher
             )
             self.habitReminderNotificationDelegate = delegate
             UNUserNotificationCenter.current().delegate = delegate

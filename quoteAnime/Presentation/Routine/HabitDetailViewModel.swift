@@ -28,6 +28,7 @@ final class HabitDetailViewModel: ObservableObject {
     private let unarchiveHabitUseCase: UnarchiveHabitUseCase
     private let deleteHabitUseCase: DeleteHabitUseCase
     private let habitReminderScheduler: HabitReminderScheduling
+    private let routineWidgetRefresher: RoutineWidgetRefreshing
     private let calculateStreak: CalculateStreakUseCase
     private let calendar: Calendar
     /// Injected so the screen can be tested at a fixed date, the same reason Android's view
@@ -42,6 +43,7 @@ final class HabitDetailViewModel: ObservableObject {
         unarchiveHabitUseCase: UnarchiveHabitUseCase,
         deleteHabitUseCase: DeleteHabitUseCase,
         habitReminderScheduler: HabitReminderScheduling,
+        routineWidgetRefresher: RoutineWidgetRefreshing,
         today: Date = Date(),
         calendar: Calendar = .current
     ) {
@@ -52,6 +54,7 @@ final class HabitDetailViewModel: ObservableObject {
         self.unarchiveHabitUseCase = unarchiveHabitUseCase
         self.deleteHabitUseCase = deleteHabitUseCase
         self.habitReminderScheduler = habitReminderScheduler
+        self.routineWidgetRefresher = routineWidgetRefresher
         self.calculateStreak = CalculateStreakUseCase(calendar: calendar)
         self.calendar = calendar
         self.today = today
@@ -77,6 +80,7 @@ final class HabitDetailViewModel: ObservableObject {
                 print("[HabitDetailViewModel] toggle rechazado: \(error)")
             }
             await load()
+            await routineWidgetRefresher.refresh()
         }
     }
 
@@ -89,6 +93,7 @@ final class HabitDetailViewModel: ObservableObject {
             do {
                 try await archiveHabitUseCase.execute(id: habitId)
                 await habitReminderScheduler.cancel(habitId: habitId)
+                await routineWidgetRefresher.refresh()
                 uiState.shouldDismiss = true
             } catch {
                 print("[HabitDetailViewModel] archive error: \(error)")
@@ -104,6 +109,7 @@ final class HabitDetailViewModel: ObservableObject {
                     await habitReminderScheduler.schedule(habit: restored)
                 }
                 await load()
+                await routineWidgetRefresher.refresh()
             } catch {
                 print("[HabitDetailViewModel] unarchive error: \(error)")
             }
@@ -116,6 +122,7 @@ final class HabitDetailViewModel: ObservableObject {
             do {
                 try await deleteHabitUseCase.execute(id: habitId)
                 await habitReminderScheduler.cancel(habitId: habitId)
+                await routineWidgetRefresher.refresh()
                 uiState.shouldDismiss = true
             } catch {
                 print("[HabitDetailViewModel] delete error: \(error)")

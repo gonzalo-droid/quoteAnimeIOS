@@ -60,6 +60,7 @@ struct OnboardingContainerView: View {
             viewModel.setup(
                 setOnboardingCompleted: deps.setOnboardingCompletedUseCase,
                 createHabitUseCase: deps.createHabitUseCase,
+                routineWidgetRefresher: deps.routineWidgetRefresher,
                 onComplete: { router.navigateToMain() }
             )
         }
@@ -129,6 +130,7 @@ struct MainContainerView: View {
                     unarchiveHabitUseCase: unarchiveHabit,
                     deleteHabitUseCase: deleteHabit,
                     habitReminderScheduler: deps.habitReminderScheduler,
+                    routineWidgetRefresher: deps.routineWidgetRefresher,
                     premiumGate: deps.premiumGate
                 )
             } else {
@@ -148,7 +150,8 @@ struct MainContainerView: View {
                     archiveHabitUseCase: archiveHabit,
                     unarchiveHabitUseCase: unarchiveHabit,
                     deleteHabitUseCase: deleteHabit,
-                    habitReminderScheduler: deps.habitReminderScheduler
+                    habitReminderScheduler: deps.habitReminderScheduler,
+                    routineWidgetRefresher: deps.routineWidgetRefresher
                 )
             } else {
                 unavailableView(message: "Mi Rutina requiere iOS 17 o superior")
@@ -164,6 +167,7 @@ struct MainContainerView: View {
                     updateHabitUseCase: updateHabit,
                     habitRepository: habitRepository,
                     habitReminderScheduler: deps.habitReminderScheduler,
+                    routineWidgetRefresher: deps.routineWidgetRefresher,
                     premiumGate: deps.premiumGate
                 )
             } else {

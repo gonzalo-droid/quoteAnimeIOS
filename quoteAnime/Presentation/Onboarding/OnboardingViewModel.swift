@@ -12,6 +12,10 @@ final class OnboardingViewModel: ObservableObject {
     /// Nil below iOS 17. When it is nil the habit page is not offered at all — see
     /// `OnboardingView(isHabitSelectionAvailable:)` — so no habit can be silently dropped here.
     private var createHabitUseCase: CreateHabitUseCase?
+    /// The first habit can be created here and nowhere else in the session, so the widgets have
+    /// to be told about it — otherwise a widget added right after onboarding would find an empty
+    /// snapshot and offer no habit to follow.
+    private var routineWidgetRefresher: RoutineWidgetRefreshing = NoopRoutineWidgetRefresher()
     private var onComplete: (() -> Void)?
 
     private var setupDone = false
@@ -19,12 +23,14 @@ final class OnboardingViewModel: ObservableObject {
     func setup(
         setOnboardingCompleted: SetOnboardingCompletedUseCase,
         createHabitUseCase: CreateHabitUseCase?,
+        routineWidgetRefresher: RoutineWidgetRefreshing = NoopRoutineWidgetRefresher(),
         onComplete: @escaping () -> Void
     ) {
         guard !setupDone else { return }
         setupDone = true
         self.setOnboardingCompleted = setOnboardingCompleted
         self.createHabitUseCase     = createHabitUseCase
+        self.routineWidgetRefresher = routineWidgetRefresher
         self.onComplete             = onComplete
     }
 
@@ -51,6 +57,7 @@ final class OnboardingViewModel: ObservableObject {
                     createdAt: Date()
                 )
                 _ = try? await createHabitUseCase.execute(habit)
+                await routineWidgetRefresher.refresh()
                 onComplete?()
             }
         } else {

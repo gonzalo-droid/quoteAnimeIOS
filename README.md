@@ -11,7 +11,7 @@ iOS app that displays anime quotes in a full-screen, swipeable feed. Users can s
 - Pick which animes the feed and the notifications draw from (Settings → Contenido → Animes)
 - Favorites (persisted locally)
 - Share quote as a generated image card
-- WidgetKit integration — current quote on the home screen
+- WidgetKit — current quote (home + lock screen), a routine summary, and a per-habit widget with its activity map
 - Daily push notifications with a random quote
 - AdMob interstitial between every 3 shares (configurable)
 - Dark-only UI
@@ -48,7 +48,7 @@ iOS app that displays anime quotes in a full-screen, swipeable feed. Users can s
    - Push Notifications
    - Background Modes → Background fetch (optional, for widget refresh)
 
-6. **Widget Extension**: Create via File → New → Target → Widget Extension, name `QuoteAnimeWidget`. Move `quoteAnime/Widget/QuoteWidget.swift` to that target. `WidgetDataWriter.swift` stays in the main target.
+6. **Widget Extension**: `QuoteAnimeWidgetExtension` already exists; its sources live in the synchronised `QuoteAnimeWidget/` folder. The writers (`WidgetDataWriter`, `HabitWidgetDataWriter`, `RoutineWidgetRefresher`) stay in the main target under `quoteAnime/Widget/`.
 
 7. **Info.plist keys** (set in Build Settings → Info, the plist is auto-generated):
    - `GADApplicationIdentifier` — AdMob app ID
@@ -90,7 +90,7 @@ quoteAnime/
 │   ├── Common/                 # AppLinks (legal + App Store URLs)
 │   └── Components/             # Shared: QuoteDetailView, QuoteCard, ShareCardView
 ├── Notification/               # Local notification scheduling
-├── Widget/                     # WidgetDataWriter (main) + QuoteWidget (extension)
+├── Widget/                     # WidgetDataWriter + HabitWidgetDataWriter + RoutineWidgetRefresher
 └── Theme/                      # Colors.swift, Typography.swift
 ```
 
@@ -150,6 +150,10 @@ A banner ad was evaluated and removed. Instead, `ShareInterstitialManager` shows
 ### Widget data sharing — App Group UserDefaults
 
 `WidgetDataWriter.write(_:)` writes the active quote to `UserDefaults(suiteName: "group.com.gonzadev.quoteAnime")` and calls `WidgetCenter.shared.reloadAllTimelines()`. The widget extension reads from the same suite.
+
+The same App Group carries the user's anime selection (`pref_selected_category_ids`, mirrored from `UserDefaults.standard` by `UserPreferencesStore`), which the quote widget filters its own fetch with, and a JSON snapshot of the user's habits (`habit_widget_snapshot`) written by `HabitWidgetDataWriter` — title, colour, glyph, streak, archived flag and the last 9 weeks of marked days. `RoutineWidgetRefresher` is the only thing that rewrites it, and does so after every habit change.
+
+**Why a snapshot and not SwiftData:** the widget extension is a separate binary and cannot open the app's `ModelContainer`. The snapshot is also what the per-habit widget's `EntityQuery` reads to list habits in its configuration picker.
 
 **Why not CloudKit / background fetch:** The widget only needs to reflect what the user is currently reading. App Group UserDefaults is synchronous, requires no network, and reloads immediately.
 

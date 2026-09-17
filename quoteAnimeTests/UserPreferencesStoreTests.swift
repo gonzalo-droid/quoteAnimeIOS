@@ -8,14 +8,19 @@ import Testing
 @Suite("UserPreferencesStore")
 struct UserPreferencesStoreTests {
 
+    /// The shared suite is injected too, so `save` doesn't write into the real App Group — the one
+    /// the widgets on the simulator are reading. What it mirrors there is covered by
+    /// `WidgetAnimeSelectionTests`.
     private static func makeStore() -> (UserPreferencesStore, UserDefaults, String) {
         let suiteName = "test.preferences.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suiteName)!
-        return (UserPreferencesStore(defaults: defaults), defaults, suiteName)
+        let shared = UserDefaults(suiteName: suiteName + ".group")!
+        return (UserPreferencesStore(defaults: defaults, sharedDefaults: shared), defaults, suiteName)
     }
 
     private static func tearDown(_ suiteName: String) {
         UserDefaults.standard.removePersistentDomain(forName: suiteName)
+        UserDefaults.standard.removePersistentDomain(forName: suiteName + ".group")
     }
 
     // MARK: - Round trip

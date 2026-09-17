@@ -1,39 +1,39 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "%lld días seguidos" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld day streak"
+  "sourceLanguage": "en",
+  "strings": {
+    "%lld días": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld day"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld day streak"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld days"
                 }
               }
             }
           }
         },
-        "es" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld día seguido"
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld día"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld días seguidos"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld días"
                 }
               }
             }
@@ -41,119 +41,280 @@
         }
       }
     },
-    "Mi Rutina" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "My Routine"
+    "%lld días seguidos": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld day streak"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld day streak"
+                }
+              }
+            }
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mi Rutina"
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld día seguido"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld días seguidos"
+                }
+              }
+            }
           }
         }
       }
     },
-    "Quote Anime" : {
-      "comment" : "Widget name, not translated",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quote Anime"
+    "Elige un hábito": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a habit"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quote Anime"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige un hábito"
           }
         }
       }
     },
-    "Quote Anime — Pantalla bloqueada" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quote Anime — Lock Screen"
+    "Este hábito ya no existe.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This habit no longer exists."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quote Anime — Pantalla bloqueada"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este hábito ya no existe."
           }
         }
       }
     },
-    "Sin hábitos activos" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No active habits"
+    "Hábito": {
+      "comment": "Name of the per-habit widget, and of its configuration parameter",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Habit"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin hábitos activos"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hábito"
           }
         }
       }
     },
-    "Tus hábitos activos, con racha y check de hoy." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your active habits, with their streak and today's check."
+    "Mantén pulsado el widget para elegir un hábito.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touch and hold the widget to choose a habit."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tus hábitos activos, con racha y check de hoy."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mantén pulsado el widget para elegir un hábito."
           }
         }
       }
     },
-    "Una frase de anime en tu pantalla bloqueada." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An anime quote on your Lock Screen."
+    "Mapa de actividad de las últimas %lld semanas": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Activity map for the last week"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Activity map for the last %lld weeks"
+                }
+              }
+            }
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una frase de anime en tu pantalla bloqueada."
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Mapa de actividad de la última semana"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Mapa de actividad de las últimas %lld semanas"
+                }
+              }
+            }
           }
         }
       }
     },
-    "Una frase de anime en tu pantalla de inicio." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An anime quote on your Home Screen."
+    "Mi Rutina": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My Routine"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una frase de anime en tu pantalla de inicio."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mi Rutina"
+          }
+        }
+      }
+    },
+    "Quote Anime": {
+      "comment": "Widget name, not translated",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quote Anime"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quote Anime"
+          }
+        }
+      }
+    },
+    "Quote Anime — Pantalla bloqueada": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quote Anime — Lock Screen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quote Anime — Pantalla bloqueada"
+          }
+        }
+      }
+    },
+    "Sigue el progreso de un hábito desde la pantalla de inicio": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Track one habit's progress from the home screen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sigue el progreso de un hábito desde la pantalla de inicio"
+          }
+        }
+      }
+    },
+    "Sin hábitos activos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No active habits"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin hábitos activos"
+          }
+        }
+      }
+    },
+    "Tus hábitos activos, con racha y check de hoy.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your active habits, with their streak and today's check."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tus hábitos activos, con racha y check de hoy."
+          }
+        }
+      }
+    },
+    "Una frase de anime en tu pantalla bloqueada.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An anime quote on your Lock Screen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una frase de anime en tu pantalla bloqueada."
+          }
+        }
+      }
+    },
+    "Una frase de anime en tu pantalla de inicio.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An anime quote on your Home Screen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una frase de anime en tu pantalla de inicio."
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

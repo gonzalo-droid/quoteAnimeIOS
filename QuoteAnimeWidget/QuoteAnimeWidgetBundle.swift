@@ -14,5 +14,10 @@ struct QuoteAnimeWidgetBundle: WidgetBundle {
         QuoteAnimeWidget()
         QuoteAnimeLockWidget()
         RoutineSummaryWidget()
+        // iOS 17+ only: `AppIntentConfiguration` (the native habit picker in the widget's edit
+        // sheet) doesn't exist on iOS 16. The members above keep working on 16.6.
+        if #available(iOS 17.0, *) {
+            HabitWidget()
+        }
     }
 }

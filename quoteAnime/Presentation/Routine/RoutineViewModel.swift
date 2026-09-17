@@ -31,6 +31,7 @@ final class RoutineViewModel: ObservableObject {
     private let unarchiveHabitUseCase: UnarchiveHabitUseCase
     private let deleteHabitUseCase: DeleteHabitUseCase
     private let habitReminderScheduler: HabitReminderScheduling
+    private let routineWidgetRefresher: RoutineWidgetRefreshing
     private let premiumGate: PremiumGate
 
     init(
@@ -42,6 +43,7 @@ final class RoutineViewModel: ObservableObject {
         unarchiveHabitUseCase: UnarchiveHabitUseCase,
         deleteHabitUseCase: DeleteHabitUseCase,
         habitReminderScheduler: HabitReminderScheduling,
+        routineWidgetRefresher: RoutineWidgetRefreshing,
         premiumGate: PremiumGate
     ) {
         self.getActiveHabitsUseCase = getActiveHabitsUseCase
@@ -52,12 +54,18 @@ final class RoutineViewModel: ObservableObject {
         self.unarchiveHabitUseCase = unarchiveHabitUseCase
         self.deleteHabitUseCase = deleteHabitUseCase
         self.habitReminderScheduler = habitReminderScheduler
+        self.routineWidgetRefresher = routineWidgetRefresher
         self.premiumGate = premiumGate
         self.uiState.maxHabits = premiumGate.maxActiveHabits
     }
 
     func onAppear() {
-        Task { await load() }
+        Task {
+            await load()
+            // Coming back to the list is also the moment to re-sync the widgets: a habit may have
+            // been changed on the detail screen, or the day may simply have rolled over.
+            await routineWidgetRefresher.refresh()
+        }
     }
 
     func onFilterChanged(_ filter: RoutineFilter) {
@@ -71,6 +79,7 @@ final class RoutineViewModel: ObservableObject {
             do {
                 try await toggleHabitCompletionUseCase.execute(habitId: habitId, date: Date())
                 await load()
+                await routineWidgetRefresher.refresh()
             } catch {
                 print("[RoutineViewModel] toggleToday error: \(error)")
             }
@@ -83,6 +92,7 @@ final class RoutineViewModel: ObservableObject {
                 try await archiveHabitUseCase.execute(id: habitId)
                 await habitReminderScheduler.cancel(habitId: habitId)
                 await load()
+                await routineWidgetRefresher.refresh()
             } catch {
                 print("[RoutineViewModel] archive error: \(error)")
             }
@@ -94,6 +104,7 @@ final class RoutineViewModel: ObservableObject {
             do {
                 try await unarchiveHabitUseCase.execute(id: habitId)
                 await load()
+                await routineWidgetRefresher.refresh()
             } catch {
                 print("[RoutineViewModel] unarchive error: \(error)")
             }
@@ -106,6 +117,7 @@ final class RoutineViewModel: ObservableObject {
                 try await deleteHabitUseCase.execute(id: habitId)
                 await habitReminderScheduler.cancel(habitId: habitId)
                 await load()
+                await routineWidgetRefresher.refresh()
             } catch {
                 print("[RoutineViewModel] delete error: \(error)")
             }
@@ -125,7 +137,6 @@ final class RoutineViewModel: ObservableObject {
             let active = try await activeHabits
             uiState.activeCount = active.count
             uiState.globalStreak = try await streak
-            HabitWidgetDataWriter.write(habits: active, globalStreak: uiState.globalStreak.current)
 
             switch uiState.filter {
             case .active:

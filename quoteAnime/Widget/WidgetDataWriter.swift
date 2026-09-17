@@ -10,6 +10,11 @@ enum WidgetSharedKeys {
     static let quoteId                = "widget_quote_id"
     static let imageUrl               = "widget_image_url"
     static let widgetUpdateTimesPerDay = "widget_update_times_per_day"
+    /// Deliberately the *same* key name `UserPreferencesStore` uses in `UserDefaults.standard`:
+    /// the anime selection is mirrored into the App Group so the widget extension can filter its
+    /// own Firebase fetch with it. `UserPreferencesStore` owns writing it (and the one-time copy
+    /// for users who chose their animes before the widget honoured them).
+    static let selectedCategoryIds = "pref_selected_category_ids"
 }
 
 /// Writes the currently displayed quote to the App Group UserDefaults

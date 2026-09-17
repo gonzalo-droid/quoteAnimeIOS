@@ -1,6 +1,7 @@
 import WidgetKit
 import SwiftUI
 import UIKit
+import ImageIO
 
 // MARK: - Configuration
 // ⚠️ Fill in your Firebase project URL.
@@ -8,14 +9,7 @@ import UIKit
 // or in GoogleService-Info.plist → DATABASE_URL
 private let kFirebaseDatabaseURL = "https://quoteanime-76a76-default-rtdb.firebaseio.com"
 
-private let kAppGroupSuite = "group.com.gonzadev.quoteAnime"
-
-private enum SharedKey {
-    static let quoteText   = "widget_quote_text"
-    static let quoteAuthor = "widget_quote_author"
-    static let quoteAnime  = "widget_quote_anime"
-    static let imageUrl    = "widget_image_url"
-}
+// App Group suite and keys: `WidgetSharedModel.swift`.
 
 // MARK: - Helpers
 
@@ -78,8 +72,12 @@ private enum WidgetNetworkService {
 
     private static func fetchRandomQuote() async
         -> (text: String, author: String, anime: String, animeSlug: String?)? {
-        // orderBy is required by Firebase REST when using limitToFirst
-        guard let url = URL(string: "\(kFirebaseDatabaseURL)/quotes.json?orderBy=%22%24key%22&limitToFirst=100") else { return nil }
+        // The whole node, with no `limitToFirst`. It used to ask for the first 100 keys, which
+        // meant the widget could only ever show quotes from that fixed slice — and, now that the
+        // anime selection is honoured, would have shown nothing at all to anyone whose animes
+        // happened to live outside it. (`orderBy` was only there because Firebase REST demands it
+        // alongside `limitToFirst`, so it goes away with it.)
+        guard let url = URL(string: "\(kFirebaseDatabaseURL)/quotes.json") else { return nil }
         guard let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
         guard let json = try? JSONSerialization.jsonObject(with: data) else { return nil }
 
@@ -91,13 +89,37 @@ private enum WidgetNetworkService {
         }
 
         guard
-            let q      = quotes.randomElement(),
+            let q      = pick(from: quotes, matching: selectedAnimes()),
             let text   = q["quote"]  as? String,
             let author = q["author"] as? String,
             let anime  = q["anime"]  as? String
         else { return nil }
 
         return (text, author, anime, q["animeSlug"] as? String)
+    }
+
+    /// The animes the user picked in Ajustes → Contenido → Animes, mirrored into the App Group by
+    /// `UserPreferencesStore`. Empty (or absent) means "all animes" — never "no animes".
+    static func selectedAnimes() -> Set<String> {
+        let stored = UserDefaults(suiteName: kAppGroupSuite)?
+            .stringArray(forKey: WidgetSharedKey.selectedCategoryIds) ?? []
+        return Set(stored)
+    }
+
+    /// Same rule as the app's `GetAllQuotesUseCase.filtered` and Android's
+    /// `UpdateQuoteWidgetWorker` (`getRandomQuote(preferences.selectedCategoryIds)`): an empty
+    /// selection means everything, and the id is the anime's exact name.
+    ///
+    /// The fallback matters. If the selection matches nothing in the catalogue — an anime that was
+    /// renamed or withdrawn remotely — the widget shows a quote from the whole pool rather than an
+    /// error, because a stale filter is not a reason to leave the home screen blank.
+    static func pick(from quotes: [[String: Any]], matching selection: Set<String>) -> [String: Any]? {
+        guard !selection.isEmpty else { return quotes.randomElement() }
+        let filtered = quotes.filter { quote in
+            guard let anime = quote["anime"] as? String else { return false }
+            return selection.contains(anime)
+        }
+        return filtered.randomElement() ?? quotes.randomElement()
     }
 
     static func fetchImageData(forSlug slug: String) async -> Data? {
@@ -118,21 +140,52 @@ private enum WidgetNetworkService {
         }
 
         guard let first = urls.first, let imageURL = URL(string: first) else { return nil }
-        return try? await URLSession.shared.data(from: imageURL).0
+        guard let full = try? await URLSession.shared.data(from: imageURL).0 else { return nil }
+        // Downsampled, never used at full size — see `downsampled(_:maxPixel:)`.
+        return downsampled(full) ?? nil
+    }
+
+    /// Shrinks the artwork before it goes into a timeline entry.
+    ///
+    /// WidgetKit refuses to archive a timeline that carries an image much bigger than the widget
+    /// itself: the anime covers come back at 1080×1350 and every single refresh failed with
+    /// `ArchivingError.imageTooLarge(size: (1080, 1350), maximumSize: (1084.6, 986))`, so the
+    /// widget never left its grey placeholder — the quote it had fetched was simply thrown away.
+    /// 600px on the long side still covers a 3× `systemMedium` and is a quarter of the bytes.
+    /// Android downsamples for the same reason (`optimizedForDisplay()` plus an 85% JPEG in
+    /// `UpdateQuoteWidgetWorker`).
+    private static func downsampled(_ data: Data, maxPixel: CGFloat = 600) -> Data? {
+        guard let source = CGImageSourceCreateWithData(
+            data as CFData,
+            [kCGImageSourceShouldCache: false] as CFDictionary
+        ) else { return nil }
+
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixel
+        ]
+        guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+            return nil
+        }
+        return UIImage(cgImage: thumbnail).jpegData(compressionQuality: 0.85)
     }
 
     /// Reads the last quote written by the main app from the shared App Group.
     static func readAppGroup() -> QuoteEntry {
         let d = UserDefaults(suiteName: kAppGroupSuite)
         var imageData: Data? = nil
-        if let urlStr = d?.string(forKey: SharedKey.imageUrl), let url = URL(string: urlStr) {
-            imageData = try? Data(contentsOf: url) // only works for local/cached URLs
+        if let urlStr = d?.string(forKey: WidgetSharedKey.imageUrl), let url = URL(string: urlStr) {
+            // Only works for local/cached URLs — and it gets the same downsampling, for the same
+            // archiving limit.
+            imageData = (try? Data(contentsOf: url)).flatMap { downsampled($0) }
         }
         return QuoteEntry(
             date: .now,
-            quoteText: d?.string(forKey: SharedKey.quoteText)   ?? QuoteEntry.placeholder.quoteText,
-            author:    d?.string(forKey: SharedKey.quoteAuthor) ?? QuoteEntry.placeholder.author,
-            anime:     d?.string(forKey: SharedKey.quoteAnime)  ?? QuoteEntry.placeholder.anime,
+            quoteText: d?.string(forKey: WidgetSharedKey.quoteText)   ?? QuoteEntry.placeholder.quoteText,
+            author:    d?.string(forKey: WidgetSharedKey.quoteAuthor) ?? QuoteEntry.placeholder.author,
+            anime:     d?.string(forKey: WidgetSharedKey.quoteAnime)  ?? QuoteEntry.placeholder.anime,
             backgroundImageData: imageData
         )
     }
@@ -164,7 +217,7 @@ struct QuoteProvider: TimelineProvider {
     /// Falls back to 2 times/day (720 min) if not set.
     private func refreshIntervalMinutes() -> Int {
         let timesPerDay = UserDefaults(suiteName: kAppGroupSuite)?
-            .integer(forKey: "widget_update_times_per_day")
+            .integer(forKey: WidgetSharedKey.updateTimesPerDay)
             .nonZero ?? 2
         return max(1, (24 * 60) / timesPerDay)
     }

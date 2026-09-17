@@ -15,6 +15,7 @@ struct HabitEditorView: View {
         updateHabitUseCase: UpdateHabitUseCase,
         habitRepository: HabitRepository,
         habitReminderScheduler: HabitReminderScheduling,
+        routineWidgetRefresher: RoutineWidgetRefreshing,
         premiumGate: PremiumGate
     ) {
         _viewModel = StateObject(wrappedValue: HabitEditorViewModel(
@@ -22,7 +23,8 @@ struct HabitEditorView: View {
             createHabitUseCase: createHabitUseCase,
             updateHabitUseCase: updateHabitUseCase,
             habitRepository: habitRepository,
-            habitReminderScheduler: habitReminderScheduler
+            habitReminderScheduler: habitReminderScheduler,
+            routineWidgetRefresher: routineWidgetRefresher
         ))
         self.premiumGate = premiumGate
     }

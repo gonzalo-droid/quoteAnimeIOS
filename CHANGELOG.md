@@ -9,6 +9,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **Widget de un solo hábito.** Un widget nuevo que sigue el hábito que elijas: muestra su nombre, su racha y el mapa de actividad de las últimas 9 semanas con su color. Puedes poner varios, uno por hábito. Para elegirlo, mantén pulsado el widget y toca "Editar widget". Necesita iOS 17; los demás widgets siguen funcionando desde iOS 16.6.
+- Tests del snapshot que alimenta los widgets, del selector de hábito y de la selección de animes compartida con la extensión (40 casos nuevos, 208 en total).
 - **Aviso cuando el recordatorio no se puede activar.** Si las notificaciones están desactivadas, el editor de hábitos te lo explica y te ofrece un botón para ir a Ajustes, como en Android.
 - Tests de los íconos de las plantillas, del aviso de permiso y del idioma de respaldo (40 casos nuevos, 307 en total).
 - **La app ahora está en inglés y en español.** Usa el idioma del iPhone, como en Android; también puedes elegirlo solo para QuoteAnime en Ajustes del sistema → Apps → QuoteAnime → Idioma. Las frases y los nombres de los animes se muestran tal cual vienen.
@@ -29,6 +31,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
 ### Changed
+- **El widget de frases respeta los animes que elegiste**, igual que en Android. Si ya los habías elegido, se conservan solos. El widget también deja de mostrar siempre frases del mismo bloque: ahora sale de todo el catálogo.
+- **Los widgets se actualizan apenas cambias algo.** Marcar un día, crear, editar, archivar, restaurar o borrar un hábito refresca la pantalla de inicio al instante, sin esperar. También al marcar desde la notificación.
+- El widget "Mi Rutina" deja de listar los hábitos archivados.
 - **Si tu iPhone está en un idioma que la app no tiene (portugués, francés, alemán…), la app se muestra en inglés**, igual que en Android. Antes se mostraba en español. Español e inglés siguen igual.
 - **Todos los textos en español tratan de "tú".** Antes la app mezclaba "vos" y "tú" ("Creá", "Ya sos premium" junto a "Puedes"); ahora habla igual en todas las pantallas, como la app de Android.
 - Las fechas, los meses y los días de la semana del calendario, del mapa de actividad y del recordatorio siguen el idioma y la región del iPhone (por ejemplo, "L M X J V S D" en España y "M T W T F S S" en inglés).
@@ -38,6 +43,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - Typography: `quoteSerif` changed from `Georgia` to `Didot`; `quoteSerifItalic` changed from `Georgia-Italic` to `Georgia`.
 
 ### Fixed
+- **El widget de frases volvía a quedarse en gris.** Descargaba la ilustración del anime a tamaño completo y iOS se negaba a guardar el widget con una imagen tan grande, así que descartaba la frase que acababa de traer. Ahora la reduce antes de mostrarla.
 - **Las sugerencias de hábito muestran su ícono.** Camino ninja, Buscar el One Piece, Sé un saiyan y las demás sugerencias mostraban un check genérico en el onboarding, el editor y la tarjeta; ahora tienen su ícono, el mismo que en Android. Los hábitos que ya habías creado desde una sugerencia también lo recuperan.
 - **"1 días seguidos" ahora dice "1 día seguido".**
 - La sugerencia "Sé el Rey Mago" usaba un color distinto al de Android; ahora los hábitos creados desde ella nacen del mismo color en las dos apps.
