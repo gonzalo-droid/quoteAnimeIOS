@@ -125,15 +125,19 @@ es otro binario y no puede abrir ni SwiftData ni `UserDefaults.standard` de la a
 
 **Widgets de la extensión** (`QuoteAnimeWidget/`): `QuoteAnimeWidget` + `QuoteAnimeLockWidget`
 (frases), `RoutineSummaryWidget` (hábitos activos) y `HabitWidget` (un hábito por instancia, con su
-heatmap de 9 semanas). `HabitWidget` usa `AppIntentConfiguration` + `HabitEntity`/`HabitEntityQuery`
-— el equivalente iOS de `HabitWidgetConfigureActivity` — y por eso **requiere iOS 17**; el
-`@available` va en el miembro del `WidgetBundle` para que el resto siga en 16.6.
+heatmap de 9 semanas). `HabitWidget` usa `AppIntentConfiguration` — el equivalente iOS de
+`HabitWidgetConfigureActivity` — y por eso **requiere iOS 17**; el `@available` va en el miembro del
+`WidgetBundle` para que el resto siga en 16.6. Guarda el **id** del hábito en un `@Parameter` de
+tipo `String` y la lista del selector sale de un `DynamicOptionsProvider`: un `AppEntity` fue el
+primer intento y no sobrevivió el viaje de ida y vuelta por la configuración guardada (la hoja de
+edición mostraba el hábito elegido y la extensión recibía `nil`). Ver el comentario en
+`HabitWidget.swift` antes de volver a intentarlo.
 
 **Duplicación deliberada en el target del widget**: `QuoteAnimeWidget/WidgetSharedModel.swift`
 reúne las copias a mano del App Group, el snapshot, `HeatmapGrid` y `HabitPalette`; los tokens de
 color (`w`-prefijados) viven en `QuoteAnimeWidget.swift`. **Cuando cambies un lado, cambia el
 otro.** `HabitWidgetSnapshot.activeHabits` / `habit(id:)` existen también en el target de la app,
-sin llamador, sólo para que los tests puedan fijar lo que decide la `EntityQuery`.
+sin llamador, sólo para que los tests puedan fijar lo que decide el selector del widget.
 
 ### Domain models (identical to Android)
 
