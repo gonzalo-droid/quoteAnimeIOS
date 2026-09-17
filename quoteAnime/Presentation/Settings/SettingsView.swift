@@ -33,7 +33,9 @@ struct SettingsView: View {
             notificationsSection
             widgetSection
             ratingSection
-            socialSection
+            // Hidden for now: the Instagram and Facebook accounts are blocked, so these
+            // links would dead-end. Restore this line once they're back.
+            // socialSection
             versionSection
         }
         .listStyle(.insetGrouped)
