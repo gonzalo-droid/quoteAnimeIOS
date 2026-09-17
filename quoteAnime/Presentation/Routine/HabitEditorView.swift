@@ -72,8 +72,9 @@ struct HabitEditorView: View {
         }
     }
 
-    /// Lands on this app's notification page in Settings (iOS 16+), one tap closer than the
-    /// app's general page Android opens.
+    /// Opens Settings through the notification-specific URL (iOS 16+). On the iOS 26.3
+    /// simulator it lands on the app's page, with the Notifications row showing "Off" — the same
+    /// destination Android's `ACTION_APPLICATION_DETAILS_SETTINGS` reaches.
     private func openNotificationSettings() {
         guard let url = URL(string: UIApplication.openNotificationSettingsURLString) else { return }
         UIApplication.shared.open(url)

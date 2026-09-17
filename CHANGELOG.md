@@ -9,6 +9,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **Aviso cuando el recordatorio no se puede activar.** Si las notificaciones están desactivadas, el editor de hábitos te lo explica y te ofrece un botón para ir a Ajustes, como en Android.
+- Tests de los íconos de las plantillas, del aviso de permiso y del idioma de respaldo (40 casos nuevos, 307 en total).
 - **La app ahora está en inglés y en español.** Usa el idioma del iPhone, como en Android; también puedes elegirlo solo para QuoteAnime en Ajustes del sistema → Apps → QuoteAnime → Idioma. Las frases y los nombres de los animes se muestran tal cual vienen.
 - Los textos con números usan singular y plural según corresponda: "1 día seguido", "1 vez al día", "1 anime" (y "1 day streak" en inglés).
 - Los botones que solo tienen ícono (favorito, compartir, explorar, volver, añadir hábito, marcar hoy, colores del hábito) ahora se leen con VoiceOver.
@@ -27,11 +29,13 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
 ### Changed
+- **Si tu iPhone está en un idioma que la app no tiene (portugués, francés, alemán…), la app se muestra en inglés**, igual que en Android. Antes se mostraba en español. Español e inglés siguen igual.
 - **Todos los textos en español tratan de "tú".** Antes la app mezclaba "vos" y "tú" ("Creá", "Ya sos premium" junto a "Puedes"); ahora habla igual en todas las pantallas, como la app de Android.
 - Las fechas, los meses y los días de la semana del calendario, del mapa de actividad y del recordatorio siguen el idioma y la región del iPhone (por ejemplo, "L M X J V S D" en España y "M T W T F S S" en inglés).
 - En Ajustes, la frecuencia del widget ahora dice "Nueva frase 2 veces al día", el mismo texto que en Android.
 
 ### Fixed
+- **Las sugerencias de hábito muestran su ícono.** Camino ninja, Buscar el One Piece, Sé un saiyan y las demás sugerencias mostraban un check genérico en el onboarding, el editor y la tarjeta; ahora tienen su ícono, el mismo que en Android. Los hábitos que ya habías creado desde una sugerencia también lo recuperan.
 - **"1 días seguidos" ahora dice "1 día seguido".**
 - **Las filas de beneficios del paywall quedan alineadas.** Cada fila se centraba según el largo de su texto y los íconos no coincidían.
 - El recordatorio de un hábito se muestra en el idioma que tenga el iPhone cuando llega, aunque lo hayas creado con otro idioma.
