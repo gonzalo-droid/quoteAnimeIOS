@@ -43,9 +43,14 @@ struct HabitCardView: View {
                 )
 
                 HStack {
-                    Label("\(item.streak.current)", systemImage: "flame.fill")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.textSecondary)
+                    Label {
+                        Text(verbatim: "\(item.streak.current)")
+                    } icon: {
+                        Image(systemName: "flame.fill")
+                    }
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.textSecondary)
+                    .accessibilityLabel("\(item.streak.current) días seguidos")
                     Spacer()
                     Text("Mejor: \(item.streak.best)")
                         .font(.system(size: 12))
@@ -82,6 +87,7 @@ struct HabitCardView: View {
                     .foregroundColor(.textSecondary)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Restaurar")
 
             Button { showDeleteConfirm = true } label: {
                 Image(systemName: "trash")
@@ -89,6 +95,7 @@ struct HabitCardView: View {
                     .foregroundColor(.heartRed)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Eliminar")
         } else {
             Button(action: onToggleToday) {
                 Image(systemName: item.streak.completedToday ? "checkmark.circle.fill" : "circle")
@@ -96,6 +103,7 @@ struct HabitCardView: View {
                     .foregroundColor(item.streak.completedToday ? accentColor : .textSecondary)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(item.streak.completedToday ? "Desmarcar hoy" : "Marcar hoy")
 
             Menu {
                 Button("Editar", systemImage: "pencil", action: onEdit)

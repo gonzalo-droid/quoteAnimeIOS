@@ -78,6 +78,7 @@ struct HabitEditorView: View {
                     .foregroundColor(.textPrimary)
                     .frame(width: 44, height: 44)
             }
+            .accessibilityLabel("Volver")
 
             Text(viewModel.uiState.isEditing ? "Editar hábito" : "Nuevo hábito")
                 .font(.system(size: 17, weight: .semibold))
@@ -119,7 +120,7 @@ struct HabitEditorView: View {
                         } label: {
                             HStack(spacing: 6) {
                                 Image(systemName: isLocked ? "lock.fill" : HabitIcons.symbol(for: template.iconKey))
-                                Text(template.title)
+                                Text(verbatim: template.title)
                                     .font(.system(size: 13, weight: .medium))
                             }
                             .foregroundColor(isLocked ? .textSecondary : .textPrimary)
@@ -132,6 +133,7 @@ struct HabitEditorView: View {
                                     .stroke(Color.outline.opacity(0.4), lineWidth: 1)
                             )
                         }
+                        .accessibilityHint(isLocked ? Text("Sugerencia exclusiva para premium") : Text(verbatim: ""))
                     }
                 }
             }
@@ -141,7 +143,7 @@ struct HabitEditorView: View {
     private var titleField: some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel("Nombre")
-            TextField("", text: $viewModel.uiState.title, prompt: Text("Ej: Meditar 10 minutos").foregroundColor(.textSecondary))
+            TextField("Nombre", text: $viewModel.uiState.title, prompt: Text("Ej: Meditar 10 minutos").foregroundColor(.textSecondary))
                 .foregroundColor(.textPrimary)
                 .padding(12)
                 .background(Color.surface)
@@ -152,7 +154,7 @@ struct HabitEditorView: View {
     private var descriptionField: some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel("Descripción (opcional)")
-            TextField("", text: $viewModel.uiState.description, prompt: Text("Agregá contexto o tu motivación").foregroundColor(.textSecondary), axis: .vertical)
+            TextField("Descripción", text: $viewModel.uiState.description, prompt: Text("Agrega contexto o tu motivación").foregroundColor(.textSecondary), axis: .vertical)
                 .foregroundColor(.textPrimary)
                 .lineLimit(2...4)
                 .padding(12)
@@ -199,6 +201,8 @@ struct HabitEditorView: View {
                                     .stroke(Color.white, lineWidth: viewModel.uiState.colorIndex == index ? 2 : 0)
                             )
                     }
+                    .accessibilityLabel("Color \(index + 1)")
+                    .accessibilityAddTraits(viewModel.uiState.colorIndex == index ? .isSelected : [])
                 }
             }
         }
@@ -212,7 +216,7 @@ struct HabitEditorView: View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel("Fecha de inicio")
             DatePicker(
-                "",
+                "Fecha de inicio",
                 selection: Binding(
                     get: { viewModel.uiState.startDate },
                     set: { viewModel.onStartDateChanged($0) }
@@ -230,7 +234,7 @@ struct HabitEditorView: View {
                 sectionLabel("Ponerle fecha de fin")
                 Spacer()
                 Toggle(
-                    "",
+                    "Ponerle fecha de fin",
                     isOn: Binding(
                         get: { viewModel.uiState.hasEndDate },
                         set: { viewModel.onEndDateEnabled($0) }
@@ -238,13 +242,12 @@ struct HabitEditorView: View {
                 )
                 .labelsHidden()
                 .tint(.accentPurple)
-                .accessibilityLabel("Ponerle fecha de fin")
             }
             .padding(.top, 8)
 
             if viewModel.uiState.hasEndDate {
                 DatePicker(
-                    "",
+                    "Fecha de fin",
                     selection: $viewModel.uiState.endDate,
                     in: viewModel.uiState.startDate...,
                     displayedComponents: .date
@@ -265,7 +268,7 @@ struct HabitEditorView: View {
                 sectionLabel("Recordatorio")
                 Spacer()
                 Toggle(
-                    "",
+                    "Recordatorio",
                     isOn: Binding(
                         get: { viewModel.uiState.reminderEnabled },
                         set: { viewModel.onReminderToggled($0) }
@@ -278,7 +281,7 @@ struct HabitEditorView: View {
             if viewModel.uiState.reminderEnabled {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(spacing: 6) {
-                        ForEach(Self.weekdaySymbols, id: \.weekday) { symbol in
+                        ForEach(weekdaySymbols, id: \.weekday) { symbol in
                             let isSelected = viewModel.uiState.reminderWeekdays.contains(symbol.weekday)
                             Button {
                                 viewModel.onWeekdayToggled(symbol.weekday)
@@ -290,11 +293,13 @@ struct HabitEditorView: View {
                                     .background(isSelected ? Color.accentPurple : Color.surface)
                                     .clipShape(Circle())
                             }
+                            .accessibilityLabel(symbol.name)
+                            .accessibilityAddTraits(isSelected ? .isSelected : [])
                         }
                     }
 
                     DatePicker(
-                        "",
+                        "Hora",
                         selection: $viewModel.uiState.reminderTime,
                         displayedComponents: .hourAndMinute
                     )
@@ -309,12 +314,17 @@ struct HabitEditorView: View {
         }
     }
 
-    /// `Calendar` weekday numbering: 1 = Sunday ... 7 = Saturday.
-    private static let weekdaySymbols: [(weekday: Int, label: String)] = [
-        (1, "D"), (2, "L"), (3, "M"), (4, "X"), (5, "J"), (6, "V"), (7, "S")
-    ]
+    /// `Calendar` weekday numbering: 1 = Sunday ... 7 = Saturday, kept Sunday-first as before.
+    /// Initials and names come from the user's locale ("D L M X" in Spanish, "S M T W" in
+    /// English) instead of a hardcoded Spanish list.
+    private var weekdaySymbols: [(weekday: Int, label: String, name: String)] {
+        let calendar = Calendar.current
+        let initials = calendar.veryShortStandaloneWeekdaySymbols
+        let names = calendar.standaloneWeekdaySymbols
+        return (1...7).map { ($0, initials[$0 - 1], names[$0 - 1]) }
+    }
 
-    private func sectionLabel(_ text: String) -> some View {
+    private func sectionLabel(_ text: LocalizedStringKey) -> some View {
         Text(text)
             .font(.system(size: 13, weight: .medium))
             .foregroundColor(.textSecondary)

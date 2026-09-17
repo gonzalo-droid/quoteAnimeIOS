@@ -61,7 +61,7 @@ struct HabitDetailView: View {
                 Button("Archivar") { viewModel.onArchive() }
                 Button("Cancelar", role: .cancel) {}
             } message: {
-                Text("Pasa al filtro de Archivados y deja de recordarte. Su historial se conserva — podés restaurarlo cuando quieras.")
+                Text("Pasa al filtro de Archivados y deja de recordarte. Su historial se conserva — puedes restaurarlo cuando quieras.")
             }
             .confirmationDialog(
                 "¿Borrar este hábito?",
@@ -116,7 +116,7 @@ struct HabitDetailView: View {
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(.textSecondary)
                 }
-                Text(habit.description?.isEmpty == false ? habit.description! : "Sin descripción")
+                Text(habit.description?.isEmpty == false ? habit.description! : String(localized: "Sin descripción"))
                     .font(.system(size: 13))
                     .foregroundColor(.textSecondary)
                 Text(dateRangeLabel(habit))
@@ -170,32 +170,32 @@ struct HabitDetailView: View {
         HStack(spacing: 10) {
             statChip(
                 systemImage: "flame.fill",
-                value: "\(viewModel.uiState.streak.current)",
+                value: viewModel.uiState.streak.current,
                 caption: "Racha actual",
                 tint: accentColor
             )
             statChip(
                 systemImage: "trophy.fill",
-                value: "\(viewModel.uiState.streak.best)",
+                value: viewModel.uiState.streak.best,
                 caption: "Mejor racha",
                 tint: .textSecondary
             )
             statChip(
                 systemImage: "checkmark.seal.fill",
-                value: "\(viewModel.uiState.completions.count)",
+                value: viewModel.uiState.completions.count,
                 caption: "Días marcados",
                 tint: .textSecondary
             )
         }
     }
 
-    private func statChip(systemImage: String, value: String, caption: String, tint: Color) -> some View {
+    private func statChip(systemImage: String, value: Int, caption: LocalizedStringKey, tint: Color) -> some View {
         VStack(spacing: 4) {
             HStack(spacing: 5) {
                 Image(systemName: systemImage)
                     .font(.system(size: 12))
                     .foregroundColor(tint)
-                Text(value)
+                Text(value, format: .number)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.textPrimary)
             }
@@ -207,8 +207,9 @@ struct HabitDetailView: View {
         .padding(.vertical, 10)
         .background(Color.surface)
         .cornerRadius(12)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(caption): \(value)")
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(caption))
+        .accessibilityValue(Text(value, format: .number))
     }
 
     private func calendarSection(_ habit: Habit) -> some View {
@@ -245,7 +246,7 @@ struct HabitDetailView: View {
                 onDayTap: { viewModel.onDayTap($0) }
             )
 
-            Text("Tocá cualquier día para marcarlo o desmarcarlo. Los días futuros y los que quedan fuera del período del hábito no se pueden marcar.")
+            Text("Toca cualquier día para marcarlo o desmarcarlo. Los días futuros y los que quedan fuera del período del hábito no se pueden marcar.")
                 .font(.system(size: 11))
                 .foregroundColor(.textSecondary.opacity(0.8))
         }
@@ -276,20 +277,21 @@ struct HabitDetailView: View {
 
     private static let detailHeatmapWeeks = 26
 
+    /// "Marzo de 2026" / "March 2026". The format follows the user's locale; only the first
+    /// letter is forced to uppercase, since Spanish month names are lowercase.
     private var monthLabel: String {
-        viewModel.uiState.visibleMonth
-            .formatted(.dateTime.month(.wide).year())
-            .prefix(1).uppercased()
-            + viewModel.uiState.visibleMonth.formatted(.dateTime.month(.wide).year()).dropFirst()
+        let formatted = viewModel.uiState.visibleMonth.formatted(.dateTime.month(.wide).year())
+        return formatted.prefix(1).uppercased() + formatted.dropFirst()
     }
 
     private func dateRangeLabel(_ habit: Habit) -> String {
         let start = habit.startDate.formatted(.dateTime.day().month(.abbreviated).year())
-        guard let endDate = habit.endDate else { return "Desde el \(start)" }
-        return "Del \(start) al \(endDate.formatted(.dateTime.day().month(.abbreviated).year()))"
+        guard let endDate = habit.endDate else { return String(localized: "Desde el \(start)") }
+        let end = endDate.formatted(.dateTime.day().month(.abbreviated).year())
+        return String(localized: "Del \(start) al \(end)")
     }
 
-    private func sectionLabel(_ text: String) -> some View {
+    private func sectionLabel(_ text: LocalizedStringKey) -> some View {
         Text(text)
             .font(.system(size: 13, weight: .medium))
             .foregroundColor(.textSecondary)

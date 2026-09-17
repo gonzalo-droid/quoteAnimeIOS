@@ -3,7 +3,7 @@ import SwiftUI
 struct WidgetTutorialView: View {
     @State private var currentStep = 0
 
-    private let steps: [(title: String, description: String, icon: String)] = [
+    private let steps: [(title: LocalizedStringKey, description: LocalizedStringKey, icon: String)] = [
         (
             "Mantén pulsado el escritorio",
             "Toca y mantén pulsado cualquier zona vacía del escritorio hasta que los iconos empiecen a moverse.",
@@ -86,7 +86,7 @@ struct WidgetTutorialView: View {
         .toolbarColorScheme(.dark, for: .navigationBar)
     }
 
-    private func stepPage(step: (title: String, description: String, icon: String), index: Int) -> some View {
+    private func stepPage(step: (title: LocalizedStringKey, description: LocalizedStringKey, icon: String), index: Int) -> some View {
         VStack(spacing: 24) {
             Spacer()
 

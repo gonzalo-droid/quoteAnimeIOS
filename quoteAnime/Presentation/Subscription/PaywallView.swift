@@ -28,7 +28,7 @@ struct PaywallView: View {
                     .foregroundColor(.textPrimary)
                     .padding(.top, 20)
 
-                Text("Desbloqueá todo el potencial de tu rutina.")
+                Text("Desbloquea todo el potencial de tu rutina.")
                     .font(.system(size: 14))
                     .foregroundColor(.textSecondary)
                     .multilineTextAlignment(.center)
@@ -39,17 +39,17 @@ struct PaywallView: View {
                     benefitRow(
                         icon: "infinity",
                         title: "Hábitos ilimitados",
-                        body: "Sin el límite de 3 hábitos activos — creá todos los que necesites."
+                        body: "Sin el límite de 3 hábitos activos — crea todos los que necesites."
                     )
                     benefitRow(
                         icon: "nosign",
                         title: "Sin anuncios",
-                        body: "Compartí tus frases favoritas sin interrupciones publicitarias."
+                        body: "Comparte tus frases favoritas sin interrupciones publicitarias."
                     )
                     benefitRow(
                         icon: "sparkles",
                         title: "Temas exclusivos",
-                        body: "Accedé a colecciones temáticas exclusivas, como Pokémon y Black Clover."
+                        body: "Accede a colecciones temáticas exclusivas, como Pokémon y Black Clover."
                     )
                 }
                 .padding(.top, 32)
@@ -74,6 +74,7 @@ struct PaywallView: View {
                     .foregroundColor(.textPrimary)
                     .frame(width: 44, height: 44)
             }
+            .accessibilityLabel("Volver")
             Spacer()
         }
         .frame(height: 52)
@@ -83,7 +84,7 @@ struct PaywallView: View {
     private var ctaSection: some View {
         if viewModel.uiState.isPremium {
             VStack(spacing: 8) {
-                Text("✨ Ya sos premium")
+                Text("✨ Ya eres premium")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundColor(.textPrimary)
                 #if DEBUG
@@ -112,7 +113,7 @@ struct PaywallView: View {
         }
     }
 
-    private func benefitRow(icon: String, title: String, body: String) -> some View {
+    private func benefitRow(icon: String, title: LocalizedStringKey, body: LocalizedStringKey) -> some View {
         HStack(alignment: .top, spacing: 14) {
             Circle()
                 .fill(Color.surface)

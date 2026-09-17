@@ -112,9 +112,14 @@ struct RoutineSummaryWidgetEntryView: View {
                     .foregroundColor(.wTextPrimary)
                 Spacer()
                 if entry.globalStreak > 0 {
-                    Label("\(entry.globalStreak)", systemImage: "flame.fill")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.wAccentPurple)
+                    Label {
+                        Text(verbatim: "\(entry.globalStreak)")
+                    } icon: {
+                        Image(systemName: "flame.fill")
+                    }
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(.wAccentPurple)
+                    .accessibilityLabel("\(entry.globalStreak) días seguidos")
                 }
             }
 

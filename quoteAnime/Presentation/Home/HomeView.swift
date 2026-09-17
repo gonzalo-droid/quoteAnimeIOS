@@ -65,6 +65,7 @@ private struct HomeContentView: View {
                                 .foregroundColor(.white.opacity(0.7))
                                 .padding(14)
                         }
+                        .accessibilityLabel("Mi Rutina")
                     }
                     Button { router.push(.settings) } label: {
                         Image(systemName: "gearshape.fill")
@@ -72,6 +73,7 @@ private struct HomeContentView: View {
                             .foregroundColor(.white.opacity(0.7))
                             .padding(14)
                     }
+                    .accessibilityLabel("Ajustes")
                 }
                 .padding(.top, 4)
                 Spacer()
@@ -149,6 +151,7 @@ private struct QuotePageView: View {
                             .foregroundColor(quote.isFavorite ? .heartRed : .white.opacity(0.8))
                             .scaleEffect(favoriteScale)
                     }
+                    .accessibilityLabel(quote.isFavorite ? "Quitar favorito" : "Añadir favorito")
 
                     // Share
                     Button {
@@ -158,6 +161,7 @@ private struct QuotePageView: View {
                             .font(.system(size: 24))
                             .foregroundColor(.white.opacity(0.8))
                     }
+                    .accessibilityLabel("Compartir")
 
                     // Explore catalog
                     Button(action: onExplore) {
@@ -165,6 +169,7 @@ private struct QuotePageView: View {
                             .font(.system(size: 24))
                             .foregroundColor(.white.opacity(0.8))
                     }
+                    .accessibilityLabel("Explorar")
                 }
                 .padding(.bottom, 16)
 

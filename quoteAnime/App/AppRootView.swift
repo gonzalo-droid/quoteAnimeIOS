@@ -176,7 +176,7 @@ struct MainContainerView: View {
         }
     }
 
-    private func unavailableView(message: String) -> some View {
+    private func unavailableView(message: LocalizedStringKey) -> some View {
         VStack {
             Spacer()
             Text(message)

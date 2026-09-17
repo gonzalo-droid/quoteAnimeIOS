@@ -214,7 +214,7 @@ struct QuoteWidgetSmallContent: View {
 
             Spacer(minLength: 6)
 
-            Text("— \(entry.author)")
+            Text(verbatim: "— \(entry.author)")
                 .font(.custom("Didot", size: 10))
                 .foregroundColor(.wTextPrimary.opacity(0.8))
 
@@ -246,7 +246,7 @@ struct QuoteWidgetMediumContent: View {
                 .frame(width: 40, height: 1)
                 .padding(.vertical, 10)
 
-            Text("— \(entry.author)")
+            Text(verbatim: "— \(entry.author)")
                 .font(.custom("Didot", size: 11))
                 .foregroundColor(.wTextPrimary.opacity(0.85))
 
@@ -371,8 +371,8 @@ struct QuoteAnimeLockWidget: Widget {
                 QuoteAnimeLockWidgetEntryView(entry: entry)
             }
         }
-        .configurationDisplayName("Quote Anime — Lock Screen")
-        .description("Una frase de anime en tu pantalla de bloqueo.")
+        .configurationDisplayName("Quote Anime — Pantalla bloqueada")
+        .description("Una frase de anime en tu pantalla bloqueada.")
         .supportedFamilies([.accessoryRectangular, .accessoryInline])
     }
 }

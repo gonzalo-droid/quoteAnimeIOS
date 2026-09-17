@@ -15,12 +15,17 @@ final class HabitReminderScheduler: HabitReminderScheduling {
     static let categoryIdentifier = "HABIT_REMINDER"
     static let markDoneActionIdentifier = "MARK_DONE_ACTION"
 
+    /// Catalog key of the reminder body. Kept as a constant because it's looked up at delivery
+    /// time, where the compiler can't extract it; `Localizable.xcstrings` carries it by hand.
+    static let reminderBodyKey = "¿Ya completaste tu hábito de hoy?"
+
     private let center = UNUserNotificationCenter.current()
 
     static func registerCategory() {
         let markDone = UNNotificationAction(
             identifier: markDoneActionIdentifier,
-            title: "Hecho",
+            // Categories are registered on every launch, so the title follows the current language.
+            title: String(localized: "Hecho", comment: "Notification action: mark the habit as done today"),
             options: []
         )
         let category = UNNotificationCategory(
@@ -39,7 +44,12 @@ final class HabitReminderScheduler: HabitReminderScheduling {
         for weekday in habit.reminderWeekdays {
             let content = UNMutableNotificationContent()
             content.title = habit.title
-            content.body = "¿Ya completaste tu hábito de hoy?"
+            // Resolved when the notification is delivered, not when it's scheduled: these requests
+            // repeat weekly for months, and the user may change the device language meanwhile.
+            content.body = NSString.localizedUserNotificationString(
+                forKey: Self.reminderBodyKey,
+                arguments: nil
+            )
             content.sound = .default
             content.categoryIdentifier = Self.categoryIdentifier
             content.userInfo = ["habitId": habit.id]

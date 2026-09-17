@@ -48,6 +48,7 @@ struct QuoteDetailView<Actions: View>: View {
                         .background(Color.black.opacity(0.35))
                         .clipShape(Circle())
                 }
+                .accessibilityLabel("Volver")
                 .padding(.leading, 16)
                 .padding(.top, 8)
             }
@@ -106,7 +107,7 @@ struct QuoteDetailView<Actions: View>: View {
                 .padding(.vertical, 18)
 
             // Author
-            Text("— \(quote.author)")
+            Text(verbatim: "— \(quote.author)")
                 .font(.quoteSerif(size: 15))
                 .foregroundColor(.white.opacity(0.85))
 

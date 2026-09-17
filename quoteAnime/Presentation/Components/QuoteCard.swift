@@ -16,7 +16,7 @@ struct QuoteCard: View {
 
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("— \(quote.author)")
+                    Text(verbatim: "— \(quote.author)")
                         .font(.quoteSerif(size: 13))
                         .foregroundColor(.textSecondary)
 
@@ -42,6 +42,7 @@ struct QuoteCard: View {
                         .foregroundColor(quote.isFavorite ? .heartRed : .textSecondary)
                         .scaleEffect(heartScale)
                 }
+                .accessibilityLabel(quote.isFavorite ? "Quitar favorito" : "Añadir favorito")
             }
         }
         .padding(16)

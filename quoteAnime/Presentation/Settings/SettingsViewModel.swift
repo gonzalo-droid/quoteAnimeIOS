@@ -41,10 +41,11 @@ final class SettingsViewModel: ObservableObject {
     /// Detail text for the row that opens the anime selection. Empty set means "all animes",
     /// exactly as on Android (`SettingsUiState.allCategoriesSelected`).
     var categorySelectionSummary: String {
+        // The count goes through the catalog's plural rule ("1 anime" / "3 animes"), not a
+        // hand-written `case 1`.
         switch preferences.selectedCategoryIds.count {
-        case 0:  return "Todos"
-        case 1:  return "1 anime"
-        case let count: return "\(count) animes"
+        case 0:  return String(localized: "Todos", comment: "Anime selection summary: nothing picked means every anime")
+        case let count: return String(localized: "\(count) animes", comment: "Anime selection summary")
         }
     }
 

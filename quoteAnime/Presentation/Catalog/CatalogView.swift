@@ -52,20 +52,18 @@ struct CatalogView: View {
     private var selectorView: some View {
         VStack(spacing: 0) {
             // TopBar
-            topBar(title: "Explorar", onBack: { dismiss() })
+            topBar(title: String(localized: "Explorar"), onBack: { dismiss() })
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
                     // Main action cards row
                     HStack(spacing: 12) {
                         mainFilterCard(
-                            title: "Favoritos",
                             icon: "heart.fill",
                             color: .heartRed,
                             filter: .favorites
                         )
                         mainFilterCard(
-                            title: "Todas",
                             icon: "rectangle.stack.fill",
                             color: .accentPurple,
                             filter: .all
@@ -90,13 +88,13 @@ struct CatalogView: View {
         }
     }
 
-    private func mainFilterCard(title: String, icon: String, color: Color, filter: CatalogFilter) -> some View {
+    private func mainFilterCard(icon: String, color: Color, filter: CatalogFilter) -> some View {
         Button { viewModel.onFilterSelected(filter) } label: {
             HStack(spacing: 10) {
                 Image(systemName: icon)
                     .font(.system(size: 20))
                     .foregroundColor(color)
-                Text(title)
+                Text(filter.label)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.textPrimary)
             }
@@ -184,6 +182,7 @@ struct CatalogView: View {
                 ) {
                     viewModel.onToggleFavorite(quote)
                 }
+                .accessibilityLabel(quote.isFavorite ? "Quitar favorito" : "Añadir favorito")
 
                 // Share
                 CircleActionButton(icon: "square.and.arrow.up", color: .white) {
@@ -191,6 +190,7 @@ struct CatalogView: View {
                         viewModel.buildShareImage(for: quote)
                     }
                 }
+                .accessibilityLabel("Compartir")
             }
         }
     }
@@ -205,6 +205,7 @@ struct CatalogView: View {
                     .foregroundColor(.textPrimary)
                     .frame(width: 44, height: 44)
             }
+            .accessibilityLabel("Volver")
             .padding(.leading, 8)
 
             Text(title)

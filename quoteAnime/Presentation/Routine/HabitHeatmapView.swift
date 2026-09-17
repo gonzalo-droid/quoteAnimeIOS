@@ -45,7 +45,7 @@ struct HabitHeatmapView: View {
                 labeledGrid
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Mapa de actividad de los últimos \(weeks) semanas")
+            .accessibilityLabel("Mapa de actividad de las últimas \(weeks) semanas")
         } else {
             compactGrid
         }

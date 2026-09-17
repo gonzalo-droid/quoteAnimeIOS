@@ -24,7 +24,8 @@ struct HabitCalendarMonthView: View {
     private var days: [Date] { CalendarMonthGrid.days(for: month, calendar: calendar) }
 
     private var weekdaySymbols: [String] {
-        // `shortWeekdaySymbols` is Sunday-first; the grid is Monday-first.
+        // `shortWeekdaySymbols` is Sunday-first; the grid is Monday-first. The symbols come from
+        // `calendar.locale`, so the initials follow the user's language ("L M X" / "M T W").
         let symbols = calendar.shortWeekdaySymbols
         return (0..<7).map { symbols[($0 + 1) % 7].prefix(1).uppercased() }
     }
@@ -70,7 +71,7 @@ struct HabitCalendarMonthView: View {
                         .padding(4)
                 }
                 VStack(spacing: 3) {
-                    Text("\(calendar.component(.day, from: day))")
+                    Text(calendar.component(.day, from: day), format: .number)
                         .font(.system(size: 13, weight: isToday ? .semibold : .regular))
                         .foregroundColor(dayNumberColor(isInMonth: isInMonth, isMarkable: isMarkable, isToday: isToday))
                     Circle()
@@ -96,8 +97,10 @@ struct HabitCalendarMonthView: View {
 
     private func accessibilityLabel(for day: Date, isCompleted: Bool, isMarkable: Bool) -> String {
         let formatted = day.formatted(.dateTime.day().month(.wide).year())
-        guard isMarkable else { return "\(formatted), no se puede marcar" }
-        return isCompleted ? "\(formatted), completado" : "\(formatted), sin completar"
+        guard isMarkable else { return String(localized: "\(formatted), no se puede marcar") }
+        return isCompleted
+            ? String(localized: "\(formatted), completado")
+            : String(localized: "\(formatted), sin completar")
     }
 }
 

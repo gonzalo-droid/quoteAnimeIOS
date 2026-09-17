@@ -145,7 +145,7 @@ struct SettingsView: View {
                 router.push(.paywall)
             } label: {
                 Label(
-                    premiumGate.isPremium ? "Ya sos premium ✨" : "Hazte Premium",
+                    premiumGate.isPremium ? "Ya eres premium ✨" : "Hazte Premium",
                     systemImage: "crown.fill"
                 )
                 .foregroundColor(.textPrimary)
@@ -168,7 +168,7 @@ struct SettingsView: View {
                 .foregroundColor(.textSecondary)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Actualizaciones: \(viewModel.preferences.widgetUpdateTimesPerDay) por día")
+                Text("Nueva frase \(viewModel.preferences.widgetUpdateTimesPerDay) veces al día")
                     .font(.subheadline)
                     .foregroundColor(.textPrimary)
                 Slider(

@@ -8,10 +8,11 @@ enum CatalogFilter: Equatable {
     case all
     case byEmotion(categoryId: String, label: String)
 
+    /// Display text. The emotion label is already localized in `allEmotionCategories`.
     var label: String {
         switch self {
-        case .favorites:                    return "Favoritos"
-        case .all:                          return "Todas"
+        case .favorites:                    return String(localized: "Favoritos")
+        case .all:                          return String(localized: "Todas", comment: "Catalog filter: all quotes")
         case .byEmotion(_, let label):      return label
         }
     }
@@ -19,6 +20,7 @@ enum CatalogFilter: Equatable {
 
 // MARK: - Emotion categories (hardcoded)
 
+/// `id` is the Firestore category id and is never translated; `label` is display text only.
 struct EmotionCategory: Identifiable {
     let id: String
     let label: String
@@ -27,16 +29,16 @@ struct EmotionCategory: Identifiable {
 }
 
 let allEmotionCategories: [EmotionCategory] = [
-    EmotionCategory(id: "motivación", label: "Motivación",  emoji: "⚡", color: Color(hex: "#E67E22")),
-    EmotionCategory(id: "lucha",      label: "Lucha",       emoji: "🛡", color: Color(hex: "#C0392B")),
-    EmotionCategory(id: "tristeza",   label: "Tristeza",    emoji: "💧", color: Color(hex: "#5D8AA8")),
-    EmotionCategory(id: "amor",       label: "Amor",        emoji: "❤️", color: Color(hex: "#FF6B8A")),
-    EmotionCategory(id: "amistad",    label: "Amistad",     emoji: "👥", color: Color(hex: "#27AE60")),
-    EmotionCategory(id: "reflexión",  label: "Reflexión",   emoji: "🧠", color: Color(hex: "#A78BFA")),
-    EmotionCategory(id: "soledad",    label: "Soledad",     emoji: "🌙", color: Color(hex: "#4A4A5A")),
-    EmotionCategory(id: "sacrificio", label: "Sacrificio",  emoji: "🧘", color: Color(hex: "#8B2252")),
-    EmotionCategory(id: "esperanza",  label: "Esperanza",   emoji: "☀️", color: Color(hex: "#F1C40F")),
-    EmotionCategory(id: "orgullo",    label: "Orgullo",     emoji: "🏆", color: Color(hex: "#F39C12")),
+    EmotionCategory(id: "motivación", label: String(localized: "Motivación"),  emoji: "⚡", color: Color(hex: "#E67E22")),
+    EmotionCategory(id: "lucha",      label: String(localized: "Lucha"),       emoji: "🛡", color: Color(hex: "#C0392B")),
+    EmotionCategory(id: "tristeza",   label: String(localized: "Tristeza"),    emoji: "💧", color: Color(hex: "#5D8AA8")),
+    EmotionCategory(id: "amor",       label: String(localized: "Amor"),        emoji: "❤️", color: Color(hex: "#FF6B8A")),
+    EmotionCategory(id: "amistad",    label: String(localized: "Amistad"),     emoji: "👥", color: Color(hex: "#27AE60")),
+    EmotionCategory(id: "reflexión",  label: String(localized: "Reflexión"),   emoji: "🧠", color: Color(hex: "#A78BFA")),
+    EmotionCategory(id: "soledad",    label: String(localized: "Soledad"),     emoji: "🌙", color: Color(hex: "#4A4A5A")),
+    EmotionCategory(id: "sacrificio", label: String(localized: "Sacrificio"),  emoji: "🧘", color: Color(hex: "#8B2252")),
+    EmotionCategory(id: "esperanza",  label: String(localized: "Esperanza"),   emoji: "☀️", color: Color(hex: "#F1C40F")),
+    EmotionCategory(id: "orgullo",    label: String(localized: "Orgullo"),     emoji: "🏆", color: Color(hex: "#F39C12")),
 ]
 
 // MARK: - UI State

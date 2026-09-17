@@ -8,7 +8,7 @@ struct OnboardingView: View {
     /// dead end the Home flame button had.
     let isHabitSelectionAvailable: Bool
 
-    private let quotePages: [(image: String, phrase: String)] = [
+    private let quotePages: [(image: String, phrase: LocalizedStringKey)] = [
         ("onboarding_01", "Las mejores frases del anime, en la palma de tu mano."),
         ("onboarding_02", "Descubre personajes que te inspiran cada día."),
         ("onboarding_03", "Comparte lo que sientes a través de las palabras del anime."),
@@ -96,7 +96,7 @@ struct OnboardingView: View {
 
 private struct OnboardingPageView: View {
     let imageName: String
-    let phrase: String
+    let phrase: LocalizedStringKey
 
     var body: some View {
         GeometryReader { geo in
@@ -161,12 +161,12 @@ private struct HabitSelectionPageView: View {
                 VStack(spacing: 24) {
                     Spacer()
 
-                    Text("Elegí tu primer hábito")
+                    Text("Elige tu primer hábito")
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.textPrimary)
                         .multilineTextAlignment(.center)
 
-                    Text("Podés cambiarlo o crear otro más tarde, desde Mi Rutina.")
+                    Text("Puedes cambiarlo o crear otro más tarde, desde Mi Rutina.")
                         .font(.system(size: 14))
                         .foregroundColor(.textSecondary)
                         .multilineTextAlignment(.center)
@@ -200,7 +200,7 @@ private struct HabitSelectionPageView: View {
                     .font(.system(size: 18))
                     .foregroundColor(HabitPalette.color(at: template.themeColorIndex ?? 0))
                     .frame(width: 28)
-                Text(template.title)
+                Text(verbatim: template.title)
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(.textPrimary)
                 Spacer()

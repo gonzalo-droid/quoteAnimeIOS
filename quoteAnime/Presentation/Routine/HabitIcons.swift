@@ -2,7 +2,8 @@ import Foundation
 
 struct HabitIconCategory: Identifiable {
     let id: String
-    let title: String
+    /// Display name only; `id` is the stable identifier.
+    let title: LocalizedStringResource
     let keys: [String]
 }
 

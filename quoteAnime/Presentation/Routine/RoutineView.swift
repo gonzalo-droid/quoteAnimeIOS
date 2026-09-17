@@ -59,6 +59,7 @@ struct RoutineView: View {
                         .foregroundColor(.textPrimary)
                         .frame(width: 44, height: 44)
                 }
+                .accessibilityLabel("Volver")
 
                 Text("Mi Rutina")
                     .font(.system(size: 17, weight: .semibold))
@@ -73,10 +74,12 @@ struct RoutineView: View {
                         .foregroundColor(viewModel.uiState.canAddHabit ? .textPrimary : .textSecondary)
                         .frame(width: 44, height: 44)
                 }
+                .accessibilityLabel("Añadir hábito")
             }
             .frame(height: 52)
 
             if viewModel.uiState.globalStreak.current > 0 {
+                // "1 día seguido" / "5 días seguidos": the plural lives in the String Catalog.
                 Label("\(viewModel.uiState.globalStreak.current) días seguidos", systemImage: "flame.fill")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.accentPurple)
@@ -95,7 +98,7 @@ struct RoutineView: View {
         .padding(.bottom, 12)
     }
 
-    private func filterTab(title: String, filter: RoutineFilter) -> some View {
+    private func filterTab(title: LocalizedStringKey, filter: RoutineFilter) -> some View {
         let isSelected = viewModel.uiState.filter == filter
         return Button { viewModel.onFilterChanged(filter) } label: {
             Text(title)
@@ -114,13 +117,13 @@ struct RoutineView: View {
             Image(systemName: "checkmark.circle.badge.questionmark")
                 .font(.system(size: 44))
                 .foregroundColor(.textSecondary)
-            Text(viewModel.uiState.filter == .active ? "Todavía no tenés hábitos" : "No archivaste ningún hábito")
+            Text(viewModel.uiState.filter == .active ? "Todavía no tienes hábitos" : "No archivaste ningún hábito")
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(.textPrimary)
             Text(
                 viewModel.uiState.filter == .active
-                    ? "Creá el primero para empezar a construir tu racha"
-                    : "Los hábitos archivados guardan su historial — restauralos cuando quieras retomarlos"
+                    ? "Crea el primero para empezar a construir tu racha"
+                    : "Los hábitos archivados guardan su historial — restáuralos cuando quieras retomarlos"
             )
             .font(.system(size: 13))
             .foregroundColor(.textSecondary)

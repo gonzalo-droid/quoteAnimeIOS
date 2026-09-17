@@ -22,9 +22,38 @@ struct HabitEditorUiState {
 /// One alert slot for every reason a save can be refused — the limit, a blank title, an
 /// inverted date range. Each maps to one of `CreateHabitError` / `UpdateHabitError`.
 struct HabitEditorAlert: Identifiable, Equatable {
+    enum Reason: Equatable {
+        case habitLimitReached(max: Int)
+        case blankTitle
+        case invalidDateRange
+        case habitNotFound
+    }
+
     let id = UUID()
-    let title: String
-    let message: String
+    /// What went wrong, independent of the language the text is shown in — tests assert this.
+    let reason: Reason
+
+    var title: String {
+        switch reason {
+        case .habitLimitReached: return String(localized: "Límite alcanzado")
+        case .blankTitle: return String(localized: "Falta el nombre")
+        case .invalidDateRange: return String(localized: "Fechas inválidas")
+        case .habitNotFound: return String(localized: "No se pudo guardar")
+        }
+    }
+
+    var message: String {
+        switch reason {
+        case .habitLimitReached(let max):
+            return String(localized: "Con el plan gratuito puedes tener \(max) hábitos activos a la vez. Archiva uno o pásate a premium para agregar más.")
+        case .blankTitle:
+            return String(localized: "Ponle un nombre al hábito para poder guardarlo.")
+        case .invalidDateRange:
+            return String(localized: "La fecha de fin no puede ser anterior a la de inicio.")
+        case .habitNotFound:
+            return String(localized: "Este hábito ya no existe.")
+        }
+    }
 }
 
 @MainActor
@@ -174,38 +203,22 @@ final class HabitEditorViewModel: ObservableObject {
     private static func alert(for error: CreateHabitError) -> HabitEditorAlert {
         switch error {
         case .habitLimitReached(let max):
-            return HabitEditorAlert(
-                title: "Límite alcanzado",
-                message: "Con el plan gratuito podés tener \(max) hábitos activos a la vez. Archivá uno o pasate a premium para agregar más."
-            )
+            return HabitEditorAlert(reason: .habitLimitReached(max: max))
         case .blankTitle:
-            return blankTitleAlert
+            return HabitEditorAlert(reason: .blankTitle)
         case .invalidDateRange:
-            return invalidDateRangeAlert
+            return HabitEditorAlert(reason: .invalidDateRange)
         }
     }
 
     private static func alert(for error: UpdateHabitError) -> HabitEditorAlert {
         switch error {
         case .blankTitle:
-            return blankTitleAlert
+            return HabitEditorAlert(reason: .blankTitle)
         case .invalidDateRange:
-            return invalidDateRangeAlert
+            return HabitEditorAlert(reason: .invalidDateRange)
         case .habitNotFound:
-            return HabitEditorAlert(
-                title: "No se pudo guardar",
-                message: "Este hábito ya no existe."
-            )
+            return HabitEditorAlert(reason: .habitNotFound)
         }
     }
-
-    private static let blankTitleAlert = HabitEditorAlert(
-        title: "Falta el nombre",
-        message: "Ponele un nombre al hábito para poder guardarlo."
-    )
-
-    private static let invalidDateRangeAlert = HabitEditorAlert(
-        title: "Fechas inválidas",
-        message: "La fecha de fin no puede ser anterior a la de inicio."
-    )
 }

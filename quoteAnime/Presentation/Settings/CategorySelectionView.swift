@@ -27,11 +27,11 @@ struct CategorySelectionView: View {
     var body: some View {
         List {
             Section {
-                selectionRow(title: "Todos los animes", isSelected: viewModel.allSelected) {
+                selectionRow(title: String(localized: "Todos los animes"), isSelected: viewModel.allSelected) {
                     viewModel.selectAll()
                 }
             } footer: {
-                Text("Elegí de qué animes querés ver frases en el inicio y recibir por notificación. Si no elegís ninguno, se muestran todos.")
+                Text("Elige de qué animes quieres ver frases en el inicio y recibir por notificación. Si no eliges ninguno, se muestran todos.")
                     .foregroundColor(.textSecondary)
             }
             .listRowBackground(Color.surface)
@@ -47,7 +47,7 @@ struct CategorySelectionView: View {
                 .listRowBackground(Color.surface)
             } else if viewModel.loadFailed {
                 Section {
-                    Text("No pudimos cargar los animes. Revisá tu conexión y volvé a entrar.")
+                    Text("No pudimos cargar los animes. Revisa tu conexión y vuelve a entrar.")
                         .foregroundColor(.textSecondary)
                 }
                 .listRowBackground(Color.surface)
@@ -82,6 +82,8 @@ struct CategorySelectionView: View {
 
     // MARK: - Rows
 
+    /// `title` is already display text: either a localized label or an anime name, which is
+    /// never translated.
     private func selectionRow(
         title: String,
         isSelected: Bool,
@@ -89,7 +91,7 @@ struct CategorySelectionView: View {
     ) -> some View {
         Button(action: action) {
             HStack {
-                Text(title)
+                Text(verbatim: title)
                     .foregroundColor(.textPrimary)
                 Spacer()
                 if isSelected {

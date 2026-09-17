@@ -140,7 +140,7 @@ struct HabitEditorViewModelTests {
         viewModel.save(onSaved: {})
         await settle()
 
-        #expect(viewModel.alert?.title == "Límite alcanzado")
+        #expect(viewModel.alert?.reason == .habitLimitReached(max: PremiumGate.freeHabitLimit))
         #expect(viewModel.alert?.message.contains("\(PremiumGate.freeHabitLimit)") == true)
         #expect(try! await repository.countActiveHabits() == 3)
     }
