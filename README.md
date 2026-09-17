@@ -15,6 +15,7 @@ iOS app that displays anime quotes in a full-screen, swipeable feed. Users can s
 - Daily push notifications with a random quote
 - AdMob interstitial between every 3 shares (configurable)
 - Dark-only UI
+- Spanish and English, following the device language (String Catalogs)
 
 ---
 
@@ -51,7 +52,7 @@ iOS app that displays anime quotes in a full-screen, swipeable feed. Users can s
 
 7. **Info.plist keys** (set in Build Settings → Info, the plist is auto-generated):
    - `GADApplicationIdentifier` — AdMob app ID
-   - `NSUserNotificationUsageDescription` — notification permission prompt text
+   - Visible Info.plist values are translated in `quoteAnime/InfoPlist.xcstrings`
 
 ### Build
 
@@ -151,6 +152,10 @@ A banner ad was evaluated and removed. Instead, `ShareInterstitialManager` shows
 `WidgetDataWriter.write(_:)` writes the active quote to `UserDefaults(suiteName: "group.com.gonzadev.quoteAnime")` and calls `WidgetCenter.shared.reloadAllTimelines()`. The widget extension reads from the same suite.
 
 **Why not CloudKit / background fetch:** The widget only needs to reflect what the user is currently reading. App Group UserDefaults is synchronous, requires no network, and reloads immediately.
+
+### Localization — String Catalogs with Spanish as the source language
+
+`Localizable.xcstrings` in the app and a separate one in the widget extension (an extension can't read the app bundle's catalog). Keys are the Spanish text; English translations reuse the Android app's wording where one exists. Plurals ("1 día seguido" / "5 días seguidos") are catalog plural variations, not `if` branches. The Spanish register is "tú" throughout. `LocalizationTests` fails if any key is missing its Spanish or English value. See `CLAUDE.md` → Localization for the rules.
 
 ### UI — always dark, portrait only
 

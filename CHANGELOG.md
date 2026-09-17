@@ -9,12 +9,16 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
-- **Pantalla de detalle de cada hábito.** Tocá una tarjeta de Mi Rutina y se abre su detalle: el mapa de actividad de los últimos 6 meses, la racha actual, la mejor racha y los días marcados, más un calendario mensual que podés navegar mes a mes.
-- **Marcar días pasados.** Desde el calendario del detalle podés marcar o desmarcar cualquier día que te hayas olvidado, y la racha se recalcula sola. Los días futuros y los que quedan fuera del período del hábito se ven atenuados y no se pueden tocar.
+- **La app ahora está en inglés y en español.** Usa el idioma del iPhone, como en Android; también puedes elegirlo solo para QuoteAnime en Ajustes del sistema → Apps → QuoteAnime → Idioma. Las frases y los nombres de los animes se muestran tal cual vienen.
+- Los textos con números usan singular y plural según corresponda: "1 día seguido", "1 vez al día", "1 anime" (y "1 day streak" en inglés).
+- Los botones que solo tienen ícono (favorito, compartir, explorar, volver, añadir hábito, marcar hoy, colores del hábito) ahora se leen con VoiceOver.
+- Tests de plurales en los dos idiomas, un test que verifica que cada texto tenga su traducción al español y al inglés, y tests de la racha de cada hábito con el día de hoy fijo (40 casos nuevos, 267 en total).
+- **Pantalla de detalle de cada hábito.** Toca una tarjeta de Mi Rutina y se abre su detalle: el mapa de actividad de los últimos 6 meses, la racha actual, la mejor racha y los días marcados, más un calendario mensual que puedes navegar mes a mes.
+- **Marcar días pasados.** Desde el calendario del detalle puedes marcar o desmarcar cualquier día que te hayas olvidado, y la racha se recalcula sola. Los días futuros y los que quedan fuera del período del hábito se ven atenuados y no se pueden tocar.
 - **Archivar, restaurar y borrar desde el detalle**, en el menú de la barra superior. Borrar pide confirmación y avisa que se pierde todo el historial.
-- **Fecha de fin opcional en los hábitos.** Al crear o editar un hábito podés ponerle una fecha de fin; después de esa fecha deja de aceptar marcas. No se puede elegir una fecha de fin anterior a la de inicio.
+- **Fecha de fin opcional en los hábitos.** Al crear o editar un hábito puedes ponerle una fecha de fin; después de esa fecha deja de aceptar marcas. No se puede elegir una fecha de fin anterior a la de inicio.
 - Tests del detalle del hábito, del calendario mensual y de la fecha de fin (121 casos nuevos en `quoteAnimeTests`, 228 en total).
-- **Elegí de qué animes querés frases.** Nueva sección en Ajustes → Contenido → Animes: una lista con los 19 animes disponibles donde marcás los que te interesan. La elección se aplica al feed del inicio y a las frases que te llegan por notificación; si no elegís ninguno, seguís viendo todos.
+- **Elige de qué animes quieres frases.** Nueva sección en Ajustes → Contenido → Animes: una lista con los 19 animes disponibles donde marcas los que te interesan. La elección se aplica al feed del inicio y a las frases que te llegan por notificación; si no eliges ninguno, sigues viendo todos.
 - Tests del filtro por animes, de su persistencia y del onboarding (49 casos nuevos en `quoteAnimeTests`, 107 en total).
 - Suite de tests (`quoteAnimeTests`, con Swift Testing): cubre el cálculo de racha actual y mejor racha, la racha global entre hábitos, el límite de 3 hábitos del plan gratuito y el marcado por día. Es el primer target de tests del proyecto.
 - SwiftUI `#Preview` blocks added to all presentation views: `QuoteCard`, `QuoteDetailView`, `SplashView`, `WidgetTutorialView`, `OnboardingView`, `SettingsView`, `CatalogView`. Views with ViewModels use inline mock repositories.
@@ -22,7 +26,16 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Settings — Síguenos section**: Instagram and Facebook links with deep-link-first strategy (opens native app if installed, browser otherwise). Custom SVG brand icons added to `Assets.xcassets` (`icon_instagram`, `icon_facebook`, `icon_tiktok`).
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
+### Changed
+- **Todos los textos en español tratan de "tú".** Antes la app mezclaba "vos" y "tú" ("Creá", "Ya sos premium" junto a "Puedes"); ahora habla igual en todas las pantallas, como la app de Android.
+- Las fechas, los meses y los días de la semana del calendario, del mapa de actividad y del recordatorio siguen el idioma y la región del iPhone (por ejemplo, "L M X J V S D" en España y "M T W T F S S" en inglés).
+- En Ajustes, la frecuencia del widget ahora dice "Nueva frase 2 veces al día", el mismo texto que en Android.
+
 ### Fixed
+- **"1 días seguidos" ahora dice "1 día seguido".**
+- **Las filas de beneficios del paywall quedan alineadas.** Cada fila se centraba según el largo de su texto y los íconos no coincidían.
+- El recordatorio de un hábito se muestra en el idioma que tenga el iPhone cuando llega, aunque lo hayas creado con otro idioma.
+- La descripción del mapa de actividad para VoiceOver decía "los últimos 26 semanas".
 - **Ya no se pierden los hábitos ni los favoritos al cerrar la app.** Las dos bases de datos internas compartían el mismo archivo sin querer, así que cada una borraba lo que había guardado la otra: al abrir la app de nuevo, todo lo del día anterior había desaparecido. Ahora cada una tiene el suyo y el historial se conserva.
 - **El mapa de actividad se dibuja completo.** Los días anteriores al comienzo del hábito quedaban en blanco y la grilla se veía cortada, sobre todo en el detalle.
 - **La política de privacidad y los términos abren la página correcta.** Seguían apuntando al dominio viejo; ahora van a animequote.app, igual que en Android.

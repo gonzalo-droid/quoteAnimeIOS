@@ -7,12 +7,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Standard Xcode project. Open `quoteAnime.xcodeproj`. Build with:
 
 ```bash
-xcodebuild -project quoteAnime.xcodeproj -scheme quoteAnime \
-  -destination 'platform=iOS Simulator,name=iPhone 16' build
+# The project file is lowercase on disk: quoteanime.xcodeproj
+xcodebuild -project quoteanime.xcodeproj -scheme quoteAnime \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+xcodebuild -project quoteanime.xcodeproj -scheme QuoteAnimeWidgetExtension \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
 
-# Run tests (once a test target is added)
-xcodebuild test -project quoteAnime.xcodeproj -scheme quoteAnime \
-  -destination 'platform=iOS Simulator,name=iPhone 16'
+# Tests (target quoteAnimeTests, Swift Testing)
+xcodebuild test -project quoteanime.xcodeproj -scheme quoteAnime \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+
+# Run the app in a given language without touching the simulator's settings
+xcrun simctl launch booted com.gonzadev.quoteAnime -AppleLanguages "(en)" -AppleLocale en_US
 ```
 
 ### Required setup before building
@@ -30,7 +36,7 @@ xcodebuild test -project quoteAnime.xcodeproj -scheme quoteAnime \
 4. **Info.plist keys** needed (auto-generated plist via `GENERATE_INFOPLIST_FILE = YES`, add in Build Settings → Info):
    - `GADApplicationIdentifier` — AdMob app ID
    - `BGTaskSchedulerPermittedIdentifiers` — if using background refresh
-   - `NSUserNotificationUsageDescription`
+   - Visible Info.plist values (today only `CFBundleDisplayName`) are translated in `quoteAnime/InfoPlist.xcstrings`.
 
 5. **App Group** for widget data sharing: Add capability `group.com.gonzadev.quoteAnime` to both the main app target and the widget extension target.
 
@@ -122,13 +128,51 @@ struct UserPreferences { selectedCategoryIds, notificationsEnabled, notification
   `RescheduleQuoteNotificationsUseCase` (pozo de notificaciones); se elige en
   Ajustes → Contenido → Animes
 
+### Localization — String Catalogs, Spanish source, "tú"
+
+The app ships **Spanish (source/development language, `es`) and English**, and follows the
+device language (plus iOS's per-app language setting). There is no in-app language picker, same
+as Android. **Nothing user-visible is hardcoded any more**: every string goes through a catalog.
+
+- `quoteAnime/Localizable.xcstrings` — app strings. `QuoteAnimeWidget/Localizable.xcstrings` —
+  the widget extension's own catalog (an extension bundle can't read the app's; both targets are
+  synchronised folders, so each catalog belongs to its folder's target with no pbxproj change).
+  A string used in both places lives in both catalogs.
+  `quoteAnime/InfoPlist.xcstrings` — `CFBundleDisplayName`/`CFBundleName`.
+- **Keys are the Spanish text itself** (Xcode's default). A literal in `Text("…")`, `Button("…")`,
+  `Label`, `.navigationTitle`, `.accessibilityLabel`, `Toggle`, `LocalizedStringKey` or
+  `LocalizedStringResource` is extracted automatically. Text that lives in a `String` (view
+  models, models, notification content, alert bodies) must be built with
+  `String(localized: "…")`. Content that must never be translated — quotes, authors, anime
+  names, the habit's own title — goes through `Text(verbatim:)` or a `String` variable.
+- **Every new string needs its English entry in the catalog in the same change.**
+  `LocalizationTests` fails if any key lacks a `translated` Spanish or English value, or if a
+  translation drops/adds a `%@`/`%lld`. It reads the catalogs from the source tree.
+- **Register: tú, never vos.** "Toca", "Elige", "puedes", "Ya eres premium". Reuse Android's
+  wording (`app/src/main/res/values{,-es}/strings.xml`) whenever a string has an equivalent.
+- **Counts use plural variations in the catalog**, never `if count == 1`: interpolate the number
+  (`"\(n) días seguidos"`) and give the key `one`/`other` forms. Tests in `LocalizationTests`
+  pin each plural in both languages.
+- **Changing a Spanish text changes its key.** Update the catalog entry (both languages) in the
+  same commit, or the old key goes stale and the new one ships untranslated.
+- Keys looked up at runtime instead of from a literal (the habit reminder body, resolved at
+  delivery time with `localizedUserNotificationString(forKey:)`) are marked
+  `extractionState: manual` in the catalog so Xcode doesn't flag them as stale.
+- Dates, month names and weekday initials come from `Calendar`/`FormatStyle` with the user's
+  locale (`veryShortStandaloneWeekdaySymbols` for initials); never hardcode "L M X…".
+- Persistence keys, Firestore ids (`"motivación"`), `print("[Type] …")` logs and `#Preview` data
+  stay as they are.
+- To check that everything the compiler extracts is in the catalogs, run
+  `xcodebuild -exportLocalizations -project quoteanime.xcodeproj -localizationPath /tmp/l10n -exportLanguage en`
+  and look for units without a `<target>` in `en.xcloc/Localized Contents/en.xliff`.
+
 ### Theme
 
 Always dark (`.preferredColorScheme(.dark)` at root). All colors defined as `Color` static extensions in `Theme/Colors.swift`. Quote text uses Georgia (serif) via `Font.quoteSerif(size:)` / `Font.quoteSerifItalic(size:)`.
 
 ## Deployment
 
-- Minimum: iOS 16.0
+- Minimum: iOS 16.6 (app and widget extension)
 - Optimized: iOS 17+ (vertical scroll paging via `scrollTargetBehavior(.paging)`, SwiftData)
 - Portrait only
 - Bundle ID: `com.gonzadev.quoteAnime`
