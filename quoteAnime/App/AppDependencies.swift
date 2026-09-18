@@ -169,4 +169,10 @@ final class AppDependencies: ObservableObject {
             UNUserNotificationCenter.current().delegate = delegate
         }
     }
+
+    /// Hands a tapped habit reminder to the router — `AppRouter.open(_:)`, the same door the
+    /// widgets' URL goes through. A no-op below iOS 17, where there is no delegate.
+    func routeNotificationTaps(to open: @escaping (AppDeepLink) -> Void) {
+        habitReminderNotificationDelegate?.openDeepLink = open
+    }
 }

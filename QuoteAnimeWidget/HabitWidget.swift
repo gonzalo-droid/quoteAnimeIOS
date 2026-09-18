@@ -300,6 +300,8 @@ struct HabitWidget: Widget {
         AppIntentConfiguration(kind: kind, intent: SelectHabitIntent.self, provider: HabitWidgetProvider()) { entry in
             HabitWidgetEntryView(entry: entry)
                 .containerBackground(for: .widget) { Color.wBgDark }
+                // Android's `HabitWidget` opens Mi Rutina (the list, not the habit) on any tap.
+                .widgetURL(WidgetDeepLink.routine)
         }
         .configurationDisplayName("Hábito")
         .description("Sigue el progreso de un hábito desde la pantalla de inicio")

@@ -127,11 +127,15 @@ struct RoutineSummaryWidget: Widget {
             if #available(iOS 17.0, *) {
                 RoutineSummaryWidgetEntryView(entry: entry)
                     .containerBackground(for: .widget) { Color.wBgDark }
+                    .widgetURL(WidgetDeepLink.routine)
             } else {
+                // On iOS 16 the app has no Mi Rutina: the router ignores the link and the tap
+                // just opens the app.
                 ZStack {
                     Color.wBgDark
                     RoutineSummaryWidgetEntryView(entry: entry)
                 }
+                .widgetURL(WidgetDeepLink.routine)
             }
         }
         .configurationDisplayName("Mi Rutina")

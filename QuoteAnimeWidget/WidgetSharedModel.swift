@@ -21,6 +21,16 @@ enum WidgetSharedKey {
     static let selectedCategoryIds = "pref_selected_category_ids"
 }
 
+// MARK: - Deep link
+// Mirrors `AppDeepLink.url` (`quoteAnime/Presentation/Navigation/AppDeepLink.swift`); the scheme
+// is registered under `CFBundleURLTypes` in the app's `Info.plist`. `AppDeepLinkTests` reads this
+// file and fails if the two stop agreeing.
+
+/// Where a tap on a routine widget opens the app: Mi Rutina, as Android's `EXTRA_OPEN_ROUTINE`.
+enum WidgetDeepLink {
+    static let routine = URL(string: "quoteanime://routine")!
+}
+
 // MARK: - Habit snapshot
 // Mirrors `HabitWidgetDataWriter.swift`. Fields added after the first version are optional so a
 // snapshot written by an older build still decodes instead of blanking the widget.
