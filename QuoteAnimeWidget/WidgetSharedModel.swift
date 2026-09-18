@@ -14,6 +14,7 @@ enum WidgetSharedKey {
     static let quoteAuthor        = "widget_quote_author"
     static let quoteAnime         = "widget_quote_anime"
     static let imageUrl           = "widget_image_url"
+    static let quoteId            = "widget_quote_id"
     static let updateTimesPerDay  = "widget_update_times_per_day"
     static let habitSnapshot      = "habit_widget_snapshot"
     /// The anime selection, mirrored into the App Group by `UserPreferencesStore`. Empty or
@@ -26,9 +27,35 @@ enum WidgetSharedKey {
 // is registered under `CFBundleURLTypes` in the app's `Info.plist`. `AppDeepLinkTests` reads this
 // file and fails if the two stop agreeing.
 
-/// Where a tap on a routine widget opens the app: Mi Rutina, as Android's `EXTRA_OPEN_ROUTINE`.
+/// Where a tap on a widget opens the app.
 enum WidgetDeepLink {
+    /// Routine widgets: Mi Rutina, as Android's `EXTRA_OPEN_ROUTINE`.
     static let routine = URL(string: "quoteanime://routine")!
+
+    /// Mirrors `AppDeepLink.quoteHost` / `.quoteIdParameter` — `quoteanime://home?quoteId=<id>`.
+    static let quoteHost = "home"
+    static let quoteIdParameter = "quoteId"
+
+    /// Quote widget: Home positioned on that quote, as Android's `widget_quote_id` extra.
+    static func quote(id: String) -> URL? {
+        var components = URLComponents()
+        components.scheme = "quoteanime"
+        components.host = quoteHost
+        components.queryItems = [URLQueryItem(name: quoteIdParameter, value: id)]
+        return components.url
+    }
+}
+
+// MARK: - Quote id
+// Mirrors `QuoteDTO.init(dict:key:)`: the `id` field when it is text, otherwise the node's key.
+// The live `/quotes` node stores `id` as a number, so in practice the id is the key ("45",
+// "-OrkSrA9…"). If the node ever came back as a plain JSON array there is no key, the app falls
+// back to a random UUID, and no id could match — the widget then carries none.
+
+enum WidgetQuoteID {
+    static func resolve(fields: [String: Any], key: String?) -> String? {
+        (fields["id"] as? String) ?? key
+    }
 }
 
 // MARK: - Habit snapshot

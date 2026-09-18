@@ -17,7 +17,9 @@ estén portados, sean Android-only o sean una divergencia deliberada de la tabla
 "pendiente" lo bloquea. Tras la tanda 9 el primer bloqueo era `fcfcd28` (banners de AdMob,
 2026-04-02). La tanda 10 portó o decidió las cinco filas que la tanda 9 dejó abiertas (buscador,
 analytics, portadas, banners, TikTok); la tanda 11 portó las plantillas remotas y el deep link de
-los recordatorios. Dónde puede ir el tag lo dice "Estado del tag" al final.
+los recordatorios. La tanda 12 portó los horarios de las notificaciones de frases (`4b5d21f`) y el
+toque del widget de frases (`4ed8e7e`), y registró tipografías y editor-como-pantalla como
+divergencias. Dónde puede ir el tag lo dice "Estado del tag" al final.
 
 ---
 
@@ -58,6 +60,8 @@ inventar un SHA.
 | Tocar un recordatorio de hábito abre Mi Rutina | `e4fbf2f`, `4b691bf` | portado | Tanda 11. El destino es **la lista** de Mi Rutina, no el detalle del hábito (Android pone `EXTRA_OPEN_ROUTINE` sin id). `HabitReminderNotificationDelegate` resuelve `UNNotificationDefaultActionIdentifier` de la categoría `HABIT_REMINDER` con `AppDeepLink.forNotification` y llama a `AppRouter.open(_:)`. En caliente la pila pasa a ser `[.routine]` (Android navega a Routine con `popUpTo(start, inclusive)`): nunca se apila una segunda Mi Rutina. `AppDependencies` se construye en `QuoteAnimeApp.init` para que el delegate exista antes de terminar el lanzamiento. Un hábito borrado no rompe nada: el destino no lo busca. Lo demás de `e4fbf2f` es Android-only (el `popUpTo` de la barra inferior, que Android ya quitó en `7a842f3`) o presentación (el editor como `dialog()` — ver divergencias). Arranque en frío distinto a propósito — ver divergencias. |
 | Tocar los widgets de Mi Rutina abre Mi Rutina | `132e96b` (parte) | portado | Tanda 11. Esquema `quoteanime://` en `CFBundleURLTypes` (`Info.plist`); `RoutineSummaryWidget` y `HabitWidget` usan `widgetURL(quoteanime://routine)`, la app lo recibe con `onOpenURL` y entra por la misma puerta, `AppRouter.open(_:)`. La URL vive dos veces (app y extensión); `AppDeepLinkTests` lee el fuente del widget y falla si se separan. En iOS 16 el router ignora el enlace y sólo se abre la app. |
 | Plantillas de hábito remotas | `492f80f` | portado | Tanda 11. `/habitTemplates` de la **Realtime Database** (no Firestore) con `getData()`; mismo fallback que Android (nodo vacío o ausente, error de red → `DefaultHabitTemplates`) y orden por `order`, desempate por id. `HabitTemplateTitles` traduce la clave de Android (`template_theme_ninja`) al texto del catálogo; `HabitTemplateDTO` replica las reglas de `toHabitTemplateDto()`. El editor y el onboarding usan `GetHabitTemplatesUseCase` (antes leían `DefaultHabitTemplates.all` directo). Sin portada conocida, `ThemedSuggestionPreview` pinta el acento plano; un ícono desconocido cae al genérico. En producción el nodo **no existe** (consultado por REST el 2026-09-18: `null`; la raíz sólo tiene `imagenes` y `quotes`), así que hoy se ven las locales. Divergencias de validación y de carga — ver abajo. |
+| Horarios de las notificaciones de frases | `4b5d21f` | portado | Tanda 12. `QuoteNotificationSlotCalculator` (puro) replica el de Android: N horarios **de punta a punta** de la ventana (3 en 08:00–22:00 → 08:00, 15:00, 22:00), ventanas que cruzan la medianoche, inicio == fin como 24 h, frecuencia acotada a 1…10. Sus tablas de `slotsFor` y `nextSlot` están portadas caso por caso en `QuoteNotificationSlotCalculatorTests`. iOS sigue programando por adelantado (ver divergencia "Notificaciones de frases"): `upcomingSlots` da los próximos horarios en orden empezando por la ventana de **ayer**, así la noche del cambio de día no se pierde ni se duplica, y arma cada horario con componentes de reloj (un cambio de hora no lo corre). El tope de 64 pendientes se **comparte con los recordatorios de hábitos**: las frases usan lo que queda libre. Defecto sólo de iOS arreglado en el mismo pase: reprogramar usaba `removeAllPendingNotificationRequests()`, que borraba también los recordatorios de hábitos en cada arranque con las frases activas; ahora sólo se tocan los `quote_*` (verificado en el simulador: 3 recordatorios siguen pendientes tras dos arranques). Las instalaciones existentes se reprograman solas en el siguiente arranque (Inicio reprograma siempre; el prefijo `quote_` cubre los ids del formato viejo). |
+| Tocar el widget de frases abre esa frase | `4ed8e7e` | portado | Tanda 12. `AppDeepLink.quote(id:)` = `quoteanime://home?quoteId=<id>` (la ruta de Android es `home?quoteId=`), por `AppRouter.open(_:)` como Mi Rutina: en frío espera al splash y al onboarding, en caliente vuelve a Inicio desde cualquier pantalla; existe también en iOS 16. `HomeViewModel.focus(onQuoteId:)` espera al feed y posiciona la página. El widget manda la clave del nodo (`WidgetQuoteID`, misma regla que `QuoteDTO`); los widgets de pantalla bloqueada abren lo mismo. Frase inexistente o fuera de los animes elegidos → Inicio donde estaba, como Android cuando `indexOfFirst` no la encuentra. Duplicación deliberada: host y parámetro repetidos en `WidgetSharedModel.swift`, comparados por `AppDeepLinkTests`. |
 
 ---
 
@@ -85,7 +89,7 @@ vuelven a regir el día que `PremiumConfig.usesRealBilling` pase a `true`.
 | **`selectedCategoryIds`** | Ids de Firestore (`amor`, `motivación`) | Nombres de anime | Espacios de ids distintos. Sincronizar el valor corrompe en silencio la selección del usuario. |
 | **Nombre visible de la app** | `Frases Anime` / `Anime Quotes` | `QuoteAnime` | Decisión de marca. Renombrar le cambia el nombre instalado a los usuarios actuales. |
 | **Registro del español** | `values-es/strings.xml` usa voseo ("Desbloqueá", "sos", "Probá", "Cancelá") | Tuteo en todas las pantallas | Convención del repo iOS. Cada string portado se convierte. |
-| **Notificaciones de frases** | El worker elige la frase en cada disparo | Se pre-programan todas por adelantado (`RescheduleQuoteNotificationsUseCase`) | iOS no ejecuta código propio en el momento del disparo. |
+| **Notificaciones de frases** | El worker elige la frase en cada disparo y encadena **un** horario por vez | Se pre-programan por adelantado hasta llenar el tope de 64 pendientes menos los recordatorios de hábitos (`RescheduleQuoteNotificationsUseCase` → `NotificationScheduler`), con los mismos horarios que Android; Inicio rellena en cada arranque | iOS no ejecuta código propio en el momento del disparo. Consecuencia: si la app no se abre, las frases se acaban (≈64 días a 1 por día, ≈6 días a 10 por día). |
 | **Heatmap (detalle y tarjeta)** | Tocar una celda marca o desmarca el día, en el detalle **y en la tarjeta de Mi Rutina** (`HabitCard.kt`, `onDayClick = onToggleDay`) | Sólo lectura en las dos superficies | A 10–12 pt cada celda es un cuarto de un target de toque fiable. El calendario mensual del detalle cubre el marcado retroactivo; en la tarjeta, el botón "Marcar hoy". (Tanda 9: la fila decía sólo "del detalle"; la divergencia siempre fue en las dos.) |
 | **Heatmap con VoiceOver** | Cada día visible es un nodo de TalkBack ("12 mar 2026, completed"), accionable, más un resumen "Habit completion calendar" | Un solo elemento: "Mapa de actividad de las últimas 26 semanas", con valor "N días completados" (los que el mapa pinta). El anuncio día por día, accionable, vive en el calendario mensual (`"<fecha>, completado / sin completar / no se puede marcar"`). El heatmap compacto de la tarjeta no se anuncia: la tarjeta es un botón que ya lee título, racha y mejor racha | Consecuencia de la fila anterior: si el heatmap no es donde se marcan los días, 182 nodos que no hacen nada son sólo ruido para quien navega deslizando. |
 | **Nombre en inglés del ícono `auto_awesome`** | "Treat yourself" — el mismo que `icecream` | "Pamper yourself" | **Confirmada por el usuario (tanda 10).** Dos íconos con el mismo nombre son dos botones indistinguibles para VoiceOver — y ahora también dos resultados iguales en el buscador. El español ya los distingue ("Darte un gusto" / "Darte un capricho"). Fijado por `dos íconos nunca se anuncian igual`. Queda como deuda de Android. |
@@ -95,11 +99,13 @@ vuelven a regir el día que `PremiumConfig.usesRealBilling` pase a `true`.
 | **Hitos de racha desde el detalle** | `streak_milestone` / `streak_broken` sólo se miden al marcar desde la lista; marcar el 7º día desde el calendario del detalle o desde la notificación no dispara nada | Igual que Android, a propósito | Las dos apps alimentan los mismos eventos: medir distinto en iOS haría incomparables los datos. Fijado por el test `DIVERGENCIA: completar el 7º día desde el calendario…`; si Android lo corrige, se corrige aquí a la vez. Ver deuda de Android. |
 | **Estado seleccionado en los selectores** | TalkBack no dice cuál ícono ni cuál color está elegido (sólo el borde lo muestra) | `.isSelected` en íconos, colores y días del recordatorio | Lo pidió el usuario en la tanda 9; en Android es deuda. |
 | **Widgets tras la acción "Hecho" de la notificación** | No refresca | Refresca (`HabitReminderNotificationDelegate`) | Gap de Android, ya anotado en el propio archivo. |
-| **Deep link en arranque en frío** | `AppNavGraph` arranca en `Routine`: se salta el splash **y el onboarding aunque no esté completo**, y "atrás" cierra la app | La ruta queda pendiente en `AppRouter` hasta que el splash termina — y el onboarding, si falta — y se abre sobre Inicio, así que "atrás" vuelve a Inicio | Lo pidió el usuario (tanda 11): no saltarse un onboarding incompleto. Con Inicio debajo, el gesto de volver tiene adónde ir, como espera un usuario de iOS. Fijado por `AppDeepLinkTests`. |
+| **Deep link en arranque en frío** | `AppNavGraph` arranca en `Routine` (o en `home?quoteId=` desde el widget de frases): se salta el splash **y el onboarding aunque no esté completo**, y "atrás" cierra la app | La ruta queda pendiente en `AppRouter` hasta que el splash termina — y el onboarding, si falta — y se abre sobre Inicio, así que "atrás" vuelve a Inicio | Lo pidió el usuario (tanda 11): no saltarse un onboarding incompleto. Con Inicio debajo, el gesto de volver tiene adónde ir, como espera un usuario de iOS. Fijado por `AppDeepLinkTests`. |
 | **Título de plantilla con clave desconocida** | `resolveTemplateTitle` muestra el texto crudo: una clave publicada antes de que la app la conozca sale como `template_theme_bleach` | Si el título tiene forma de clave (snake_case con `_`) y iOS no la conoce, la plantilla se **descarta**; un título literal ("Leer 20 minutos") se muestra tal cual, como en Android. Si se descartan todas, se usan las locales | Decisión de la tanda 11 por pedido del usuario: nunca mostrar un id. Una sugerencia sin nombre no vale la pena ofrecerla; la versión que agregue la clave la trae. |
 | **Tipos inválidos en `/habitTemplates`** | `getValue(Int/Boolean)` sobre un valor de otro tipo (no verificado qué hace) | `order` inválido → 0; `themeColorIndex` inválido o fuera de la paleta → nil; `isPremiumOnly` inválido → la plantilla se descarta | Un `isPremiumOnly: "true"` mal cargado nunca debe regalar un tema premium; un índice de color fuera de rango no debe persistirse en un hábito. Fijado por `HabitTemplateRemoteTests`. |
 | **Carga de las plantillas** | El editor y el onboarding esperan la primera emisión remota; sin red y sin caché del RTDB esa emisión no llega y no hay sugerencias | Las locales se ven al instante y se reemplazan cuando responde el servidor; una sugerencia ya aplicada no se cambia | Es lo que dice el KDoc del propio caso de uso de Android ("keeps the editor usable offline"). Se portó la intención. Ver deuda de Android. |
-| **Editor de hábitos: hoja o pantalla** | `dialog()` + `ModalBottomSheet` sobre Mi Rutina (`e4fbf2f`) | Pantalla empujada en el `NavigationStack` (`AppRoute.habitEditor`), con volver | Anterior a esta tanda; encontrada al leer `e4fbf2f`. Es presentación, no comportamiento: guarda, valida y vuelve igual. **Sin decidir** — anotada para no perderla. Un deep link con el editor abierto lo cierra en las dos plataformas. |
+| **Editor de hábitos: hoja o pantalla** | `dialog()` + `ModalBottomSheet` sobre Mi Rutina (`e4fbf2f`) | Pantalla empujada en el `NavigationStack` (`AppRoute.habitEditor`), con volver | **Decidido por el usuario (tanda 12): divergencia deliberada.** En iOS un formulario largo va como pantalla, no como hoja. Es presentación, no comportamiento: guarda, valida y vuelve igual. Un deep link con el editor abierto lo cierra en las dos plataformas. |
+| **Tipografía de las frases** | Empaqueta Fraunces, Lora y Playfair Display (`res/font/*.ttf`, `8e366af`) y usa Fraunces en las frases (`fe415ac`) | Serif del sistema: Didot (`quoteSerif`) y Georgia (`quoteSerifItalic`), sin `.ttf` ni `UIAppFonts` | **Decidido por el usuario (tanda 12).** Las serif del sistema se ven nativas y no suman peso al binario. Igualarla sería añadir los `.ttf` y la clave `UIAppFonts` en `Info.plist`. |
+| **Margen de gracia de las notificaciones de frases** | `QuoteNotificationWorker` descarta un disparo fuera de la ventana, con 30 min de gracia tras el fin (`isWithinWindow`) | No existe | El margen compensa los atrasos de WorkManager. iOS no corre código al disparar: cada fecha programada ya es un horario de la ventana y `UNCalendarNotificationTrigger` dispara en ese minuto, así que no hay nada que volver a comprobar. Los casos de `isWithinWindow` de Android no se portaron por eso. |
 | **Comparación de días** | `LocalDate`, sin hora | `Date` + guarda para que una marca de "hoy" no se rechace al cambiar la hora | Caso que Android nunca enfrenta. |
 
 ---
@@ -178,32 +184,35 @@ Se reporta, no se arregla: el repo de Android es de sólo lectura para el agente
 | Registrar los fallos de compra como non-fatal (`fc16551`) | pendiente, **antes** de activar la compra real | Android los manda a Crashlytics con etapa y código. En iOS `FirebaseCrashlytics` está enlazado al target pero nadie lo importa: los fallos de `loadOffers`, `purchase`, `restore` y las transacciones sin verificar sólo hacen `print`. El reporte del acknowledge agotado es Android-only (`finish()` es local). |
 | Plan anual | pendiente, después de activar la compra real | Necesita un product id nuevo en App Store Connect; el paywall ya soporta varios planes. |
 | Dynamic Type | pendiente (todo el repo) | Las 106 llamadas a `.font(.system(size:))` son tamaños fijos; no hay ni una fuente semántica. No es de ninguna tanda de paridad, pero nadie lo tenía anotado. |
-| Tipografía de las frases | **a decidir** (encontrado en la tanda 10) | `8e366af`, `fe415ac`. Android empaqueta Fraunces, Lora y Playfair Display (`res/font/*.ttf`) y usa Fraunces para las frases; iOS usa las del sistema: Didot (`quoteSerif`) y Georgia (`quoteSerifItalic`), sin `.ttf` ni `UIAppFonts`. Cosmético. Recomendación: pasarla a divergencia deliberada (las serif del sistema se ven nativas y no suman peso); si se prefiere igualar, es añadir los `.ttf` y la clave `UIAppFonts` — un cambio de `Info.plist` que hay que pedir. |
-| Horarios de las notificaciones de frases | pendiente (encontrado en la tanda 11) | `4b5d21f` (HEAD de Android, 2026-09-18). Android reparte N notificaciones **de punta a punta** de la ventana (3 en 08:00–22:00 → 08:00, 15:00, 22:00), acepta ventanas que cruzan la medianoche (22:00–02:00) y trata inicio == fin como 24 h. `NotificationScheduler.reschedule` de iOS ya entrega exactamente N por día (el defecto de cantidad de Android no existe aquí), pero reparte con el fin **excluido** (08:00, 12:40, 17:20) y con inicio ≥ fin no programa **nada**. Encontrado por lectura; es una tanda propia. |
-| Tocar el widget de frases abre esa frase | pendiente (encontrado en la tanda 11) | Android pone `widget_quote_id` en el intent del widget y `Screen.Home` abre el feed en esa frase. `QuoteAnimeWidget` de iOS no tiene `widgetURL`: abre la app donde estaba. El esquema `quoteanime://` ya existe; falta el caso en `AppDeepLink` y posicionar el feed. |
 | Heatmap interactivo | divergencia deliberada, no pendiente | Ver la tabla de divergencias. |
 
 ---
 
-## Estado del tag (tanda 11)
+## Estado del tag (tanda 12)
 
-Auditoría rehecha contra el log de Android hasta HEAD `4b5d21f` (2026-09-18). La tanda 11 cerró
-`492f80f`, `e4fbf2f` y `4b691bf`. Lo que queda abierto, en orden de historia:
+Auditoría rehecha contra el log de Android hasta HEAD `4b5d21f` (2026-09-18), con la ancestría
+comprobada con `git merge-base --is-ancestor`, no con el orden de fechas.
 
-1. **`8e366af`** (2026-04-24, "update fonts") — tipografías, a decidir.
-2. **`fe415ac`** (2026-07-30, Fraunces en las frases) — tipografías, a decidir.
-3. **`fc16551`** — la parte del StoreKit dormido (serializar la re-sincronización, reportar fallos).
-4. **`4b5d21f`** — horarios de las notificaciones de frases (nuevo, ver Pendiente).
+Cerrado en la tanda 12: `4b5d21f` (horarios, portado), `4ed8e7e` (toque del widget de frases,
+portado), `8e366af` y `fe415ac` (tipografías, divergencia deliberada) y `e4fbf2f` (editor como
+pantalla, divergencia deliberada).
 
-**Corrección a la tanda 10**: `8e366af` es **ancestro** de `5583b91` (20 commits antes), así que
-el tag nunca pudo ir a `5583b91` mientras las tipografías estuvieran abiertas.
+**Corrección a la tanda 11**: el toque del widget de frases viene de `4ed8e7e` (2026-04-01), que
+es **ancestro** de `0b76ed0`. Estuvo sin portar hasta hoy, así que el escenario (b) de la tanda 11
+("el tag puede ir a `0b76ed0`") nunca fue cierto mientras esa fila siguió pendiente.
 
-- **(a) Como está**: `ios-synced` sólo puede ir a **`38fd472`** (menú de Ajustes / TikTok, ya
-  decidido), el padre de `8e366af`.
-- **(b) Si `8e366af` y `fe415ac` se registran como divergencias deliberadas**: el primer bloqueo
-  pasa a ser `fc16551`, y el tag puede ir a **`0b76ed0`** (URLs de privacidad), su padre en la
-  historia. `fc16551` no es ancestro de `0b76ed0`; `fe415ac` sí (por eso hace falta decidirlo).
-  Supone aceptar la divergencia de presentación del editor (hoja vs pantalla); si no, `e4fbf2f`
-  vuelve a bloquear y el tag se queda en su padre, `e60ef6f`.
+Lo que queda abierto, en orden de historia:
 
-HEAD `4b5d21f` no califica en ningún escenario. El tag no se ha creado.
+1. **`132e96b`** (2026-08-02) — la fila "Plantillas en el onboarding" de las divergencias sigue
+   marcada *Pendiente, no decidido* (Android elige la primera plantilla con
+   `!isPremiumOnly || isPremium`; iOS filtra siempre las premium). Es ancestro de `0b76ed0`.
+2. **`fc16551`** (2026-09-17) — la parte del StoreKit dormido (serializar la re-sincronización,
+   reportar fallos). No es ancestro de `0b76ed0`; lo es de los seis commits siguientes, HEAD incluido.
+
+- **(a) Si "Plantillas en el onboarding" se registra como divergencia deliberada** (o se porta):
+  `ios-synced` puede ir a **`0b76ed0`** (2026-08-18, URLs de privacidad), el commit más nuevo que
+  no desciende de `fc16551`.
+- **(b) Como está**: el primer bloqueo es `132e96b`, y el tag sólo puede ir a su padre,
+  **`611c70a`** (2026-07-30, "fix: format compose").
+
+HEAD `4b5d21f` no califica mientras `fc16551` siga abierto. El tag no se ha creado.

@@ -167,6 +167,93 @@ struct AppDeepLinkTests {
         #expect(router.navigationPath == [.routine])
     }
 
+    // MARK: - Quote widget (Android `home?quoteId=`)
+
+    @Test("la URL del widget de frases abre Inicio en esa frase", arguments: [
+        "45", "-OrkSrA9-Sglsk83jpeu", "id con espacios&símbolos",
+    ])
+    func quoteURLRoundTrip(id: String) {
+        let url = AppDeepLink.quote(id: id).url
+        #expect(url.scheme == "quoteanime")
+        #expect(url.host == "home")
+        #expect(AppDeepLink(url: url) == .quote(id: id))
+    }
+
+    @Test("una URL de frase sin id no abre nada", arguments: [
+        "quoteanime://home",
+        "quoteanime://home?quoteId=",
+        "quoteanime://home?otro=45",
+    ])
+    func quoteURLWithoutId(raw: String) {
+        #expect(AppDeepLink(url: URL(string: raw)!) == nil)
+    }
+
+    /// The widget builds its URL with its own copy of the host and parameter names.
+    @Test("la copia del widget de frases arma la misma URL que la app")
+    func quoteWidgetMirrorMatchesApp() throws {
+        let source = try String(
+            contentsOf: Self.repoRoot.appendingPathComponent("QuoteAnimeWidget/WidgetSharedModel.swift"),
+            encoding: .utf8
+        )
+        let host = try #require(source.firstMatch(of: #/static let quoteHost = "([^"]+)"/#))
+        let parameter = try #require(source.firstMatch(of: #/static let quoteIdParameter = "([^"]+)"/#))
+        #expect(String(host.1) == AppDeepLink.quoteHost)
+        #expect(String(parameter.1) == AppDeepLink.quoteIdParameter)
+
+        var components = URLComponents()
+        components.scheme = "quoteanime"
+        components.host = String(host.1)
+        components.queryItems = [URLQueryItem(name: String(parameter.1), value: "45")]
+        #expect(AppDeepLink(url: try #require(components.url)) == .quote(id: "45"))
+    }
+
+    /// The widget's id rule mirrors `QuoteDTO`: the live `/quotes` node stores `id` as a number,
+    /// so the app's id is the node key — and the widget sends that key.
+    @Test("el id de una frase es la clave del nodo cuando el campo id es numérico")
+    func quoteIdIsTheNodeKey() throws {
+        let fields: [String: Any] = ["id": 1, "quote": "q", "author": "a", "anime": "Naruto"]
+        #expect(try #require(QuoteDTO(dict: fields, key: "45")).id == "45")
+        #expect(try #require(QuoteDTO(dict: fields.merging(["id": "abc"]) { $1 }, key: "45")).id == "abc")
+    }
+
+    @Test("arranque en frío desde el widget de frases: espera al splash y pide la frase a Inicio")
+    func quoteColdStart() {
+        let router = AppRouter(isRoutineAvailable: true)
+        router.open(.quote(id: "45"))
+        #expect(router.pendingDeepLink == .quote(id: "45"))
+        #expect(router.quoteFocusRequest == nil)
+
+        router.navigateToMain()
+        #expect(router.navigationPath.isEmpty)
+        #expect(router.quoteFocusRequest == "45")
+
+        router.consumeQuoteFocusRequest()
+        #expect(router.quoteFocusRequest == nil)
+    }
+
+    @Test("con la app abierta vuelve a Inicio, desde cualquier pantalla", arguments: [
+        [AppRoute](),
+        [.settings, .categorySelection],
+        [.routine, .habitEditor(habitId: nil)],
+    ])
+    func quoteWarmOpenPopsToHome(initial: [AppRoute]) {
+        let router = AppRouter(isRoutineAvailable: true)
+        router.navigateToMain()
+        router.navigationPath = initial
+
+        router.open(.quote(id: "45"))
+        #expect(router.navigationPath.isEmpty)
+        #expect(router.quoteFocusRequest == "45")
+    }
+
+    @Test("en iOS 16 el widget de frases sí posiciona Inicio")
+    func quoteWorksWithoutRoutine() {
+        let router = AppRouter(isRoutineAvailable: false)
+        router.navigateToMain()
+        router.open(.quote(id: "45"))
+        #expect(router.quoteFocusRequest == "45")
+    }
+
     private static let repoRoot = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent()   // quoteAnimeTests
         .deletingLastPathComponent()   // repo root

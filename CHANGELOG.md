@@ -9,6 +9,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **Tocar el widget de frases abre esa frase.** La app se abre en Inicio justo en la frase que mostraba el widget, como en Android, esté cerrada o abierta en otra pantalla. Si la frase ya no está o no es de los animes que elegiste, se abre Inicio como siempre.
+- Tests de los horarios de las notificaciones (las tablas de horarios de Android, ventanas que cruzan la medianoche, el día entero y el tope de 64 en varios días) y del widget de frases (30 casos nuevos, 413 en total).
 - **Tocar un recordatorio abre Mi Rutina.** Al tocar la notificación de un hábito la app se abre directo en Mi Rutina, como en Android, esté cerrada o en segundo plano. Si todavía no terminaste la bienvenida, primero la completas y después llegas a Mi Rutina. "Hecho" sigue marcando el día sin abrir la app.
 - **Los widgets de Mi Rutina abren Mi Rutina.** Tocar el widget de resumen o el de un hábito lleva a la lista de Mi Rutina, como en Android.
 - **Sugerencias de hábito que se actualizan solas.** Las sugerencias del editor y de la bienvenida pueden llegar desde el servidor sin publicar una versión nueva; mientras tanto, o sin conexión, ves las de siempre al instante.
@@ -48,6 +50,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
 ### Changed
+- **Las notificaciones de frases se reparten de punta a punta de tu horario**, como en Android: 3 al día entre las 8:00 y las 22:00 llegan a las 8:00, 15:00 y 22:00 (antes 8:00, 12:40 y 17:20). Ahora también puedes elegir un horario que cruce la medianoche (22:00 a 2:00) o el día entero (misma hora de inicio y fin); antes no llegaba ninguna. Las que ya tenías programadas se reacomodan solas la próxima vez que abras la app.
 - **Un hábito nuevo empieza desde una sugerencia.** El editor abre con la primera sugerencia que puedes usar ya aplicada (nombre, descripción, ícono, color y portada), y elegir otra la reemplaza entera; puedes cambiar todo antes de guardar. La sugerencia elegida se marca en la fila.
 - **Perder premium ya no te quita nada de lo que creaste.** Si la suscripción caduca, los hábitos que pasan del límite gratuito se quedan donde están y solo deja de poderse crear uno nuevo, igual que en Android.
 - **El widget de frases respeta los animes que elegiste**, igual que en Android. Si ya los habías elegido, se conservan solos. El widget también deja de mostrar siempre frases del mismo bloque: ahora sale de todo el catálogo.
@@ -62,6 +65,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - Typography: `quoteSerif` changed from `Georgia` to `Didot`; `quoteSerifItalic` changed from `Georgia-Italic` to `Georgia`.
 
 ### Fixed
+- **Los recordatorios de hábitos ya no desaparecen.** Con las notificaciones de frases activadas, cada vez que abrías la app se borraban los recordatorios de tus hábitos (y también al apagar las de frases); ahora conviven.
+- Inicio cargaba las frases dos veces al abrir la app.
 - **"Hecho" en el recordatorio de un hábito ya no desmarca el día.** Si ya lo habías marcado desde la app, tocar "Hecho" en la notificación lo dejaba sin marcar; ahora lo deja marcado, como en Android.
 - **El widget de frases volvía a quedarse en gris.** Descargaba la ilustración del anime a tamaño completo y iOS se negaba a guardar el widget con una imagen tan grande, así que descartaba la frase que acababa de traer. Ahora la reduce antes de mostrarla.
 - **Las sugerencias de hábito muestran su ícono.** Camino ninja, Buscar el One Piece, Sé un saiyan y las demás sugerencias mostraban un check genérico en el onboarding, el editor y la tarjeta; ahora tienen su ícono, el mismo que en Android. Los hábitos que ya habías creado desde una sugerencia también lo recuperan.

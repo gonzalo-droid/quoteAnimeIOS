@@ -3,6 +3,9 @@ import UserNotifications
 
 /// A place the app can be opened at from outside itself: a habit reminder or a widget.
 ///
+/// `.quote` is Android's `widget_quote_id` extra (the quote widget's open intent), which starts
+/// the graph at `home?quoteId=…`: the feed, positioned on the quote the widget was showing.
+///
 /// Android's `EXTRA_OPEN_ROUTINE` intent extra — set by the reminder's content intent
 /// (`e4fbf2f`, `4b691bf`) and by the open intent of both routine widgets (`132e96b`). iOS has no
 /// intent extras, so the widgets carry it as a URL (`quoteanime://routine`, registered under
@@ -14,7 +17,15 @@ enum AppDeepLink: Equatable {
     /// scheduled cannot break the tap: nothing here looks the habit up.
     case routine
 
+    /// Home, scrolled to this quote. The id is the app's `Quote.id` (the RTDB node key, see
+    /// `QuoteDTO`). Nothing is guaranteed to still hold it: a quote removed remotely, or one
+    /// outside the current anime selection, just opens Home — `HomeViewModel.focus(onQuoteId:)`.
+    case quote(id: String)
+
     static let scheme = "quoteanime"
+    /// `quoteanime://home?quoteId=<id>` — Android's route is `home?quoteId={quoteId}`.
+    static let quoteHost = "home"
+    static let quoteIdParameter = "quoteId"
 
     /// The URL the widgets hand to `widgetURL`. **Mirrored by hand** in the widget extension
     /// (`WidgetDeepLink` in `QuoteAnimeWidget/WidgetSharedModel.swift`), which cannot import this
@@ -23,6 +34,12 @@ enum AppDeepLink: Equatable {
         switch self {
         case .routine:
             return URL(string: "\(Self.scheme)://routine")!
+        case .quote(let id):
+            var components = URLComponents()
+            components.scheme = Self.scheme
+            components.host = Self.quoteHost
+            components.queryItems = [URLQueryItem(name: Self.quoteIdParameter, value: id)]
+            return components.url!
         }
     }
 
@@ -32,6 +49,11 @@ enum AppDeepLink: Equatable {
         switch url.host?.lowercased() {
         case "routine":
             self = .routine
+        case Self.quoteHost:
+            let id = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+                .queryItems?.first { $0.name == Self.quoteIdParameter }?.value
+            guard let id, !id.isEmpty else { return nil }
+            self = .quote(id: id)
         default:
             return nil
         }
