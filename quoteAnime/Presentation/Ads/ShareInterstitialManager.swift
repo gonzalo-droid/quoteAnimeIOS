@@ -7,11 +7,10 @@ final class ShareInterstitialManager: NSObject {
     static let shared = ShareInterstitialManager()
 
     private var interstitial: InterstitialAd?
-    private var shareCount = 0
     private var pendingOnProceed: (() -> Void)?
 
-    /// Number of shares between each interstitial. Change here to adjust frequency.
-    private let sharesPerAd = 3
+    /// The "no ads" gate. Lives in one place so a future ad surface has somewhere to ask.
+    private var policy = ShareAdPolicy()
 
     private override init() {
         super.init()
@@ -26,12 +25,11 @@ final class ShareInterstitialManager: NSObject {
     /// - Otherwise: calls `onProceed` immediately.
     /// The share always proceeds even if the ad fails.
     func onShareRequested(onProceed: @escaping () -> Void) {
-        guard !PremiumGate.shared.isPremium else {
+        guard policy.shouldShowAd(isPremium: PremiumGate.shared.isPremium) else {
             onProceed()
             return
         }
-        shareCount += 1
-        if shareCount % sharesPerAd == 0, let ad = interstitial {
+        if let ad = interstitial {
             interstitial = nil
             pendingOnProceed = onProceed
             guard let vc = rootViewController() else {
@@ -47,7 +45,8 @@ final class ShareInterstitialManager: NSObject {
 
     /// Pre-loads the next interstitial in background. Safe to call multiple times — no-ops if already loaded.
     func preload() {
-        guard interstitial == nil else { return }
+        // Premium users never see this ad, so there is nothing to warm up — same as Android.
+        guard !PremiumGate.shared.isPremium, interstitial == nil else { return }
         let request = Request()
         InterstitialAd.load(
             with: AdConstants.shareInterstitialID,

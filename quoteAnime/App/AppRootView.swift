@@ -175,7 +175,7 @@ struct MainContainerView: View {
             }
 
         case .paywall:
-            PaywallView(premiumGate: deps.premiumGate)
+            PaywallView(premiumGate: deps.premiumGate, store: deps.premiumStore)
         }
     }
 

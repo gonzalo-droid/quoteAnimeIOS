@@ -17,6 +17,11 @@ xcodebuild -project quoteanime.xcodeproj -scheme QuoteAnimeWidgetExtension \
 xcodebuild test -project quoteanime.xcodeproj -scheme quoteAnime \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 
+# StoreKit testing: the shared scheme `quoteAnime` points at `quoteAnimeTests/Premium.storekit`,
+# so running from Xcode uses the local store. `simctl launch` cannot: simctl has no StoreKit
+# command, and `SKTestSession` aborts outside an XCTest runtime — the purchase flow has to be
+# exercised from Xcode.
+
 # Run the app in a given language without touching the simulator's settings
 xcrun simctl launch booted com.gonzadev.quoteAnime -AppleLanguages "(en)" -AppleLocale en_US
 ```
@@ -56,9 +61,13 @@ quoteAnime/
 │   └── AppRootView.swift       switches Splash / Onboarding / Main
 ├── Domain/
 │   ├── Model/              Quote, Category, UserPreferences (pure structs)
+│   ├── Premium/            PremiumGate + PremiumEntitlementSource (protocol) +
+│   │                       PremiumEntitlementDecision (pure) + PremiumStore (protocol)
 │   ├── Repository/         QuoteRepository, UserPreferencesRepository (protocols)
 │   └── UseCase/            one struct per use case, each wraps a single repo call
 ├── Data/
+│   ├── Premium/            StoreKitEntitlementSource, StoreKitPremiumStore,
+│   │                       DebugPremiumOverrideSource (#if DEBUG only)
 │   ├── Remote/             QuoteRemoteDataSource (Firebase) + DTOs
 │   ├── Local/
 │   │   ├── SwiftData/      FavoriteQuoteDAO (iOS 17+), UserDefaultsFavoriteStorage (iOS 16)
@@ -79,6 +88,8 @@ quoteAnime/
 │   │                       HabitCardView, HabitHeatmapView, HabitCalendarMonthView,
 │   │                       HeatmapGrid + CalendarMonthGrid (geometría pura), HabitPalette,
 │   │                       HabitIcons
+│   ├── Subscription/       PaywallView/ViewModel, CancelSubscriptionSheet (hoja de
+│   │                       retención), ManageSubscription, SubscriptionOfferText
 │   ├── Common/             AppLinks (URLs legales y de App Store, espejo de AppLinks.kt)
 │   └── Components/         QuoteCard, BannerAdView, ShareCardView, ActivityViewController
 ├── Notification/           NotificationScheduler + NotificationHelper
@@ -106,6 +117,32 @@ quoteAnime/
 **Habit schema migration**: adding `endDate` (optional) to `HabitModel` is resolved by SwiftData's implicit lightweight migration — verified by installing the previous build, creating habits and completions, and installing the new one over it. A rename, a removal, or an optional becoming non-optional would need a real `VersionedSchema` + `SchemaMigrationPlan`.
 
 **Habit validation lives in the use cases**, mirroring Android: `CreateHabitUseCase` / `UpdateHabitUseCase` own the blank-title and `endDate < startDate` checks plus the trimming, and `ToggleHabitCompletionUseCase` rejects an unknown habit, a future day and a day outside the habit's window (`Habit.isActiveOn`). Views must not duplicate these rules — `HabitCalendarMonthView` only *disables* the days the use case would reject.
+
+**Premium (StoreKit 2)**: the only type the app talks to about premium is `PremiumGate`
+(`ObservableObject`, `.shared`), and it owns no state — it proxies a `PremiumEntitlementSource`.
+Two implementations: `StoreKitEntitlementSource`, which reads `Transaction.currentEntitlements`
+and listens to `Transaction.updates`, and `DebugPremiumOverrideSource`, which wraps it and is
+compiled **only into DEBUG builds**, so a release binary has exactly one possible answer. The
+entitlement is re-read at launch and on every return to the foreground (`scenePhase`), mirroring
+Android — whose repository documents the foreground re-sync but never wires it up.
+
+- **What actually grants premium** lives in `PremiumEntitlementDecision`, which is pure and takes
+  `EntitlementSnapshot` values rather than `StoreKit.Transaction` (which cannot be constructed in
+  a test). A `.unverified` transaction never grants premium: Android trusts anything Play reports
+  because it has no backend, and that weakness is deliberately not ported.
+- **The cache key is `pref_premium_entitlement_cache`, not `pref_is_premium`.** The old key
+  belongs to the pre-billing mock, whose "Suscribirme" granted premium locally to anyone who
+  tapped it; reusing it would hand all of those users a premium cache. `pref_is_premium` now means
+  "QA override", and only exists in DEBUG.
+- **Buying** is `PremiumStore` / `StoreKitPremiumStore`, mirroring Android's `BillingRepository`.
+  Play's acknowledgement, its 72-hour deadline and its retry worker have no iOS counterpart:
+  `Transaction.finish()` is local and cannot fail over the network. Restore, conversely, exists
+  only on iOS — the App Store requires it and Play does not.
+- **The three gates** read the same gate and nothing else: `CreateHabitUseCase` (active-habit cap),
+  `HabitTemplate.isLocked(isPremium:)` (locked suggestions) and `ShareAdPolicy` (share
+  interstitial). Losing premium blocks the next creation and never deletes anything.
+- Views that show premium state hold the gate as `@ObservedObject` (`SettingsView`,
+  `HabitEditorView`, `PaywallView`), or they will not redraw when StoreKit changes its mind.
 
 **Navigation**: `AppRouter` holds `currentScreen: AppScreen` (splash/onboarding/main) and `navigationPath: NavigationPath`. `AppRootView` switches the root; `MainContainerView` wraps `NavigationStack` for in-app push navigation using `AppRoute` enum cases.
 

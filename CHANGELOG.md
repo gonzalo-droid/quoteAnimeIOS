@@ -9,6 +9,10 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **Suscripción premium de verdad.** Premium ya se compra desde la App Store: el paywall muestra el plan, el precio en tu moneda y la prueba gratis tal como los devuelve la tienda, en vez de un botón de activación de prueba. Si la tienda no responde, la pantalla lo explica y ofrece reintentar.
+- **Restaurar compras.** Botón en el paywall para recuperar tu suscripción en un iPhone nuevo o después de reinstalar la app.
+- **Gestionar o cancelar la suscripción** desde el paywall: antes de mandarte al gestor de suscripciones del sistema, una hoja te recuerda qué dejarías de tener y te deja quedarte con un toque.
+- Tests del entitlement (suscripción activa, vencida, en período de gracia, reembolsada y sin verificar), de los tres límites del plan gratuito y del paywall (43 casos nuevos, 251 en total).
 - **Widget de un solo hábito.** Un widget nuevo que sigue el hábito que elijas: muestra su nombre, su racha y el mapa de actividad de las últimas 9 semanas con su color. Puedes poner varios, uno por hábito. Para elegirlo, mantén pulsado el widget y toca "Editar widget". Necesita iOS 17; los demás widgets siguen funcionando desde iOS 16.6.
 - Tests del snapshot que alimenta los widgets, del selector de hábito y de la selección de animes compartida con la extensión (40 casos nuevos, 208 en total).
 - **Aviso cuando el recordatorio no se puede activar.** Si las notificaciones están desactivadas, el editor de hábitos te lo explica y te ofrece un botón para ir a Ajustes, como en Android.
@@ -31,6 +35,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
 ### Changed
+- **Premium deja de depender de un interruptor local.** Si eres premium lo decide la App Store, y la app lo vuelve a comprobar al abrirse y cada vez que vuelves a ella: una cancelación, un reembolso o una compra hecha en otro dispositivo se reflejan solos, sin reinstalar nada.
+- **Perder premium ya no te quita nada de lo que creaste.** Si la suscripción caduca, los hábitos que pasan del límite gratuito se quedan donde están y solo deja de poderse crear uno nuevo, igual que en Android.
 - **El widget de frases respeta los animes que elegiste**, igual que en Android. Si ya los habías elegido, se conservan solos. El widget también deja de mostrar siempre frases del mismo bloque: ahora sale de todo el catálogo.
 - **Los widgets se actualizan apenas cambias algo.** Marcar un día, crear, editar, archivar, restaurar o borrar un hábito refresca la pantalla de inicio al instante, sin esperar. También al marcar desde la notificación.
 - El widget "Mi Rutina" deja de listar los hábitos archivados.

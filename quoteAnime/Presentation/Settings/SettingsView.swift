@@ -6,7 +6,9 @@ struct SettingsView: View {
     @State private var showPrivacyPolicy = false
     @State private var showTerms = false
 
-    let premiumGate: PremiumGate
+    /// Observed, not just held: with StoreKit behind it the answer can change while this
+    /// screen is open (a purchase, a cancellation made in Ajustes).
+    @ObservedObject var premiumGate: PremiumGate
 
     init(
         getUserPreferences: GetUserPreferencesUseCase,
@@ -23,7 +25,7 @@ struct SettingsView: View {
             getAllQuotes: getAllQuotes,
             rescheduleNotifications: rescheduleNotifications
         ))
-        self.premiumGate = premiumGate
+        _premiumGate = ObservedObject(wrappedValue: premiumGate)
     }
 
     var body: some View {

@@ -7,7 +7,8 @@ struct HabitEditorView: View {
     @State private var showIconPicker = false
 
     private let templates = DefaultHabitTemplates.all
-    private let premiumGate: PremiumGate
+    /// Observed so a template unlocked mid-session stops showing its padlock.
+    @ObservedObject private var premiumGate: PremiumGate
 
     init(
         habitId: String?,
@@ -26,7 +27,7 @@ struct HabitEditorView: View {
             habitReminderScheduler: habitReminderScheduler,
             routineWidgetRefresher: routineWidgetRefresher
         ))
-        self.premiumGate = premiumGate
+        _premiumGate = ObservedObject(wrappedValue: premiumGate)
     }
 
     var body: some View {
@@ -124,7 +125,7 @@ struct HabitEditorView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(templates) { template in
-                        let isLocked = template.isPremiumOnly && !premiumGate.isPremium
+                        let isLocked = template.isLocked(isPremium: premiumGate.isPremium)
                         Button {
                             if isLocked {
                                 router.push(.paywall)

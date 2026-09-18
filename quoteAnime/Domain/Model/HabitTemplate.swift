@@ -15,6 +15,15 @@ struct HabitTemplate: Identifiable, Hashable {
     var isPremiumOnly: Bool = false
 }
 
+extension HabitTemplate {
+    /// The padlock rule, in one place, so the editor's chips and anything else offering templates
+    /// cannot drift apart. A locked chip stays tappable on purpose — it routes to the paywall
+    /// instead of being greyed out, same as Android.
+    func isLocked(isPremium: Bool) -> Bool {
+        isPremiumOnly && !isPremium
+    }
+}
+
 /// Bundled fallback — same 5 themes Android ships, same 2 locked behind Premium (Pokémon,
 /// Black Clover). The original 3 stay free so no existing user loses anything.
 ///

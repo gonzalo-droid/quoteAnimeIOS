@@ -10,16 +10,6 @@ import Testing
 @Suite("OnboardingViewModel")
 struct OnboardingViewModelTests {
 
-    private static func makeGate(premium: Bool = false) -> (PremiumGate, String) {
-        let suiteName = "test.onboarding.\(UUID().uuidString)"
-        let gate = PremiumGate(defaults: UserDefaults(suiteName: suiteName)!)
-        gate.isPremium = premium
-        return (gate, suiteName)
-    }
-
-    private static func tearDown(_ suiteName: String) {
-        UserDefaults.standard.removePersistentDomain(forName: suiteName)
-    }
 
     // MARK: - Completing without a habit
 
@@ -79,8 +69,7 @@ struct OnboardingViewModelTests {
 
     @Test("elegir un hábito lo crea antes de devolver el control")
     func completesWithTemplate() async throws {
-        let (gate, suite) = Self.makeGate()
-        defer { Self.tearDown(suite) }
+        let gate = PremiumGate.fake()
         let habitRepository = FakeHabitRepository()
         let preferences = FakeUserPreferencesRepository()
         let viewModel = OnboardingViewModel()
