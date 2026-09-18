@@ -37,6 +37,11 @@ final class OnboardingViewModel: ObservableObject {
         self.onComplete             = onComplete
     }
 
+    /// The suggestion whose preview the habit page shows, if any.
+    var selectedTemplate: HabitTemplate? {
+        habitTemplates.first { $0.id == selectedTemplateId }
+    }
+
     func selectTemplate(_ id: String) {
         selectedTemplateId = (selectedTemplateId == id) ? nil : id
     }
@@ -51,12 +56,15 @@ final class OnboardingViewModel: ObservableObject {
                 let habit = Habit(
                     id: UUID().uuidString,
                     title: template.title,
-                    description: nil,
+                    // Android's onboarding saves neither the description nor the cover, so a
+                    // habit started here looked different from the same suggestion picked in the
+                    // editor. iOS saves both — see `PARITY.md`.
+                    description: HabitThemeImages.description(for: template.themeKey),
                     iconKey: template.iconKey,
                     colorIndex: template.themeColorIndex ?? 0,
                     startDate: Date(),
                     templateId: template.id,
-                    coverAnimeSlug: nil,
+                    coverAnimeSlug: template.themeKey,
                     createdAt: Date()
                 )
                 if (try? await createHabitUseCase.execute(habit)) != nil {

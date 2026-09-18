@@ -18,6 +18,9 @@ struct HabitEditorUiState {
     /// back when editing, persisted on `Habit.templateId` and reported as `habit_created`'s
     /// `template_id` (nil = `"custom"`).
     var templateId: String?
+    /// The suggestion's theme, shown as `ThemedSuggestionPreview` and saved as
+    /// `Habit.coverAnimeSlug` — Android's `HabitEditorUiState.themeKey`.
+    var themeKey: String?
     var isSaving: Bool = false
     var isEditing: Bool = false
     var canSave: Bool { !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
@@ -111,6 +114,7 @@ final class HabitEditorViewModel: ObservableObject {
                 uiState.title = habit.title
                 uiState.description = habit.description ?? ""
                 uiState.templateId = habit.templateId
+                uiState.themeKey = habit.coverAnimeSlug
                 uiState.iconKey = habit.iconKey
                 uiState.colorIndex = habit.colorIndex
                 uiState.startDate = habit.startDate
@@ -125,15 +129,31 @@ final class HabitEditorViewModel: ObservableObject {
         }
     }
 
+    /// Android's `onTemplateSelected` (`64f9b8b`): picking a suggestion *applies* it — its title,
+    /// its theme description (when it has one), icon, colour and cover all replace what the form
+    /// had. Picking one is an explicit request for that suggestion, and the title only used to be
+    /// kept when non-empty because the form started blank; now it starts from a suggestion.
     func onTemplateSelected(_ template: HabitTemplate) {
         uiState.templateId = template.id
+        uiState.themeKey = template.themeKey
         uiState.iconKey = template.iconKey
         if let themeColorIndex = template.themeColorIndex {
             uiState.colorIndex = themeColorIndex
         }
-        if uiState.title.isEmpty {
-            uiState.title = template.title
+        uiState.title = template.title
+        if let description = HabitThemeImages.description(for: template.themeKey) {
+            uiState.description = description
         }
+    }
+
+    /// A new habit starts from the first suggestion the user can use (`64f9b8b`: the suggestions
+    /// are all themed, so there is no blank default any more). Never while editing, never once a
+    /// suggestion was applied, and never a locked one — same guards as Android's `LaunchedEffect`.
+    func applyDefaultTemplate(from templates: [HabitTemplate], isPremium: Bool) {
+        guard !uiState.isEditing, uiState.templateId == nil,
+              let first = templates.first(where: { !$0.isLocked(isPremium: isPremium) })
+        else { return }
+        onTemplateSelected(first)
     }
 
     /// Keeps the pair consistent while editing: moving the start past the end drags the end
@@ -221,7 +241,7 @@ final class HabitEditorViewModel: ObservableObject {
             startDate: uiState.startDate,
             endDate: uiState.hasEndDate ? uiState.endDate : nil,
             templateId: uiState.templateId,
-            coverAnimeSlug: existingHabit?.coverAnimeSlug,
+            coverAnimeSlug: uiState.themeKey,
             // Carried forward deliberately: `saveHabit` upserts the whole record, so dropping
             // this would restore an archived habit just by opening and saving its editor.
             isArchived: existingHabit?.isArchived ?? false,

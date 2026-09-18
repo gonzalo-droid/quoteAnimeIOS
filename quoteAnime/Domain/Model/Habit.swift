@@ -11,9 +11,10 @@ struct Habit: Identifiable, Hashable {
     /// Android's `Habit.endDate`. Days after it are outside the active window and cannot
     /// be marked, so the completion rate stays meaningful.
     var endDate: Date?
-    /// Set when created from a themed suggestion — resolves to that template's cover image
-    /// and description in the editor. Nil for custom habits.
+    /// Set when created from a themed suggestion. Nil for custom habits.
     var templateId: String?
+    /// The suggestion's `themeKey`, resolved to its cover by `HabitThemeImages` (the card and the
+    /// editor's preview). Same field and values as Android's `Habit.coverAnimeSlug`.
     var coverAnimeSlug: String?
     /// Archived habits keep their full history but stop counting as active. Mirrors Android,
     /// where `isArchived` lives on the domain model too — on iOS it used to exist only on

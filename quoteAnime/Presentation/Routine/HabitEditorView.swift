@@ -41,6 +41,15 @@ struct HabitEditorView: View {
                     if !viewModel.uiState.isEditing {
                         templateRow
                     }
+                    if let themeKey = viewModel.uiState.themeKey {
+                        ThemedSuggestionPreview(
+                            iconKey: viewModel.uiState.iconKey,
+                            title: viewModel.uiState.title,
+                            description: viewModel.uiState.description,
+                            themeKey: themeKey,
+                            accentColor: HabitPalette.color(at: viewModel.uiState.colorIndex)
+                        )
+                    }
                     titleField
                     descriptionField
                     iconPicker
@@ -54,7 +63,10 @@ struct HabitEditorView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.bgDark.ignoresSafeArea())
         .navigationBarHidden(true)
-        .onAppear { viewModel.onAppear() }
+        .onAppear {
+            viewModel.onAppear()
+            viewModel.applyDefaultTemplate(from: templates, isPremium: premiumGate.isPremium)
+        }
         .sheet(isPresented: $showIconPicker) {
             HabitIconPickerView(selectedKey: $viewModel.uiState.iconKey)
         }
@@ -128,6 +140,9 @@ struct HabitEditorView: View {
                 HStack(spacing: 10) {
                     ForEach(templates) { template in
                         let isLocked = template.isLocked(isPremium: premiumGate.isPremium)
+                        // Android's `FilterChip(selected = templateId == template.id)`: now that a
+                        // new habit starts from a suggestion, the chip has to say which one.
+                        let isSelected = viewModel.uiState.templateId == template.id
                         Button {
                             if isLocked {
                                 router.push(.paywall)
@@ -140,16 +155,17 @@ struct HabitEditorView: View {
                                 Text(verbatim: template.title)
                                     .font(.system(size: 13, weight: .medium))
                             }
-                            .foregroundColor(isLocked ? .textSecondary : .textPrimary)
+                            .foregroundColor(isLocked ? .textSecondary : (isSelected ? .bgDark : .textPrimary))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(Color.surface)
+                            .background(isSelected ? Color.accentPurple : Color.surface)
                             .cornerRadius(20)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Color.outline.opacity(0.4), lineWidth: 1)
+                                    .stroke(isSelected ? Color.accentPurple : Color.outline.opacity(0.4), lineWidth: 1)
                             )
                         }
+                        .accessibilityAddTraits(isSelected ? .isSelected : [])
                         .accessibilityHint(isLocked ? Text("Sugerencia exclusiva para premium") : Text(verbatim: ""))
                     }
                 }

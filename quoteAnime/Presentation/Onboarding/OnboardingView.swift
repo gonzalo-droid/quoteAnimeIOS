@@ -144,8 +144,9 @@ private struct OnboardingPageView: View {
 }
 
 /// 4th page — same visual language as the quote pages (dark gradient background, centered
-/// content, dots + button shared with the parent) but no bundled cover image per template
-/// yet on iOS, so the background is a plain themed gradient instead of anime art.
+/// content, dots + button shared with the parent). Choosing a suggestion shows its cover in a
+/// `ThemedSuggestionPreview` under the list, as Android's `HabitOnboardingPage` does; the
+/// background is Android's bgDark → surface → bgDark gradient, from the app's tokens.
 private struct HabitSelectionPageView: View {
     @ObservedObject var viewModel: OnboardingViewModel
 
@@ -153,9 +154,9 @@ private struct HabitSelectionPageView: View {
         GeometryReader { geo in
             ZStack {
                 LinearGradient(
-                    colors: [Color.bgDark, Color(hex: "#1A1040")],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
+                    colors: [Color.bgDark, Color.surface, Color.bgDark],
+                    startPoint: .top,
+                    endPoint: .bottom
                 )
 
                 VStack(spacing: 24) {
@@ -180,6 +181,18 @@ private struct HabitSelectionPageView: View {
                     .padding(.horizontal, 32)
                     .padding(.top, 12)
 
+                    if let template = viewModel.selectedTemplate {
+                        ThemedSuggestionPreview(
+                            iconKey: template.iconKey,
+                            title: template.title,
+                            description: HabitThemeImages.description(for: template.themeKey) ?? "",
+                            themeKey: template.themeKey,
+                            accentColor: HabitPalette.color(at: template.themeColorIndex ?? 0)
+                        )
+                        .padding(.horizontal, 32)
+                        .transition(.opacity)
+                    }
+
                     Spacer()
                     Spacer()
                 }
@@ -193,7 +206,7 @@ private struct HabitSelectionPageView: View {
     private func templateRow(_ template: HabitTemplate) -> some View {
         let isSelected = viewModel.selectedTemplateId == template.id
         return Button {
-            viewModel.selectTemplate(template.id)
+            withAnimation(.easeInOut(duration: 0.2)) { viewModel.selectTemplate(template.id) }
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: HabitIcons.symbol(for: template.iconKey))
