@@ -9,6 +9,10 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **Tocar un recordatorio abre Mi Rutina.** Al tocar la notificación de un hábito la app se abre directo en Mi Rutina, como en Android, esté cerrada o en segundo plano. Si todavía no terminaste la bienvenida, primero la completas y después llegas a Mi Rutina. "Hecho" sigue marcando el día sin abrir la app.
+- **Los widgets de Mi Rutina abren Mi Rutina.** Tocar el widget de resumen o el de un hábito lleva a la lista de Mi Rutina, como en Android.
+- **Sugerencias de hábito que se actualizan solas.** Las sugerencias del editor y de la bienvenida pueden llegar desde el servidor sin publicar una versión nueva; mientras tanto, o sin conexión, ves las de siempre al instante.
+- Tests del deep link a Mi Rutina y de las sugerencias remotas (44 casos nuevos, 383 en total).
 - **Busca íconos por su nombre.** El selector de íconos de los hábitos tiene un buscador: escribe "agua", "leer" o "música" (con o sin tilde) y ves solo los íconos que coinciden, agrupados por categoría, en el idioma de tu iPhone, como en Android. Si nada coincide te lo dice.
 - **Las sugerencias temáticas traen su portada.** Camino ninja, Buscar el One Piece, Sé un saiyan, Sé un maestro Pokémon y Sé el Rey Mago muestran su ilustración y una frase del tema al elegirlas en el onboarding y en el editor, y el hábito creado la lleva de fondo en su tarjeta de Mi Rutina, como en Android.
 - **Anuncio en el detalle de frase de Explorar.** Al abrir una frase desde Explorar aparece un banner debajo de los botones, como en Android; con premium no aparece. El inicio sigue sin banner.

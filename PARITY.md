@@ -16,7 +16,8 @@ No existe tag `ios-synced` en el repo de Android. El alcance de cada tanda sale 
 estén portados, sean Android-only o sean una divergencia deliberada de la tabla de abajo. Una fila
 "pendiente" lo bloquea. Tras la tanda 9 el primer bloqueo era `fcfcd28` (banners de AdMob,
 2026-04-02). La tanda 10 portó o decidió las cinco filas que la tanda 9 dejó abiertas (buscador,
-analytics, portadas, banners, TikTok); dónde está el tag ahora lo dice "Estado del tag" al final.
+analytics, portadas, banners, TikTok); la tanda 11 portó las plantillas remotas y el deep link de
+los recordatorios. Dónde puede ir el tag lo dice "Estado del tag" al final.
 
 ---
 
@@ -54,6 +55,9 @@ inventar un SHA.
 | Eventos de Mi Rutina en Firebase Analytics | `9b82ee4`, `620c255`, `ed42446`, `26b7dcb` | portado | Tanda 10. Los siete eventos con **los mismos nombres, claves y valores** que `RoutineAnalytics.kt` (`routine_tab_opened`, `habit_detail_opened`, `habit_created`, `habit_completed`, `habit_archived`, `streak_milestone`, `streak_broken`), detrás del protocolo `RoutineAnalytics` que inyecta `AppDependencies` (`FirebaseRoutineAnalytics`). Umbrales `{7, 21, 50, 100}`, hito sólo al **subir** sobre uno (`620c255`), racha rota sólo de >0 a 0; como en Android, las rachas sólo se miden desde la lista. `habit_completed` sólo al marcar, nunca al desmarcar; `is_retroactive` = día ≠ hoy; `source` `app`/`notification`. `days_active` = períodos de 24 h truncados. Verificado en el simulador con `-FIRDebugEnabled`. El "Hecho" de la notificación pasa a ser idempotente (`26b7dcb`): antes desmarcaba un día ya marcado. El editor guarda ahora el `templateId` de la sugerencia. |
 | Portadas de las plantillas temáticas | `923e552`, `3153211`, `64f9b8b` | portado | Tanda 10. Las cinco portadas de `res/drawable` (1080×1350) en `Assets.xcassets` como JPEG al 80 % (4,2 MB → 0,8 MB, sin diferencia visible a 3x). `HabitThemeImages` resuelve `themeKey` → asset y descripción temática; `ThemedSuggestionPreview` (108 pt, degradado, insignia) en el editor y en la 4ª página del onboarding; la tarjeta de Mi Rutina lleva la portada de fondo bajo un velo del 82 %. `Habit.coverAnimeSlug` guarda el `themeKey`. Elegir una sugerencia la aplica entera (título, descripción, ícono, color, portada) y un hábito nuevo arranca desde la primera que el usuario puede usar (`64f9b8b`); el chip elegido se marca. |
 | Banner de AdMob | `fcfcd28`, `438e1b4`, `727f872` | portado (estado actual) | Tanda 10. Se replicó lo que Android muestra **hoy**, no su historia: un banner 320×50 (`AdSize.BANNER`) bajo las acciones de la frase abierta desde Explorar, oculto con premium; Home sin banner (en Android está comentado). `BannerAdPolicy` decide dónde y para quién. En DEBUG, banner **e intersticial** piden las unidades de prueba de Google (el intersticial pedía la real); release, las reales — ver Pendiente sobre la del banner. `SKAdNetworkItems` con `cstr6suwn9.skadnetwork` en `Info.plist`. Sin ATT, como el intersticial. |
+| Tocar un recordatorio de hábito abre Mi Rutina | `e4fbf2f`, `4b691bf` | portado | Tanda 11. El destino es **la lista** de Mi Rutina, no el detalle del hábito (Android pone `EXTRA_OPEN_ROUTINE` sin id). `HabitReminderNotificationDelegate` resuelve `UNNotificationDefaultActionIdentifier` de la categoría `HABIT_REMINDER` con `AppDeepLink.forNotification` y llama a `AppRouter.open(_:)`. En caliente la pila pasa a ser `[.routine]` (Android navega a Routine con `popUpTo(start, inclusive)`): nunca se apila una segunda Mi Rutina. `AppDependencies` se construye en `QuoteAnimeApp.init` para que el delegate exista antes de terminar el lanzamiento. Un hábito borrado no rompe nada: el destino no lo busca. Lo demás de `e4fbf2f` es Android-only (el `popUpTo` de la barra inferior, que Android ya quitó en `7a842f3`) o presentación (el editor como `dialog()` — ver divergencias). Arranque en frío distinto a propósito — ver divergencias. |
+| Tocar los widgets de Mi Rutina abre Mi Rutina | `132e96b` (parte) | portado | Tanda 11. Esquema `quoteanime://` en `CFBundleURLTypes` (`Info.plist`); `RoutineSummaryWidget` y `HabitWidget` usan `widgetURL(quoteanime://routine)`, la app lo recibe con `onOpenURL` y entra por la misma puerta, `AppRouter.open(_:)`. La URL vive dos veces (app y extensión); `AppDeepLinkTests` lee el fuente del widget y falla si se separan. En iOS 16 el router ignora el enlace y sólo se abre la app. |
+| Plantillas de hábito remotas | `492f80f` | portado | Tanda 11. `/habitTemplates` de la **Realtime Database** (no Firestore) con `getData()`; mismo fallback que Android (nodo vacío o ausente, error de red → `DefaultHabitTemplates`) y orden por `order`, desempate por id. `HabitTemplateTitles` traduce la clave de Android (`template_theme_ninja`) al texto del catálogo; `HabitTemplateDTO` replica las reglas de `toHabitTemplateDto()`. El editor y el onboarding usan `GetHabitTemplatesUseCase` (antes leían `DefaultHabitTemplates.all` directo). Sin portada conocida, `ThemedSuggestionPreview` pinta el acento plano; un ícono desconocido cae al genérico. En producción el nodo **no existe** (consultado por REST el 2026-09-18: `null`; la raíz sólo tiene `imagenes` y `quotes`), así que hoy se ven las locales. Divergencias de validación y de carga — ver abajo. |
 
 ---
 
@@ -91,6 +95,11 @@ vuelven a regir el día que `PremiumConfig.usesRealBilling` pase a `true`.
 | **Hitos de racha desde el detalle** | `streak_milestone` / `streak_broken` sólo se miden al marcar desde la lista; marcar el 7º día desde el calendario del detalle o desde la notificación no dispara nada | Igual que Android, a propósito | Las dos apps alimentan los mismos eventos: medir distinto en iOS haría incomparables los datos. Fijado por el test `DIVERGENCIA: completar el 7º día desde el calendario…`; si Android lo corrige, se corrige aquí a la vez. Ver deuda de Android. |
 | **Estado seleccionado en los selectores** | TalkBack no dice cuál ícono ni cuál color está elegido (sólo el borde lo muestra) | `.isSelected` en íconos, colores y días del recordatorio | Lo pidió el usuario en la tanda 9; en Android es deuda. |
 | **Widgets tras la acción "Hecho" de la notificación** | No refresca | Refresca (`HabitReminderNotificationDelegate`) | Gap de Android, ya anotado en el propio archivo. |
+| **Deep link en arranque en frío** | `AppNavGraph` arranca en `Routine`: se salta el splash **y el onboarding aunque no esté completo**, y "atrás" cierra la app | La ruta queda pendiente en `AppRouter` hasta que el splash termina — y el onboarding, si falta — y se abre sobre Inicio, así que "atrás" vuelve a Inicio | Lo pidió el usuario (tanda 11): no saltarse un onboarding incompleto. Con Inicio debajo, el gesto de volver tiene adónde ir, como espera un usuario de iOS. Fijado por `AppDeepLinkTests`. |
+| **Título de plantilla con clave desconocida** | `resolveTemplateTitle` muestra el texto crudo: una clave publicada antes de que la app la conozca sale como `template_theme_bleach` | Si el título tiene forma de clave (snake_case con `_`) y iOS no la conoce, la plantilla se **descarta**; un título literal ("Leer 20 minutos") se muestra tal cual, como en Android. Si se descartan todas, se usan las locales | Decisión de la tanda 11 por pedido del usuario: nunca mostrar un id. Una sugerencia sin nombre no vale la pena ofrecerla; la versión que agregue la clave la trae. |
+| **Tipos inválidos en `/habitTemplates`** | `getValue(Int/Boolean)` sobre un valor de otro tipo (no verificado qué hace) | `order` inválido → 0; `themeColorIndex` inválido o fuera de la paleta → nil; `isPremiumOnly` inválido → la plantilla se descarta | Un `isPremiumOnly: "true"` mal cargado nunca debe regalar un tema premium; un índice de color fuera de rango no debe persistirse en un hábito. Fijado por `HabitTemplateRemoteTests`. |
+| **Carga de las plantillas** | El editor y el onboarding esperan la primera emisión remota; sin red y sin caché del RTDB esa emisión no llega y no hay sugerencias | Las locales se ven al instante y se reemplazan cuando responde el servidor; una sugerencia ya aplicada no se cambia | Es lo que dice el KDoc del propio caso de uso de Android ("keeps the editor usable offline"). Se portó la intención. Ver deuda de Android. |
+| **Editor de hábitos: hoja o pantalla** | `dialog()` + `ModalBottomSheet` sobre Mi Rutina (`e4fbf2f`) | Pantalla empujada en el `NavigationStack` (`AppRoute.habitEditor`), con volver | Anterior a esta tanda; encontrada al leer `e4fbf2f`. Es presentación, no comportamiento: guarda, valida y vuelve igual. **Sin decidir** — anotada para no perderla. Un deep link con el editor abierto lo cierra en las dos plataformas. |
 | **Comparación de días** | `LocalDate`, sin hora | `Date` + guarda para que una marca de "hoy" no se rechace al cambiar la hora | Caso que Android nunca enfrenta. |
 
 ---
@@ -129,6 +138,10 @@ Se reporta, no se arregla: el repo de Android es de sólo lectura para el agente
 | `OnboardingViewModel.onCreateHabit` | Crea el hábito con `colorIndex = 0` y sin `coverAnimeSlug` ni descripción, mientras el editor, con la misma sugerencia, guarda el color del tema, la portada y la descripción. |
 | `RoutineViewModel.trackStreakChange` | Es el único lugar que mide rachas: completar un hito desde el calendario del detalle (`HabitDetailViewModel.onDayClick`) o desde el "Hecho" de la notificación nunca dispara `streak_milestone`. |
 | `RoutineAnalytics.kt` | Los booleanos van con `Bundle.putBoolean`, un tipo que Firebase no documenta como admitido (String, long, double). En iOS llegan como 0/1 (visto en el log de depuración). **No verificado** qué recibe Firebase desde Android: conviene mirarlo en DebugView antes de armar un informe que cruce las dos plataformas. |
+| `GetHabitTemplatesUseCase` / `HabitTemplateRemoteDataSource` (`492f80f`) | El KDoc promete que la lista local mantiene el editor usable sin conexión, pero sólo se emite cuando el `ValueEventListener` responde, y sin persistencia del RTDB (`setPersistenceEnabled` no aparece en el repo) un listener sin red no responde: el editor y el onboarding quedan sin sugerencias. Encontrado por lectura, no reproducido. |
+| `HabitIcons.kt` (`resolveTemplateTitle`) | Una clave de título que la app no conoce se muestra cruda al usuario (`template_…`). |
+| `AppNavGraph` (`e4fbf2f`) | Un recordatorio tocado con la app cerrada arranca en `Routine` saltándose el onboarding aunque no esté completo. |
+| `HabitEditorViewModel.onTemplateSelected` (y el de iOS, igual a propósito) | Elegir una sugerencia sin descripción de tema conserva la descripción de la anterior (`resolvedDescription ?: it.description`). Con las cinco locales no pasa; con una remota sin `themeKey` sí. |
 | `app/build.gradle.kts` / iOS `AdConstants` | El id del banner de release de Android (`…/4873365993`) es exactamente el que tenía iOS en `AdConstants`. Uno de los dos lados copió el del otro; como una unidad pertenece a una sola app de AdMob, en la otra plataforma no puede servir. |
 
 ---
@@ -165,19 +178,32 @@ Se reporta, no se arregla: el repo de Android es de sólo lectura para el agente
 | Registrar los fallos de compra como non-fatal (`fc16551`) | pendiente, **antes** de activar la compra real | Android los manda a Crashlytics con etapa y código. En iOS `FirebaseCrashlytics` está enlazado al target pero nadie lo importa: los fallos de `loadOffers`, `purchase`, `restore` y las transacciones sin verificar sólo hacen `print`. El reporte del acknowledge agotado es Android-only (`finish()` es local). |
 | Plan anual | pendiente, después de activar la compra real | Necesita un product id nuevo en App Store Connect; el paywall ya soporta varios planes. |
 | Dynamic Type | pendiente (todo el repo) | Las 106 llamadas a `.font(.system(size:))` son tamaños fijos; no hay ni una fuente semántica. No es de ninguna tanda de paridad, pero nadie lo tenía anotado. |
-| Plantillas de hábito remotas | pendiente — **primer bloqueo del tag** | `492f80f`. `GetHabitTemplatesUseCase` es sólo local; Android las puede sobrescribir desde Firestore. |
-| Tocar el recordatorio de un hábito abre Mi Rutina | pendiente (encontrado en la tanda 10) | `e4fbf2f`, `4b691bf`. En Android tocar el cuerpo de la notificación lleva a Mi Rutina (deep link con reutilización de la tarea). En iOS `HabitReminderNotificationDelegate` sólo atiende la acción "Hecho" (`markDoneActionIdentifier`); `UNNotificationDefaultActionIdentifier` no se maneja, así que tocar la notificación abre la app donde estaba. Se resuelve en el delegate empujando `.routine` en `AppRouter`. |
 | Tipografía de las frases | **a decidir** (encontrado en la tanda 10) | `8e366af`, `fe415ac`. Android empaqueta Fraunces, Lora y Playfair Display (`res/font/*.ttf`) y usa Fraunces para las frases; iOS usa las del sistema: Didot (`quoteSerif`) y Georgia (`quoteSerifItalic`), sin `.ttf` ni `UIAppFonts`. Cosmético. Recomendación: pasarla a divergencia deliberada (las serif del sistema se ven nativas y no suman peso); si se prefiere igualar, es añadir los `.ttf` y la clave `UIAppFonts` — un cambio de `Info.plist` que hay que pedir. |
+| Horarios de las notificaciones de frases | pendiente (encontrado en la tanda 11) | `4b5d21f` (HEAD de Android, 2026-09-18). Android reparte N notificaciones **de punta a punta** de la ventana (3 en 08:00–22:00 → 08:00, 15:00, 22:00), acepta ventanas que cruzan la medianoche (22:00–02:00) y trata inicio == fin como 24 h. `NotificationScheduler.reschedule` de iOS ya entrega exactamente N por día (el defecto de cantidad de Android no existe aquí), pero reparte con el fin **excluido** (08:00, 12:40, 17:20) y con inicio ≥ fin no programa **nada**. Encontrado por lectura; es una tanda propia. |
+| Tocar el widget de frases abre esa frase | pendiente (encontrado en la tanda 11) | Android pone `widget_quote_id` en el intent del widget y `Screen.Home` abre el feed en esa frase. `QuoteAnimeWidget` de iOS no tiene `widgetURL`: abre la app donde estaba. El esquema `quoteanime://` ya existe; falta el caso en `AppDeepLink` y posicionar el feed. |
 | Heatmap interactivo | divergencia deliberada, no pendiente | Ver la tabla de divergencias. |
 
 ---
 
-## Estado del tag (tanda 10)
+## Estado del tag (tanda 11)
 
-Auditoría de los 125 commits de Android desde `fcfcd28` hasta `51c5dfd` (HEAD) contra este archivo
-y el código Swift: ~80 portados, ~35 exclusivos de Android, el resto divergencias o pendientes.
-El primer bloqueo en orden es **`492f80f`** (plantillas remotas); los siguientes son `e4fbf2f` /
-`4b691bf` (tocar el recordatorio abre Mi Rutina), `8e366af` / `fe415ac` (tipografías, a decidir) y
-`fc16551` (en parte, del StoreKit apagado). Por la regla de arriba, `ios-synced` hoy sólo podría ir a
-**`5583b91`**, el commit anterior al primer bloqueo. **HEAD `51c5dfd` no califica.** El tag no se ha
-creado.
+Auditoría rehecha contra el log de Android hasta HEAD `4b5d21f` (2026-09-18). La tanda 11 cerró
+`492f80f`, `e4fbf2f` y `4b691bf`. Lo que queda abierto, en orden de historia:
+
+1. **`8e366af`** (2026-04-24, "update fonts") — tipografías, a decidir.
+2. **`fe415ac`** (2026-07-30, Fraunces en las frases) — tipografías, a decidir.
+3. **`fc16551`** — la parte del StoreKit dormido (serializar la re-sincronización, reportar fallos).
+4. **`4b5d21f`** — horarios de las notificaciones de frases (nuevo, ver Pendiente).
+
+**Corrección a la tanda 10**: `8e366af` es **ancestro** de `5583b91` (20 commits antes), así que
+el tag nunca pudo ir a `5583b91` mientras las tipografías estuvieran abiertas.
+
+- **(a) Como está**: `ios-synced` sólo puede ir a **`38fd472`** (menú de Ajustes / TikTok, ya
+  decidido), el padre de `8e366af`.
+- **(b) Si `8e366af` y `fe415ac` se registran como divergencias deliberadas**: el primer bloqueo
+  pasa a ser `fc16551`, y el tag puede ir a **`0b76ed0`** (URLs de privacidad), su padre en la
+  historia. `fc16551` no es ancestro de `0b76ed0`; `fe415ac` sí (por eso hace falta decidirlo).
+  Supone aceptar la divergencia de presentación del editor (hoja vs pantalla); si no, `e4fbf2f`
+  vuelve a bloquear y el tag se queda en su padre, `e60ef6f`.
+
+HEAD `4b5d21f` no califica en ningún escenario. El tag no se ha creado.
