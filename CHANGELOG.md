@@ -9,9 +9,10 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
-- **Suscripción premium de verdad.** Premium ya se compra desde la App Store: el paywall muestra el plan, el precio en tu moneda y la prueba gratis tal como los devuelve la tienda, en vez de un botón de activación de prueba. Si la tienda no responde, la pantalla lo explica y ofrece reintentar.
-- **Restaurar compras.** Botón en el paywall para recuperar tu suscripción en un iPhone nuevo o después de reinstalar la app.
-- **Gestionar o cancelar la suscripción** desde el paywall: antes de mandarte al gestor de suscripciones del sistema, una hoja te recuerda qué dejarías de tener y te deja quedarte con un toque.
+- **Premium llega próximamente.** El paywall ya muestra lo que incluye premium (hábitos ilimitados, sin anuncios y los temas de Pokémon y Black Clover), con el botón "Próximamente" mientras preparamos las suscripciones. El plan gratuito sigue igual: 3 hábitos activos y las plantillas premium con candado.
+- Premium de prueba solo en las versiones de desarrollo y TestFlight, para revisar las pantallas premium; la versión de la App Store no lo ofrece ni lo acepta.
+- La compra con la App Store (planes, restaurar compras, gestionar o cancelar la suscripción) ya está hecha pero apagada hasta la versión productiva: la app no se conecta a la tienda mientras tanto.
+- Tests del premium apagado: "Próximamente" en la App Store, premium de prueba en desarrollo y TestFlight, y que la tienda no se toca (17 casos nuevos, 268 en total).
 - Tests del entitlement (suscripción activa, vencida, en período de gracia, reembolsada y sin verificar), de los tres límites del plan gratuito y del paywall (43 casos nuevos, 251 en total).
 - **Widget de un solo hábito.** Un widget nuevo que sigue el hábito que elijas: muestra su nombre, su racha y el mapa de actividad de las últimas 9 semanas con su color. Puedes poner varios, uno por hábito. Para elegirlo, mantén pulsado el widget y toca "Editar widget". Necesita iOS 17; los demás widgets siguen funcionando desde iOS 16.6.
 - Tests del snapshot que alimenta los widgets, del selector de hábito y de la selección de animes compartida con la extensión (40 casos nuevos, 208 en total).
@@ -35,7 +36,6 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
 ### Changed
-- **Premium deja de depender de un interruptor local.** Si eres premium lo decide la App Store, y la app lo vuelve a comprobar al abrirse y cada vez que vuelves a ella: una cancelación, un reembolso o una compra hecha en otro dispositivo se reflejan solos, sin reinstalar nada.
 - **Perder premium ya no te quita nada de lo que creaste.** Si la suscripción caduca, los hábitos que pasan del límite gratuito se quedan donde están y solo deja de poderse crear uno nuevo, igual que en Android.
 - **El widget de frases respeta los animes que elegiste**, igual que en Android. Si ya los habías elegido, se conservan solos. El widget también deja de mostrar siempre frases del mismo bloque: ahora sale de todo el catálogo.
 - **Los widgets se actualizan apenas cambias algo.** Marcar un día, crear, editar, archivar, restaurar o borrar un hábito refresca la pantalla de inicio al instante, sin esperar. También al marcar desde la notificación.

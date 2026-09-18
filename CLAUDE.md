@@ -58,16 +58,21 @@ quoteAnime/
 ├── App/                    # Entry point + DI composition root
 │   ├── QuoteAnimeApp.swift     @main, creates AppDependencies + AppRouter
 │   ├── AppDependencies.swift   manual DI container (@StateObject at app level)
+│   ├── PremiumConfig.swift     THE switch: usesRealBilling (false = mock, StoreKit asleep)
+│   ├── PremiumServices.swift   builds gate + store + test controls from that switch
 │   └── AppRootView.swift       switches Splash / Onboarding / Main
 ├── Domain/
 │   ├── Model/              Quote, Category, UserPreferences (pure structs)
 │   ├── Premium/            PremiumGate + PremiumEntitlementSource (protocol) +
-│   │                       PremiumEntitlementDecision (pure) + PremiumStore (protocol)
+│   │                       PremiumEntitlementDecision (pure) + PremiumStore (protocol) +
+│   │                       AppDistribution (debug / TestFlight / App Store, pure)
 │   ├── Repository/         QuoteRepository, UserPreferencesRepository (protocols)
 │   └── UseCase/            one struct per use case, each wraps a single repo call
 ├── Data/
-│   ├── Premium/            StoreKitEntitlementSource, StoreKitPremiumStore,
-│   │                       DebugPremiumOverrideSource (#if DEBUG only)
+│   ├── Premium/            MockPremiumEntitlementSource, UnavailablePremiumStore,
+│   │                       AppTransactionDistributionDetector (switch off);
+│   │                       StoreKitEntitlementSource, StoreKitPremiumStore,
+│   │                       DebugPremiumOverrideSource (#if DEBUG only) (switch on)
 │   ├── Remote/             QuoteRemoteDataSource (Firebase) + DTOs
 │   ├── Local/
 │   │   ├── SwiftData/      FavoriteQuoteDAO (iOS 17+), UserDefaultsFavoriteStorage (iOS 16)
@@ -118,7 +123,28 @@ quoteAnime/
 
 **Habit validation lives in the use cases**, mirroring Android: `CreateHabitUseCase` / `UpdateHabitUseCase` own the blank-title and `endDate < startDate` checks plus the trimming, and `ToggleHabitCompletionUseCase` rejects an unknown habit, a future day and a day outside the habit's window (`Habit.isActiveOn`). Views must not duplicate these rules — `HabitCalendarMonthView` only *disables* the days the use case would reject.
 
-**Premium (StoreKit 2)**: the only type the app talks to about premium is `PremiumGate`
+**Premium — mock until the production release, StoreKit asleep behind one switch.**
+`PremiumConfig.usesRealBilling` (in `App/PremiumConfig.swift`) is **`false`** by product decision:
+the subscription does not exist in App Store Connect yet. Its `///` lists what must be done before
+flipping it (product, Paid Apps agreement, sandbox test on a device). `PremiumServices.make` reads
+it once and builds everything premium; `PremiumGate.shared` and `AppDependencies.premium` both come
+from `PremiumServices.live`, so there is exactly one entitlement source.
+
+- **Switch `false` (today).** `MockPremiumEntitlementSource` + `UnavailablePremiumStore`. The
+  StoreKit types are passed as factories and **never constructed**, so nothing loads products,
+  listens to `Transaction.updates` or re-syncs. The paywall (`PremiumPurchaseAvailability.comingSoon`)
+  shows the benefits with a disabled "Próximamente", no restore, no manage; free limits apply.
+  DEBUG and TestFlight builds show "Activar/Quitar premium (solo pruebas)", which writes
+  `pref_is_premium`; an App Store install ignores that flag even when it is `true`.
+- **Where the app runs** is `AppDistribution`, decided by an injectable `AppDistributionDetecting`.
+  DEBUG → `.debug`. Release → `.appStore` until proven TestFlight: only a binary whose
+  `appStoreReceiptURL` ends in `sandboxReceipt` asks `AppTransaction.shared`, and only a verified
+  `.sandbox` counts. **Never call `AppTransaction.shared` unconditionally**: with no local app
+  transaction it triggers an interactive App Store sign-in at launch (seen on the simulator).
+  App Review also runs in sandbox, so a reviewer sees the test switch — see `PARITY.md`.
+- **Switch `true`.** Everything below applies again, unchanged from tanda 7.
+
+**Premium (StoreKit 2), behind the switch**: the only type the app talks to about premium is `PremiumGate`
 (`ObservableObject`, `.shared`), and it owns no state — it proxies a `PremiumEntitlementSource`.
 Two implementations: `StoreKitEntitlementSource`, which reads `Transaction.currentEntitlements`
 and listens to `Transaction.updates`, and `DebugPremiumOverrideSource`, which wraps it and is
@@ -132,8 +158,9 @@ Android — whose repository documents the foreground re-sync but never wires it
   because it has no backend, and that weakness is deliberately not ported.
 - **The cache key is `pref_premium_entitlement_cache`, not `pref_is_premium`.** The old key
   belongs to the pre-billing mock, whose "Suscribirme" granted premium locally to anyone who
-  tapped it; reusing it would hand all of those users a premium cache. `pref_is_premium` now means
-  "QA override", and only exists in DEBUG.
+  tapped it; reusing it would hand all of those users a premium cache. With the switch on,
+  `pref_is_premium` means "QA override" and only counts in DEBUG; with it off, it is the test
+  premium flag and only counts in DEBUG and TestFlight.
 - **Buying** is `PremiumStore` / `StoreKitPremiumStore`, mirroring Android's `BillingRepository`.
   Play's acknowledgement, its 72-hour deadline and its retry worker have no iOS counterpart:
   `Transaction.finish()` is local and cannot fail over the network. Restore, conversely, exists
