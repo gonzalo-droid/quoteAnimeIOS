@@ -93,6 +93,46 @@
         }
       }
     },
+    "%lld días de prueba gratis" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld-day free trial"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld-day free trial"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld día de prueba gratis"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld días de prueba gratis"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld días seguidos" : {
       "localizations" : {
         "en" : {
@@ -182,22 +222,6 @@
         }
       }
     },
-    "Activación de prueba — la suscripción real llega pronto." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Test activation — the real subscription is coming soon."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activación de prueba — la suscripción real llega pronto."
-          }
-        }
-      }
-    },
     "Activar notificaciones" : {
       "localizations" : {
         "en" : {
@@ -210,6 +234,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Activar notificaciones"
+          }
+        }
+      }
+    },
+    "Activar premium (solo pruebas)" : {
+      "comment" : "DEBUG builds only",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activate premium (testing only)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar premium (solo pruebas)"
           }
         }
       }
@@ -259,6 +300,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ajustes"
+          }
+        }
+      }
+    },
+    "Algo salió mal con la compra. Prueba de nuevo." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something went wrong with the purchase. Please try again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo salió mal con la compra. Prueba de nuevo."
           }
         }
       }
@@ -526,6 +583,22 @@
         }
       }
     },
+    "Cancela cuando quieras desde Ajustes." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel anytime from Settings."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancela cuando quieras desde Ajustes."
+          }
+        }
+      }
+    },
     "Cancelar" : {
       "localizations" : {
         "en" : {
@@ -538,6 +611,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancelar"
+          }
+        }
+      }
+    },
+    "Cancelar de todos modos" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel anyway"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar de todos modos"
           }
         }
       }
@@ -667,6 +756,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Completado"
+          }
+        }
+      }
+    },
+    "Compra cancelada." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purchase cancelled."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra cancelada."
           }
         }
       }
@@ -1449,6 +1554,22 @@
         }
       }
     },
+    "Gestionar suscripción" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage subscription"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestionar suscripción"
+          }
+        }
+      }
+    },
     "Guardar" : {
       "localizations" : {
         "en" : {
@@ -1612,6 +1733,22 @@
         }
       }
     },
+    "La App Store no está disponible ahora. Inténtalo más tarde." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The App Store isn't available right now. Please try again later."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La App Store no está disponible ahora. Inténtalo más tarde."
+          }
+        }
+      }
+    },
     "La fecha de fin no puede ser anterior a la de inicio." : {
       "localizations" : {
         "en" : {
@@ -1693,6 +1830,38 @@
         }
       }
     },
+    "Listo, restauramos tu suscripción." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done — your subscription is back."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listo, restauramos tu suscripción."
+          }
+        }
+      }
+    },
+    "Los anuncios vuelven al compartir frases." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ads come back when you share quotes."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los anuncios vuelven al compartir frases."
+          }
+        }
+      }
+    },
     "Los hábitos archivados guardan su historial — restáuralos cuando quieras retomarlos" : {
       "localizations" : {
         "en" : {
@@ -1705,6 +1874,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Los hábitos archivados guardan su historial — restáuralos cuando quieras retomarlos"
+          }
+        }
+      }
+    },
+    "Los planes de suscripción no están disponibles en este momento. Prueba de nuevo más tarde." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription plans aren't available right now. Please try again later."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los planes de suscripción no están disponibles en este momento. Prueba de nuevo más tarde."
           }
         }
       }
@@ -1993,6 +2178,22 @@
         }
       }
     },
+    "No encontramos compras para restaurar." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We couldn't find any purchases to restore."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No encontramos compras para restaurar."
+          }
+        }
+      }
+    },
     "No pudimos cargar los animes. Revisa tu conexión y vuelve a entrar." : {
       "localizations" : {
         "en" : {
@@ -2005,6 +2206,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No pudimos cargar los animes. Revisa tu conexión y vuelve a entrar."
+          }
+        }
+      }
+    },
+    "No pudimos verificar la compra con la App Store." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We couldn't verify the purchase with the App Store."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No pudimos verificar la compra con la App Store."
           }
         }
       }
@@ -2195,6 +2412,22 @@
         }
       }
     },
+    "Pokémon, Black Clover y los demás se bloquean otra vez." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokémon, Black Clover and the rest get locked again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokémon, Black Clover y los demás se bloquean otra vez."
+          }
+        }
+      }
+    },
     "Política de privacidad" : {
       "localizations" : {
         "en" : {
@@ -2375,6 +2608,22 @@
         }
       }
     },
+    "Reintentar" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar"
+          }
+        }
+      }
+    },
     "Restaurar" : {
       "localizations" : {
         "en" : {
@@ -2387,6 +2636,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Restaurar"
+          }
+        }
+      }
+    },
+    "Restaurar compras" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restore purchases"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar compras"
           }
         }
       }
@@ -2457,6 +2722,38 @@
         }
       }
     },
+    "Seguir siendo premium" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stay premium"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguir siendo premium"
+          }
+        }
+      }
+    },
+    "Si cancelas, al terminar tu periodo actual vas a perder:" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you cancel, you'll lose these when your current period ends:"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si cancelas, al terminar tu periodo actual vas a perder:"
+          }
+        }
+      }
+    },
     "Siguiente" : {
       "localizations" : {
         "en" : {
@@ -2485,6 +2782,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sin anuncios"
+          }
+        }
+      }
+    },
+    "Sin conexión. Revisa tu red e intenta de nuevo." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No connection. Check your network and try again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin conexión. Revisa tu red e intenta de nuevo."
           }
         }
       }
@@ -2767,6 +3080,22 @@
         }
       }
     },
+    "Toca para descartar" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap to dismiss"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca para descartar"
+          }
+        }
+      }
+    },
     "Toca y mantén pulsado cualquier zona vacía del escritorio hasta que los iconos empiecen a moverse." : {
       "localizations" : {
         "en" : {
@@ -2865,6 +3194,22 @@
         }
       }
     },
+    "Tranquilo: conservas todo hasta el final del periodo que ya pagaste." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relax — you keep everything until the end of the period you already paid for."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tranquilo: conservas todo hasta el final del periodo que ya pagaste."
+          }
+        }
+      }
+    },
     "Tristeza" : {
       "comment" : "Quote category",
       "localizations" : {
@@ -2878,6 +3223,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tristeza"
+          }
+        }
+      }
+    },
+    "Tu compra está pendiente — vamos a desbloquear premium apenas se complete." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your purchase is pending — we'll unlock premium once it completes."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu compra está pendiente — vamos a desbloquear premium apenas se complete."
           }
         }
       }
@@ -2930,6 +3291,46 @@
         }
       }
     },
+    "Vuelves al límite de %lld hábitos activos." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You go back to the %lld-active-habit limit."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You go back to the %lld-active-habit limit."
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Vuelves al límite de %lld hábito activo."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Vuelves al límite de %lld hábitos activos."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Widget" : {
       "localizations" : {
         "en" : {
@@ -2958,6 +3359,166 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ya eres premium ✨"
+          }
+        }
+      }
+    },
+    "cada %lld años" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "every year"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "every %lld years"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "cada año"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "cada %lld años"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "cada %lld días" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "every day"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "every %lld days"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "cada día"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "cada %lld días"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "cada %lld meses" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "every month"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "every %lld months"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "cada mes"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "cada %lld meses"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "cada %lld semanas" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "every week"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "every %lld weeks"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "cada semana"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "cada %lld semanas"
+                }
+              }
+            }
           }
         }
       }
@@ -3006,6 +3567,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "¿Borrar este hábito?"
+          }
+        }
+      }
+    },
+    "¿Seguro que quieres cancelar?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sure you want to cancel?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Seguro que quieres cancelar?"
           }
         }
       }

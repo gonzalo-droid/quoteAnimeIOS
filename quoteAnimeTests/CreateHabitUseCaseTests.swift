@@ -7,17 +7,6 @@ import Testing
 @Suite("CreateHabitUseCase")
 struct CreateHabitUseCaseTests {
 
-    private static func makeGate(premium: Bool) -> (PremiumGate, String) {
-        let suiteName = "test.createhabit.\(UUID().uuidString)"
-        let gate = PremiumGate(defaults: UserDefaults(suiteName: suiteName)!)
-        gate.isPremium = premium
-        return (gate, suiteName)
-    }
-
-    private static func tearDown(_ suiteName: String) {
-        UserDefaults.standard.removePersistentDomain(forName: suiteName)
-    }
-
     // MARK: - The exact edge of the free limit
 
     @Test(
@@ -25,8 +14,7 @@ struct CreateHabitUseCaseTests {
         arguments: [0, 1, 2]
     )
     func allowsCreationBelowLimit(existingCount: Int) async throws {
-        let (gate, suite) = Self.makeGate(premium: false)
-        defer { Self.tearDown(suite) }
+        let gate = PremiumGate.fake(premium: false)
 
         let repository = FakeHabitRepository()
         repository.seed(habits: HabitFixture.makeMany(existingCount))
@@ -40,8 +28,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("con 3 activos el plan gratuito rechaza el cuarto")
     func rejectsAtLimit() async throws {
-        let (gate, suite) = Self.makeGate(premium: false)
-        defer { Self.tearDown(suite) }
+        let gate = PremiumGate.fake(premium: false)
 
         let repository = FakeHabitRepository()
         repository.seed(habits: HabitFixture.makeMany(3))
@@ -57,8 +44,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("por encima del límite también se rechaza", arguments: [4, 5, 10])
     func rejectsAboveLimit(existingCount: Int) async throws {
-        let (gate, suite) = Self.makeGate(premium: false)
-        defer { Self.tearDown(suite) }
+        let gate = PremiumGate.fake(premium: false)
 
         let repository = FakeHabitRepository()
         repository.seed(habits: HabitFixture.makeMany(existingCount))
@@ -73,8 +59,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("los hábitos archivados no cuentan para el límite")
     func archivedDoNotCountTowardsLimit() async throws {
-        let (gate, suite) = Self.makeGate(premium: false)
-        defer { Self.tearDown(suite) }
+        let gate = PremiumGate.fake(premium: false)
 
         let repository = FakeHabitRepository()
         // 5 habits, but 3 of them archived → only 2 active, so a new one must fit.
@@ -92,8 +77,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("archivar uno libera cupo para crear otro")
     func archivingFreesASlot() async throws {
-        let (gate, suite) = Self.makeGate(premium: false)
-        defer { Self.tearDown(suite) }
+        let gate = PremiumGate.fake(premium: false)
 
         let repository = FakeHabitRepository()
         repository.seed(habits: HabitFixture.makeMany(3))
@@ -114,8 +98,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("en premium no hay límite")
     func premiumHasNoLimit() async throws {
-        let (gate, suite) = Self.makeGate(premium: true)
-        defer { Self.tearDown(suite) }
+        let gate = PremiumGate.fake(premium: true)
 
         let repository = FakeHabitRepository()
         repository.seed(habits: HabitFixture.makeMany(25))
@@ -129,8 +112,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("crear con el mismo id actualiza en vez de duplicar")
     func savingSameIdUpdates() async throws {
-        let (gate, suite) = Self.makeGate(premium: false)
-        defer { Self.tearDown(suite) }
+        let gate = PremiumGate.fake(premium: false)
 
         let repository = FakeHabitRepository()
         repository.seed(habits: [HabitFixture.make(id: "unico", title: "Original")])
@@ -147,8 +129,7 @@ struct CreateHabitUseCaseTests {
     func limitErrorCarriesThePremiumMax() async throws {
         // Premium's max is Int.max, so the only way to hit the branch is to report it — the
         // point of the assertion is that the value travels with the error, as on Android.
-        let (gate, suite) = Self.makeGate(premium: false)
-        defer { Self.tearDown(suite) }
+        let gate = PremiumGate.fake(premium: false)
 
         let repository = FakeHabitRepository()
         repository.seed(habits: HabitFixture.makeMany(3))
@@ -164,18 +145,19 @@ struct CreateHabitUseCaseTests {
 
     // MARK: - Validation, mirroring Android's BlankTitle / InvalidDateRange
 
-    private static func makeSUT(premium: Bool = false) -> (CreateHabitUseCase, FakeHabitRepository, String) {
-        let (gate, suite) = makeGate(premium: premium)
+    private static func makeSUT(premium: Bool = false) -> (CreateHabitUseCase, FakeHabitRepository) {
         let repository = FakeHabitRepository(calendar: TestCalendar.fixed)
-        let useCase = CreateHabitUseCase(repository: repository, premiumGate: gate, calendar: TestCalendar.fixed)
-        return (useCase, repository, suite)
+        let useCase = CreateHabitUseCase(
+            repository: repository,
+            premiumGate: PremiumGate.fake(premium: premium),
+            calendar: TestCalendar.fixed
+        )
+        return (useCase, repository)
     }
 
     @Test("un título vacío o sólo espacios se rechaza", arguments: ["", " ", "   ", "\n", "\t  \n"])
     func blankTitleIsRejected(title: String) async throws {
-        let (useCase, repository, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (useCase, repository) = Self.makeSUT()
         await #expect(throws: CreateHabitError.blankTitle) {
             try await useCase.execute(HabitFixture.make(id: "vacio", title: title))
         }
@@ -185,9 +167,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("el título se guarda sin espacios sobrantes")
     func titleIsTrimmed() async throws {
-        let (useCase, repository, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (useCase, repository) = Self.makeSUT()
         let saved = try await useCase.execute(HabitFixture.make(id: "h", title: "  Meditar 10 min  "))
 
         #expect(saved.title == "Meditar 10 min")
@@ -196,9 +176,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("una descripción en blanco se guarda como nil")
     func blankDescriptionBecomesNil() async throws {
-        let (useCase, repository, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (useCase, repository) = Self.makeSUT()
         try await useCase.execute(HabitFixture.make(id: "h", description: "   "))
 
         #expect(try await repository.fetchHabit(id: "h")?.description == nil)
@@ -206,9 +184,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("una fecha de fin anterior a la de inicio se rechaza", arguments: [-1, -5, -365])
     func endDateBeforeStartIsRejected(endOffset: Int) async throws {
-        let (useCase, repository, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (useCase, repository) = Self.makeSUT()
         let habit = HabitFixture.make(
             id: "invalido",
             startDate: TestCalendar.day(0),
@@ -224,9 +200,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("una fecha de fin igual a la de inicio se acepta")
     func sameDayRangeIsAccepted() async throws {
-        let (useCase, repository, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (useCase, repository) = Self.makeSUT()
         let habit = HabitFixture.make(
             id: "un-dia",
             startDate: TestCalendar.day(0, hour: 20),
@@ -240,9 +214,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("el título vacío se valida antes que el rango de fechas")
     func blankTitleWinsOverDateRange() async throws {
-        let (useCase, _, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (useCase, _) = Self.makeSUT()
         let habit = HabitFixture.make(
             id: "doble-error",
             title: "  ",
@@ -257,8 +229,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("la validación corre antes que el límite del plan")
     func validationRunsBeforeTheLimit() async throws {
-        let (useCase, repository, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
+        let (useCase, repository) = Self.makeSUT()
         repository.seed(habits: HabitFixture.makeMany(3))
 
         await #expect(throws: CreateHabitError.blankTitle) {
@@ -268,9 +239,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("sin recordatorio activo los días se limpian")
     func reminderDaysAreClearedWithoutReminder() async throws {
-        let (useCase, repository, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (useCase, repository) = Self.makeSUT()
         let habit = HabitFixture.make(id: "h", reminderEnabled: false, reminderWeekdays: [2, 4, 6])
 
         try await useCase.execute(habit)
@@ -280,9 +249,7 @@ struct CreateHabitUseCaseTests {
 
     @Test("con recordatorio activo los días se conservan")
     func reminderDaysSurviveWithReminder() async throws {
-        let (useCase, repository, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (useCase, repository) = Self.makeSUT()
         let habit = HabitFixture.make(id: "h", reminderEnabled: true, reminderWeekdays: [2, 4, 6])
 
         try await useCase.execute(habit)

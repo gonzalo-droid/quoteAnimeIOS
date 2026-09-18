@@ -3,19 +3,12 @@ import Testing
 @testable import quoteAnime
 
 /// Mirrors Android's `di/PremiumGate.kt`: FREE_HABIT_LIMIT = 3, UNLIMITED_HABITS = Int.MAX_VALUE.
+///
+/// Since StoreKit landed the gate no longer owns the answer — it proxies a
+/// `PremiumEntitlementSource`. These tests drive that source by hand; what StoreKit puts in it is
+/// `PremiumEntitlementTests`' job.
 @Suite("PremiumGate")
 struct PremiumGateTests {
-
-    /// Each test gets its own suite so the real user's flag is never read or written.
-    private static func isolatedGate() -> (gate: PremiumGate, suiteName: String) {
-        let suiteName = "test.premiumgate.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suiteName)!
-        return (PremiumGate(defaults: defaults), suiteName)
-    }
-
-    private static func tearDown(_ suiteName: String) {
-        UserDefaults.standard.removePersistentDomain(forName: suiteName)
-    }
 
     @Test("el límite gratuito es 3, igual que en Android")
     func freeLimitMatchesAndroid() {
@@ -24,8 +17,7 @@ struct PremiumGateTests {
 
     @Test("por defecto el usuario no es premium")
     func defaultsToFree() {
-        let (gate, suite) = Self.isolatedGate()
-        defer { Self.tearDown(suite) }
+        let gate = PremiumGate.fake()
 
         #expect(gate.isPremium == false)
         #expect(gate.maxActiveHabits == 3)
@@ -33,32 +25,48 @@ struct PremiumGateTests {
 
     @Test("en premium los hábitos son ilimitados")
     func premiumIsUnlimited() {
-        let (gate, suite) = Self.isolatedGate()
-        defer { Self.tearDown(suite) }
-
-        gate.isPremium = true
+        let gate = PremiumGate.fake(premium: true)
 
         #expect(gate.maxActiveHabits == Int.max)
     }
 
-    @Test("quitar premium devuelve el límite gratuito")
+    @Test("maxActiveHabits según el plan", arguments: [(false, 3), (true, Int.max)])
+    func maxActiveHabitsByPlan(isPremium: Bool, expected: Int) {
+        let gate = PremiumGate.fake(premium: isPremium)
+
+        #expect(gate.maxActiveHabits == expected)
+    }
+
+    @Test("cuando la tienda retira el entitlement el límite vuelve al gratuito")
     func revokingPremiumRestoresLimit() {
-        let (gate, suite) = Self.isolatedGate()
-        defer { Self.tearDown(suite) }
+        let source = FakeEntitlementSource(isPremium: true)
+        let gate = PremiumGate(source: source)
+        #expect(gate.maxActiveHabits == Int.max)
 
-        gate.isPremium = true
-        gate.isPremium = false
+        source.set(false)
 
+        #expect(gate.isPremium == false)
         #expect(gate.maxActiveHabits == PremiumGate.freeHabitLimit)
     }
 
-    @Test("maxActiveHabits según el plan", arguments: [(false, 3), (true, Int.max)])
-    func maxActiveHabitsByPlan(isPremium: Bool, expected: Int) {
-        let (gate, suite) = Self.isolatedGate()
-        defer { Self.tearDown(suite) }
+    @Test("el gate no guarda copia: lee siempre la fuente")
+    func readsThroughToTheSource() {
+        let source = FakeEntitlementSource(isPremium: false)
+        let gate = PremiumGate(source: source)
 
-        gate.isPremium = isPremium
+        source.set(true)
 
-        #expect(gate.maxActiveHabits == expected)
+        #expect(gate.isPremium == true)
+    }
+
+    @Test("refresh delega en la fuente")
+    func refreshForwardsToTheSource() async {
+        let source = FakeEntitlementSource()
+        let gate = PremiumGate(source: source)
+
+        await gate.refresh()
+        await gate.refresh()
+
+        #expect(source.refreshCount == 2)
     }
 }

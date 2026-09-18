@@ -13,9 +13,8 @@ struct HabitEditorViewModelTests {
         seed: [Habit] = [],
         reminderScheduler: FakeHabitReminderScheduler = FakeHabitReminderScheduler(),
         widgetRefresher: FakeRoutineWidgetRefresher = FakeRoutineWidgetRefresher()
-    ) -> (HabitEditorViewModel, FakeHabitRepository, String) {
-        let suiteName = "test.habiteditor.\(UUID().uuidString)"
-        let gate = PremiumGate(defaults: UserDefaults(suiteName: suiteName)!)
+    ) -> (HabitEditorViewModel, FakeHabitRepository) {
+        let gate = PremiumGate.fake()
         let repository = FakeHabitRepository(calendar: TestCalendar.fixed)
         repository.seed(habits: seed)
         let viewModel = HabitEditorViewModel(
@@ -28,12 +27,9 @@ struct HabitEditorViewModelTests {
             habitReminderScheduler: reminderScheduler,
             routineWidgetRefresher: widgetRefresher
         )
-        return (viewModel, repository, suiteName)
+        return (viewModel, repository)
     }
 
-    private static func tearDown(_ suiteName: String) {
-        UserDefaults.standard.removePersistentDomain(forName: suiteName)
-    }
 
     private func settle() async {
         for _ in 0..<200 { await Task.yield() }
@@ -43,17 +39,13 @@ struct HabitEditorViewModelTests {
 
     @Test("por defecto no hay fecha de fin")
     func endDateIsOptOutByDefault() {
-        let (viewModel, _, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, _) = Self.makeSUT()
         #expect(viewModel.uiState.hasEndDate == false)
     }
 
     @Test("al activar la fecha de fin nunca queda antes de la de inicio")
     func enablingEndDateClampsIt() {
-        let (viewModel, _, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, _) = Self.makeSUT()
         viewModel.uiState.startDate = TestCalendar.day(0)
         viewModel.uiState.endDate = TestCalendar.day(-10)
 
@@ -64,9 +56,7 @@ struct HabitEditorViewModelTests {
 
     @Test("mover la fecha de inicio más allá del fin arrastra el fin", arguments: [1, 5, 40])
     func movingStartPastEndDragsEnd(offset: Int) {
-        let (viewModel, _, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, _) = Self.makeSUT()
         viewModel.uiState.startDate = TestCalendar.day(0)
         viewModel.onEndDateEnabled(true)
         viewModel.uiState.endDate = TestCalendar.day(0)
@@ -78,9 +68,7 @@ struct HabitEditorViewModelTests {
 
     @Test("mover la fecha de inicio hacia atrás no toca el fin")
     func movingStartBackLeavesEndAlone() {
-        let (viewModel, _, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, _) = Self.makeSUT()
         viewModel.uiState.startDate = TestCalendar.day(0)
         viewModel.onEndDateEnabled(true)
         viewModel.uiState.endDate = TestCalendar.day(10)
@@ -92,9 +80,7 @@ struct HabitEditorViewModelTests {
 
     @Test("sin fecha de fin activada, mover el inicio no toca nada más")
     func movingStartWithoutEndDateIsInert() {
-        let (viewModel, _, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, _) = Self.makeSUT()
         viewModel.uiState.endDate = TestCalendar.day(-100)
 
         viewModel.onStartDateChanged(TestCalendar.day(0))
@@ -106,9 +92,7 @@ struct HabitEditorViewModelTests {
 
     @Test("guardar sin fecha de fin deja el hábito indefinido")
     func savingWithoutEndDateLeavesItNil() async {
-        let (viewModel, repository, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, repository) = Self.makeSUT()
         viewModel.uiState.title = "Meditar"
         viewModel.save(onSaved: {})
         await settle()
@@ -119,9 +103,7 @@ struct HabitEditorViewModelTests {
 
     @Test("guardar con fecha de fin la persiste")
     func savingWithEndDatePersistsIt() async {
-        let (viewModel, repository, suite) = Self.makeSUT()
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, repository) = Self.makeSUT()
         viewModel.uiState.title = "Reto de 30 días"
         viewModel.uiState.startDate = TestCalendar.day(0)
         viewModel.onEndDateEnabled(true)
@@ -137,9 +119,7 @@ struct HabitEditorViewModelTests {
 
     @Test("al llegar al límite se avisa con el máximo del plan")
     func limitAlertNamesTheMax() async {
-        let (viewModel, repository, suite) = Self.makeSUT(seed: HabitFixture.makeMany(3))
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, repository) = Self.makeSUT(seed: HabitFixture.makeMany(3))
         viewModel.uiState.title = "Uno más"
         viewModel.save(onSaved: {})
         await settle()
@@ -152,9 +132,7 @@ struct HabitEditorViewModelTests {
     @Test("editar un hábito archivado no lo desarchiva")
     func editingAnArchivedHabitKeepsItArchived() async {
         let archived = HabitFixture.make(id: "viejo", title: "Correr", isArchived: true)
-        let (viewModel, repository, suite) = Self.makeSUT(habitId: "viejo", seed: [archived])
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, repository) = Self.makeSUT(habitId: "viejo", seed: [archived])
         viewModel.onAppear()
         await settle()
         viewModel.uiState.title = "Correr más"
@@ -173,9 +151,7 @@ struct HabitEditorViewModelTests {
             startDate: TestCalendar.day(-10),
             endDate: TestCalendar.day(20)
         )
-        let (viewModel, _, suite) = Self.makeSUT(habitId: "reto", seed: [existing])
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, _) = Self.makeSUT(habitId: "reto", seed: [existing])
         viewModel.onAppear()
         await settle()
 
@@ -188,9 +164,7 @@ struct HabitEditorViewModelTests {
     @Test("con el permiso concedido el recordatorio queda activo y sin aviso")
     func reminderStaysOnWhenGranted() async {
         let scheduler = FakeHabitReminderScheduler()
-        let (viewModel, _, suite) = Self.makeSUT(reminderScheduler: scheduler)
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, _) = Self.makeSUT(reminderScheduler: scheduler)
         viewModel.onReminderToggled(true)
         await settle()
 
@@ -203,9 +177,7 @@ struct HabitEditorViewModelTests {
     func reminderTurnsOffAndExplainsWhenDenied() async {
         let scheduler = FakeHabitReminderScheduler()
         scheduler.permissionGranted = false
-        let (viewModel, _, suite) = Self.makeSUT(reminderScheduler: scheduler)
-        defer { Self.tearDown(suite) }
-
+        let (viewModel, _) = Self.makeSUT(reminderScheduler: scheduler)
         viewModel.onReminderToggled(true)
         await settle()
 
@@ -220,8 +192,7 @@ struct HabitEditorViewModelTests {
     func turningReminderOffNeverAsks() async {
         let scheduler = FakeHabitReminderScheduler()
         scheduler.permissionGranted = false
-        let (viewModel, _, suite) = Self.makeSUT(reminderScheduler: scheduler)
-        defer { Self.tearDown(suite) }
+        let (viewModel, _) = Self.makeSUT(reminderScheduler: scheduler)
         viewModel.uiState.reminderEnabled = true
 
         viewModel.onReminderToggled(false)
@@ -244,8 +215,7 @@ struct HabitEditorViewModelTests {
     @Test("guardar un hábito pide refrescar los widgets")
     func savingRefreshesTheWidgets() async {
         let refresher = FakeRoutineWidgetRefresher()
-        let (viewModel, _, suite) = Self.makeSUT(widgetRefresher: refresher)
-        defer { Self.tearDown(suite) }
+        let (viewModel, _) = Self.makeSUT(widgetRefresher: refresher)
         viewModel.uiState.title = "Meditar"
 
         viewModel.save(onSaved: {})
@@ -257,11 +227,10 @@ struct HabitEditorViewModelTests {
     @Test("un guardado rechazado no refresca los widgets")
     func rejectedSaveDoesNotRefresh() async {
         let refresher = FakeRoutineWidgetRefresher()
-        let (viewModel, _, suite) = Self.makeSUT(
+        let (viewModel, _) = Self.makeSUT(
             seed: HabitFixture.makeMany(PremiumGate.freeHabitLimit),
             widgetRefresher: refresher
         )
-        defer { Self.tearDown(suite) }
         viewModel.uiState.title = "Uno más"
 
         viewModel.save(onSaved: {})
