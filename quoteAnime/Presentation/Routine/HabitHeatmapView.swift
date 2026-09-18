@@ -46,9 +46,49 @@ struct HabitHeatmapView: View {
             }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Mapa de actividad de las últimas \(weeks) semanas")
+            .accessibilityValue(Text("\(completedDayCount) días completados"))
         } else {
             compactGrid
         }
+    }
+
+    // MARK: - Accessibility
+
+    /// Android (4f8e6d2) makes every visible day its own TalkBack node — "12 mar 2026, completed" —
+    /// because its heatmap is also where days get marked. This one is read-only, and the same
+    /// per-day announcement already lives one section down, in `HabitCalendarMonthView`, where a
+    /// VoiceOver user can also act on it. So the grid is one element: what it covers (the label)
+    /// and how many of those days were kept (the value), counted with the drawing's own rules.
+    private var completedDayCount: Int {
+        Self.completedDayCount(
+            completions: completions,
+            today: today,
+            weeks: weeks,
+            startDate: startDate,
+            endDate: endDate,
+            calendar: calendar
+        )
+    }
+
+    /// The days the grid paints in the accent colour: completed, inside the visible weeks, not in
+    /// the future, and inside the habit's active window.
+    static func completedDayCount(
+        completions: Set<Date>,
+        today: Date,
+        weeks: Int,
+        startDate: Date,
+        endDate: Date?,
+        calendar: Calendar
+    ) -> Int {
+        let todayStart = calendar.startOfDay(for: today)
+        // `HeatmapGrid` works in its own ISO calendar; re-anchor to this one before comparing.
+        let gridStart = calendar.startOfDay(for: HeatmapGrid.gridStart(today: todayStart, weeks: weeks))
+        let first = max(gridStart, calendar.startOfDay(for: startDate))
+        let last = endDate.map { min(todayStart, calendar.startOfDay(for: $0)) } ?? todayStart
+        guard first <= last else { return 0 }
+        return Set(completions.map { calendar.startOfDay(for: $0) })
+            .filter { $0 >= first && $0 <= last }
+            .count
     }
 
     // MARK: - Layouts

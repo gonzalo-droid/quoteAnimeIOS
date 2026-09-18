@@ -186,17 +186,21 @@ struct HabitEditorView: View {
                     Image(systemName: HabitIcons.symbol(for: viewModel.uiState.iconKey))
                         .font(.system(size: 20))
                         .foregroundColor(HabitPalette.color(at: viewModel.uiState.colorIndex))
+                        .accessibilityHidden(true)
                     Text("Elegir ícono")
                         .font(.system(size: 14))
                         .foregroundColor(.textPrimary)
                     Spacer()
                     Image(systemName: "chevron.right")
                         .foregroundColor(.textSecondary)
+                        .accessibilityHidden(true)
                 }
                 .padding(12)
                 .background(Color.surface)
                 .cornerRadius(12)
             }
+            // "Elegir ícono, Entrenar": the glyph alone would read as the SF Symbol's own name.
+            .accessibilityValue(Text(HabitIcons.label(for: viewModel.uiState.iconKey)))
         }
     }
 
@@ -216,7 +220,7 @@ struct HabitEditorView: View {
                                     .stroke(Color.white, lineWidth: viewModel.uiState.colorIndex == index ? 2 : 0)
                             )
                     }
-                    .accessibilityLabel("Color \(index + 1)")
+                    .accessibilityLabel(Text(HabitPalette.accessibilityLabel(at: index)))
                     .accessibilityAddTraits(viewModel.uiState.colorIndex == index ? .isSelected : [])
                 }
             }
@@ -361,6 +365,7 @@ private struct HabitIconPickerView: View {
                             Text(category.title)
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.textSecondary)
+                                .accessibilityAddTraits(.isHeader)
 
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 12) {
                                 ForEach(category.keys, id: \.self) { key in
@@ -379,6 +384,10 @@ private struct HabitIconPickerView: View {
                                                     .stroke(selectedKey == key ? Color.accentPurple : Color.clear, lineWidth: 1.5)
                                             )
                                     }
+                                    // Android 4f8e6d2 names each icon (`describeIcon`); iOS also
+                                    // says which one is chosen, which TalkBack there does not.
+                                    .accessibilityLabel(Text(HabitIcons.label(for: key)))
+                                    .accessibilityAddTraits(selectedKey == key ? .isSelected : [])
                                 }
                             }
                         }

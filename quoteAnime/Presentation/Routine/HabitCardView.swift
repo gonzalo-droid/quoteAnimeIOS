@@ -25,6 +25,8 @@ struct HabitCardView: View {
                         .font(.system(size: 20))
                         .foregroundColor(accentColor)
                         .frame(width: 32, height: 32)
+                        // Decorative next to the title, as on Android (`contentDescription = null`).
+                        .accessibilityHidden(true)
 
                     Text(item.habit.title)
                         .font(.system(size: 16, weight: .semibold))

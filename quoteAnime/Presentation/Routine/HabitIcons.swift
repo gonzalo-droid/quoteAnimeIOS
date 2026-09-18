@@ -136,6 +136,159 @@ enum HabitIcons {
         "military_tech": "medal.fill", "flag": "flag.fill"
     ]
 
+    /// VoiceOver name of every icon: Android's `icon_*` strings (`HabitIcons.describeIcon`), with
+    /// the Spanish text as catalog key like the rest of the app. Every key in `categories` must
+    /// have an entry here — `HabitIconLabelTests` walks all of them in both languages.
+    private static let labelByKey: [String: LocalizedStringResource] = [
+        // physical
+        "dumbbell": "Entrenar",
+        "running": "Correr",
+        "directions_walk": "Caminar",
+        "cycling": "Andar en bici",
+        "swimming": "Nadar",
+        "self_improvement": "Meditar",
+        // mind
+        "book": "Leer",
+        "headphones": "Escuchar",
+        "bedtime": "Dormir temprano",
+        "wb_sunny": "Mañana",
+        "nights_stay": "Noche",
+        "water_drop": "Beber agua",
+        // study
+        "school": "Estudiar",
+        "edit_note": "Escribir",
+        "laptop": "Trabajar",
+        "notebook": "Tomar notas",
+        "folder": "Organizar",
+        "alarm": "Madrugar",
+        // routine
+        "restaurant": "Comer",
+        "clean_hands": "Higiene",
+        "cleaning": "Limpiar",
+        "bed": "Tender la cama",
+        "spa": "Cuidado personal",
+        "pets": "Cuidar mascota",
+        // nutrition
+        "local_dining": "Comer sano",
+        "breakfast_dining": "Desayunar",
+        "lunch_dining": "Almorzar",
+        "dinner_dining": "Cenar",
+        "icecream": "Darte un gusto",
+        "local_cafe": "Tomar café",
+        "egg": "Cocinar",
+        "monitor_weight": "Controlar el peso",
+        "medication": "Tomar vitaminas",
+        "health_and_safety": "Chequeo médico",
+        "vaccines": "Cuidar la salud",
+        "bloodtype": "Controlar la salud",
+        // home
+        "local_laundry": "Lavar la ropa",
+        "iron": "Planchar",
+        "recycling": "Reciclar",
+        "delete_sweep": "Sacar la basura",
+        "shopping_cart": "Hacer la compra",
+        "checkroom": "Ordenar el armario",
+        "plumbing": "Reparar cosas",
+        "handyman": "Hacer bricolaje",
+        "chair": "Ordenar la casa",
+        "countertops": "Limpiar la cocina",
+        "kitchen": "Cocinar en casa",
+        "home_repair_service": "Mantenimiento del hogar",
+        // finance
+        "savings": "Ahorrar dinero",
+        "account_balance_wallet": "Hacer presupuesto",
+        "attach_money": "Controlar gastos",
+        "receipt_long": "Anotar gastos",
+        "trending_up": "Hacer crecer tus ahorros",
+        "task_alt": "Completar tareas",
+        "checklist": "Planificar el día",
+        "assignment_turned_in": "Terminar una tarea",
+        "calendar_month": "Planificar la agenda",
+        "timer": "Sesión de enfoque",
+        "schedule": "Bloquear tiempo",
+        "bar_chart": "Revisar tus objetivos",
+        // creativity
+        "palette": "Pintar",
+        "brush": "Dibujar",
+        "music_note": "Tocar música",
+        "piano": "Practicar piano",
+        "camera_alt": "Hacer fotos",
+        "videocam": "Grabar vídeo",
+        "mic": "Cantar o grabar",
+        "extension": "Hacer un puzle",
+        "sports_esports": "Jugar videojuegos",
+        "casino": "Jugar un juego de mesa",
+        "design_services": "Diseñar",
+        "podcasts": "Escuchar un pódcast",
+        // social
+        "groups": "Quedar con amigos",
+        "people": "Socializar",
+        "favorite": "Mostrar cariño",
+        "call": "Llamar a la familia",
+        "chat": "Escribir a un amigo",
+        "celebration": "Celebrar",
+        "card_giftcard": "Hacer un regalo",
+        "handshake": "Hacer contactos",
+        "volunteer_activism": "Ser voluntario",
+        "family_restroom": "Tiempo en familia",
+        // nature
+        "park": "Ir al parque",
+        "hiking": "Hacer senderismo",
+        "terrain": "Explorar senderos",
+        "beach_access": "Día de playa",
+        "forest": "Paseo por la naturaleza",
+        "grass": "Cuidar el jardín",
+        "local_florist": "Cuidar las plantas",
+        "waves": "Nadar al aire libre",
+        "sailing": "Navegar",
+        "kayaking": "Hacer kayak",
+        "wb_twilight": "Ver el atardecer",
+        "landscape": "Contemplar el paisaje",
+        // technology
+        "smartphone": "Limitar las pantallas",
+        "computer": "Trabajar en el ordenador",
+        "tv": "Ver con moderación",
+        "headset": "Hacer videollamada",
+        "keyboard": "Escribir o programar",
+        "notifications_off": "Desconexión digital",
+        "do_not_disturb": "Modo concentración",
+        "tablet": "Usar la tablet",
+        "desktop_windows": "Trabajar en el escritorio",
+        "videogame_asset": "Controlar tiempo de juego",
+        // selfcare
+        "bathtub": "Darte un baño",
+        "hot_tub": "Relajarte",
+        "mood": "Revisar tu ánimo",
+        "sentiment_very_satisfied": "Practicar gratitud",
+        "nightlight_round": "Relajarte antes de dormir",
+        "psychology": "Reflexionar",
+        "face": "Cuidar la piel",
+        "emoji_emotions": "Anotar tus emociones",
+        "weekend": "Tomarte un descanso",
+        "auto_awesome": "Darte un capricho",
+        // sports
+        "sports_basketball": "Jugar baloncesto",
+        "sports_soccer": "Jugar fútbol",
+        "sports_tennis": "Jugar tenis",
+        "sports_golf": "Jugar golf",
+        "sports_volleyball": "Jugar vóleibol",
+        "sports_martial_arts": "Practicar artes marciales",
+        "skateboarding": "Andar en patineta",
+        "surfing": "Hacer surf",
+        "local_fire_department": "Mantener la racha",
+        "emoji_events": "Celebrar un logro",
+        "military_tech": "Ganar una insignia",
+        "flag": "Fijar una meta"
+    ]
+
+    /// What VoiceOver says for an icon. Legacy keys resolve like `symbol(for:)` does. An unknown
+    /// key reads as the generic "Ícono" — Android falls back to the raw key, but reading
+    /// `home_repair_service` aloud helps nobody, and `HabitIconLabelTests` keeps that branch unreachable
+    /// for every key the picker offers.
+    static func label(for key: String) -> LocalizedStringResource {
+        labelByKey[HabitIconAliases.canonical(key)] ?? "Ícono"
+    }
+
     /// Resolves legacy keys too (`HabitIconAliases`), so no caller can ever show the generic check
     /// for a habit that was created from a template before the key fix.
     static func symbol(for key: String) -> String {

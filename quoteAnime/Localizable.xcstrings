@@ -93,6 +93,47 @@
         }
       }
     },
+    "%lld días completados" : {
+      "comment" : "VoiceOver value of the habit activity map: completed days in the weeks it shows",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld day completed"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld days completed"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld día completado"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld días completados"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld días de prueba gratis" : {
       "localizations" : {
         "en" : {
@@ -288,6 +329,23 @@
         }
       }
     },
+    "Ahorrar dinero" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save money"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahorrar dinero"
+          }
+        }
+      }
+    },
     "Ajustes" : {
       "localizations" : {
         "en" : {
@@ -316,6 +374,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Algo salió mal con la compra. Prueba de nuevo."
+          }
+        }
+      }
+    },
+    "Almorzar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lunch"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Almorzar"
           }
         }
       }
@@ -354,6 +429,40 @@
         }
       }
     },
+    "Andar en bici" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cycle"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Andar en bici"
+          }
+        }
+      }
+    },
+    "Andar en patineta" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skateboard"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Andar en patineta"
+          }
+        }
+      }
+    },
     "Animes" : {
       "localizations" : {
         "en" : {
@@ -366,6 +475,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Animes"
+          }
+        }
+      }
+    },
+    "Anotar gastos" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log expenses"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anotar gastos"
+          }
+        }
+      }
+    },
+    "Anotar tus emociones" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal your feelings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anotar tus emociones"
           }
         }
       }
@@ -517,6 +660,40 @@
         }
       }
     },
+    "Beber agua" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drink water"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beber agua"
+          }
+        }
+      }
+    },
+    "Bloquear tiempo" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block out time"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloquear tiempo"
+          }
+        }
+      }
+    },
     "Borrar" : {
       "localizations" : {
         "en" : {
@@ -562,6 +739,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Buscar el One Piece"
+          }
+        }
+      }
+    },
+    "Caminar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Walk"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Caminar"
           }
         }
       }
@@ -631,6 +825,125 @@
         }
       }
     },
+    "Cantar o grabar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sing or record"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cantar o grabar"
+          }
+        }
+      }
+    },
+    "Celebrar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Celebrate"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Celebrar"
+          }
+        }
+      }
+    },
+    "Celebrar un logro" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Celebrate a milestone"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Celebrar un logro"
+          }
+        }
+      }
+    },
+    "Cenar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dinner"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cenar"
+          }
+        }
+      }
+    },
+    "Chequeo médico" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health checkup"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chequeo médico"
+          }
+        }
+      }
+    },
+    "Cocinar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cook"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cocinar"
+          }
+        }
+      }
+    },
+    "Cocinar en casa" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cook at home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cocinar en casa"
+          }
+        }
+      }
+    },
     "Color" : {
       "localizations" : {
         "en" : {
@@ -676,6 +989,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Comenzar"
+          }
+        }
+      }
+    },
+    "Comer" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comer"
+          }
+        }
+      }
+    },
+    "Comer sano" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eat healthy"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comer sano"
           }
         }
       }
@@ -760,6 +1107,23 @@
         }
       }
     },
+    "Completar tareas" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete tasks"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completar tareas"
+          }
+        }
+      }
+    },
     "Compra cancelada." : {
       "localizations" : {
         "en" : {
@@ -816,6 +1180,23 @@
         }
       }
     },
+    "Contemplar el paisaje" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Admire the view"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contemplar el paisaje"
+          }
+        }
+      }
+    },
     "Contenido" : {
       "localizations" : {
         "en" : {
@@ -828,6 +1209,91 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Contenido"
+          }
+        }
+      }
+    },
+    "Controlar el peso" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track weight"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controlar el peso"
+          }
+        }
+      }
+    },
+    "Controlar gastos" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track expenses"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controlar gastos"
+          }
+        }
+      }
+    },
+    "Controlar la salud" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track health"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controlar la salud"
+          }
+        }
+      }
+    },
+    "Controlar tiempo de juego" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track gaming time"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controlar tiempo de juego"
+          }
+        }
+      }
+    },
+    "Correr" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Run"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correr"
           }
         }
       }
@@ -881,6 +1347,108 @@
         }
       }
     },
+    "Cuidado personal" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Self-care"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuidado personal"
+          }
+        }
+      }
+    },
+    "Cuidar el jardín" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuidar el jardín"
+          }
+        }
+      }
+    },
+    "Cuidar la piel" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skincare"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuidar la piel"
+          }
+        }
+      }
+    },
+    "Cuidar la salud" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health care"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuidar la salud"
+          }
+        }
+      }
+    },
+    "Cuidar las plantas" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tend plants"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuidar las plantas"
+          }
+        }
+      }
+    },
+    "Cuidar mascota" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pet care"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuidar mascota"
+          }
+        }
+      }
+    },
     "Cómo agregar el widget" : {
       "localizations" : {
         "en" : {
@@ -893,6 +1461,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cómo agregar el widget"
+          }
+        }
+      }
+    },
+    "Darte un baño" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take a bath"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Darte un baño"
+          }
+        }
+      }
+    },
+    "Darte un capricho" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker. Android says \"Treat yourself\" here too, which makes it indistinguishable from the ice-cream icon.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pamper yourself"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Darte un capricho"
+          }
+        }
+      }
+    },
+    "Darte un gusto" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Treat yourself"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Darte un gusto"
           }
         }
       }
@@ -931,6 +1550,23 @@
         }
       }
     },
+    "Desayunar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Breakfast"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desayunar"
+          }
+        }
+      }
+    },
     "Desbloquea todo el potencial de tu rutina." : {
       "localizations" : {
         "en" : {
@@ -943,6 +1579,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Desbloquea todo el potencial de tu rutina."
+          }
+        }
+      }
+    },
+    "Desconexión digital" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digital detox"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desconexión digital"
           }
         }
       }
@@ -1061,6 +1714,57 @@
         }
       }
     },
+    "Dibujar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Draw"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dibujar"
+          }
+        }
+      }
+    },
+    "Diseñar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Design"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diseñar"
+          }
+        }
+      }
+    },
+    "Dormir temprano" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sleep early"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dormir temprano"
+          }
+        }
+      }
+    },
     "Déjanos una reseña" : {
       "localizations" : {
         "en" : {
@@ -1073,6 +1777,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Déjanos una reseña"
+          }
+        }
+      }
+    },
+    "Día de playa" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beach day"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Día de playa"
           }
         }
       }
@@ -1286,6 +2007,23 @@
         }
       }
     },
+    "Entrenar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Work out"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrenar"
+          }
+        }
+      }
+    },
     "Escribe Quote en el buscador y selecciona el widget de Quote Anime." : {
       "localizations" : {
         "en" : {
@@ -1298,6 +2036,91 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escribe Quote en el buscador y selecciona el widget de Quote Anime."
+          }
+        }
+      }
+    },
+    "Escribir" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribir"
+          }
+        }
+      }
+    },
+    "Escribir a un amigo" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message a friend"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribir a un amigo"
+          }
+        }
+      }
+    },
+    "Escribir o programar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type or code"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribir o programar"
+          }
+        }
+      }
+    },
+    "Escuchar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escuchar"
+          }
+        }
+      }
+    },
+    "Escuchar un pódcast" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listen to a podcast"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escuchar un pódcast"
           }
         }
       }
@@ -1368,6 +2191,23 @@
         }
       }
     },
+    "Estudiar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Study"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estudiar"
+          }
+        }
+      }
+    },
     "Estudio" : {
       "comment" : "Icon category",
       "localizations" : {
@@ -1397,6 +2237,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Explorar"
+          }
+        }
+      }
+    },
+    "Explorar senderos" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore trails"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explorar senderos"
           }
         }
       }
@@ -1497,6 +2354,23 @@
         }
       }
     },
+    "Fijar una meta" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set a goal"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fijar una meta"
+          }
+        }
+      }
+    },
     "Finanzas" : {
       "comment" : "Icon category",
       "localizations" : {
@@ -1571,6 +2445,23 @@
         }
       }
     },
+    "Ganar una insignia" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Earn a badge"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ganar una insignia"
+          }
+        }
+      }
+    },
     "Gestionar suscripción" : {
       "localizations" : {
         "en" : {
@@ -1587,6 +2478,23 @@
         }
       }
     },
+    "Grabar vídeo" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Record video"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grabar vídeo"
+          }
+        }
+      }
+    },
     "Guardar" : {
       "localizations" : {
         "en" : {
@@ -1599,6 +2507,210 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Guardar"
+          }
+        }
+      }
+    },
+    "Hacer bricolaje" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DIY repair"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer bricolaje"
+          }
+        }
+      }
+    },
+    "Hacer contactos" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer contactos"
+          }
+        }
+      }
+    },
+    "Hacer crecer tus ahorros" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grow savings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer crecer tus ahorros"
+          }
+        }
+      }
+    },
+    "Hacer fotos" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take photos"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer fotos"
+          }
+        }
+      }
+    },
+    "Hacer kayak" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kayak"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer kayak"
+          }
+        }
+      }
+    },
+    "Hacer la compra" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grocery shop"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer la compra"
+          }
+        }
+      }
+    },
+    "Hacer presupuesto" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Budget"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer presupuesto"
+          }
+        }
+      }
+    },
+    "Hacer senderismo" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hike"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer senderismo"
+          }
+        }
+      }
+    },
+    "Hacer surf" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Surf"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer surf"
+          }
+        }
+      }
+    },
+    "Hacer un puzle" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve a puzzle"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer un puzle"
+          }
+        }
+      }
+    },
+    "Hacer un regalo" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Give a gift"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer un regalo"
+          }
+        }
+      }
+    },
+    "Hacer videollamada" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video call"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hacer videollamada"
           }
         }
       }
@@ -1649,6 +2761,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hecho"
+          }
+        }
+      }
+    },
+    "Higiene" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hygiene"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Higiene"
           }
         }
       }
@@ -1750,6 +2879,142 @@
         }
       }
     },
+    "Ir al parque" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visit a park"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir al parque"
+          }
+        }
+      }
+    },
+    "Jugar baloncesto" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play basketball"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar baloncesto"
+          }
+        }
+      }
+    },
+    "Jugar fútbol" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play soccer"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar fútbol"
+          }
+        }
+      }
+    },
+    "Jugar golf" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play golf"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar golf"
+          }
+        }
+      }
+    },
+    "Jugar tenis" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play tennis"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar tenis"
+          }
+        }
+      }
+    },
+    "Jugar un juego de mesa" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play a board game"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar un juego de mesa"
+          }
+        }
+      }
+    },
+    "Jugar videojuegos" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play video games"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar videojuegos"
+          }
+        }
+      }
+    },
+    "Jugar vóleibol" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play volleyball"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugar vóleibol"
+          }
+        }
+      }
+    },
     "La App Store no está disponible ahora. Inténtalo más tarde." : {
       "localizations" : {
         "en" : {
@@ -1831,6 +3096,91 @@
         }
       }
     },
+    "Lavar la ropa" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do laundry"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lavar la ropa"
+          }
+        }
+      }
+    },
+    "Leer" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leer"
+          }
+        }
+      }
+    },
+    "Limitar las pantallas" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limit screen time"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limitar las pantallas"
+          }
+        }
+      }
+    },
+    "Limpiar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clean"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpiar"
+          }
+        }
+      }
+    },
+    "Limpiar la cocina" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clean kitchen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpiar la cocina"
+          }
+        }
+      }
+    },
     "Listo" : {
       "localizations" : {
         "en" : {
@@ -1859,6 +3209,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Listo, restauramos tu suscripción."
+          }
+        }
+      }
+    },
+    "Llamar a la familia" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call family"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llamar a la familia"
           }
         }
       }
@@ -1944,6 +3311,57 @@
         }
       }
     },
+    "Madrugar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wake up early"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Madrugar"
+          }
+        }
+      }
+    },
+    "Mantener la racha" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your streak"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantener la racha"
+          }
+        }
+      }
+    },
+    "Mantenimiento del hogar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home maintenance"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantenimiento del hogar"
+          }
+        }
+      }
+    },
     "Mantén pulsado el escritorio" : {
       "localizations" : {
         "en" : {
@@ -2012,6 +3430,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Marcar hoy"
+          }
+        }
+      }
+    },
+    "Mañana" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morning"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mañana"
+          }
+        }
+      }
+    },
+    "Meditar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meditate"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meditar"
           }
         }
       }
@@ -2129,6 +3581,40 @@
         }
       }
     },
+    "Modo concentración" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focus mode"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo concentración"
+          }
+        }
+      }
+    },
+    "Mostrar cariño" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show love"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar cariño"
+          }
+        }
+      }
+    },
     "Motivación" : {
       "comment" : "Quote category",
       "localizations" : {
@@ -2146,6 +3632,40 @@
         }
       }
     },
+    "Nadar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Swim"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nadar"
+          }
+        }
+      }
+    },
+    "Nadar al aire libre" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Swim outdoors"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nadar al aire libre"
+          }
+        }
+      }
+    },
     "Naturaleza" : {
       "comment" : "Icon category",
       "localizations" : {
@@ -2159,6 +3679,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Naturaleza"
+          }
+        }
+      }
+    },
+    "Navegar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sail"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navegar"
           }
         }
       }
@@ -2255,6 +3792,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se pudo guardar"
+          }
+        }
+      }
+    },
+    "Noche" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Night"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noche"
           }
         }
       }
@@ -2364,6 +3918,57 @@
         }
       }
     },
+    "Ordenar el armario" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Organize closet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenar el armario"
+          }
+        }
+      }
+    },
+    "Ordenar la casa" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tidy up"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenar la casa"
+          }
+        }
+      }
+    },
+    "Organizar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Organize"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Organizar"
+          }
+        }
+      }
+    },
     "Orgullo" : {
       "comment" : "Quote category",
       "localizations" : {
@@ -2397,6 +4002,23 @@
         }
       }
     },
+    "Paseo por la naturaleza" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nature walk"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paseo por la naturaleza"
+          }
+        }
+      }
+    },
     "Paso %lld de %lld" : {
       "localizations" : {
         "en" : {
@@ -2425,6 +4047,74 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Permiso de notificaciones"
+          }
+        }
+      }
+    },
+    "Pintar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paint"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pintar"
+          }
+        }
+      }
+    },
+    "Planchar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iron clothes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planchar"
+          }
+        }
+      }
+    },
+    "Planificar el día" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan your day"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planificar el día"
+          }
+        }
+      }
+    },
+    "Planificar la agenda" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan your schedule"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planificar la agenda"
           }
         }
       }
@@ -2493,6 +4183,57 @@
         }
       }
     },
+    "Practicar artes marciales" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice martial arts"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practicar artes marciales"
+          }
+        }
+      }
+    },
+    "Practicar gratitud" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice gratitude"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practicar gratitud"
+          }
+        }
+      }
+    },
+    "Practicar piano" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice piano"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practicar piano"
+          }
+        }
+      }
+    },
     "Próximamente" : {
       "comment" : "Paywall main button, disabled, while premium is not on sale yet (PremiumConfig.usesRealBilling == false)",
       "localizations" : {
@@ -2538,6 +4279,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Puedes redimensionar el widget manteniendo pulsado sobre él."
+          }
+        }
+      }
+    },
+    "Quedar con amigos" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spend time with friends"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quedar con amigos"
           }
         }
       }
@@ -2608,6 +4366,23 @@
         }
       }
     },
+    "Reciclar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recycle"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reciclar"
+          }
+        }
+      }
+    },
     "Recordatorio" : {
       "localizations" : {
         "en" : {
@@ -2620,6 +4395,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Recordatorio"
+          }
+        }
+      }
+    },
+    "Reflexionar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reflect"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reflexionar"
           }
         }
       }
@@ -2657,6 +4449,57 @@
         }
       }
     },
+    "Relajarte" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relax"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relajarte"
+          }
+        }
+      }
+    },
+    "Relajarte antes de dormir" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wind down"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relajarte antes de dormir"
+          }
+        }
+      }
+    },
+    "Reparar cosas" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fix things"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reparar cosas"
+          }
+        }
+      }
+    },
     "Restaurar" : {
       "localizations" : {
         "en" : {
@@ -2689,6 +4532,40 @@
         }
       }
     },
+    "Revisar tu ánimo" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check your mood"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisar tu ánimo"
+          }
+        }
+      }
+    },
+    "Revisar tus objetivos" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review your goals"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisar tus objetivos"
+          }
+        }
+      }
+    },
     "Rutina" : {
       "comment" : "Icon category",
       "localizations" : {
@@ -2702,6 +4579,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rutina"
+          }
+        }
+      }
+    },
+    "Sacar la basura" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take out trash"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sacar la basura"
           }
         }
       }
@@ -2767,6 +4661,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seguir siendo premium"
+          }
+        }
+      }
+    },
+    "Ser voluntario" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volunteer"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ser voluntario"
+          }
+        }
+      }
+    },
+    "Sesión de enfoque" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focus session"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesión de enfoque"
           }
         }
       }
@@ -2912,6 +4840,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Social"
+          }
+        }
+      }
+    },
+    "Socializar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Socialize"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Socializar"
           }
         }
       }
@@ -3081,6 +5026,57 @@
         }
       }
     },
+    "Tender la cama" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make the bed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tender la cama"
+          }
+        }
+      }
+    },
+    "Terminar una tarea" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finish an assignment"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminar una tarea"
+          }
+        }
+      }
+    },
+    "Tiempo en familia" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Family time"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiempo en familia"
+          }
+        }
+      }
+    },
     "Toca cualquier día para marcarlo o desmarcarlo. Los días futuros y los que quedan fuera del período del hábito no se pueden marcar." : {
       "localizations" : {
         "en" : {
@@ -3141,6 +5137,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Toca y mantén pulsado cualquier zona vacía del escritorio hasta que los iconos empiecen a moverse."
+          }
+        }
+      }
+    },
+    "Tocar música" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play music"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tocar música"
           }
         }
       }
@@ -3227,6 +5240,125 @@
         }
       }
     },
+    "Tomar café" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coffee"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomar café"
+          }
+        }
+      }
+    },
+    "Tomar notas" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take notes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomar notas"
+          }
+        }
+      }
+    },
+    "Tomar vitaminas" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take vitamins"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomar vitaminas"
+          }
+        }
+      }
+    },
+    "Tomarte un descanso" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take a break"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomarte un descanso"
+          }
+        }
+      }
+    },
+    "Trabajar" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Work"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trabajar"
+          }
+        }
+      }
+    },
+    "Trabajar en el escritorio" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desk work"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trabajar en el escritorio"
+          }
+        }
+      }
+    },
+    "Trabajar en el ordenador" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Work on the computer"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trabajar en el ordenador"
+          }
+        }
+      }
+    },
     "Tranquilo: conservas todo hasta el final del periodo que ya pagaste." : {
       "localizations" : {
         "en" : {
@@ -3288,6 +5420,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Términos y condiciones"
+          }
+        }
+      }
+    },
+    "Usar la tablet" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use the tablet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar la tablet"
+          }
+        }
+      }
+    },
+    "Ver con moderación" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch mindfully"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver con moderación"
+          }
+        }
+      }
+    },
+    "Ver el atardecer" : {
+      "comment" : "VoiceOver name of a habit icon in the icon picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch the sunset"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver el atardecer"
           }
         }
       }
