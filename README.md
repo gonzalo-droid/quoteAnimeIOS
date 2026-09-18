@@ -137,7 +137,7 @@ Both SwiftData containers (favorites and habits) pass a **named** `ModelConfigur
 
 Routes are typed via the `AppRoute` enum (`catalog`, `settings`, `routine`, `habitDetail`, `habitEditor`, `paywall`…).
 
-**Deep links** go through one method, `AppRouter.open(_:)`: tapping a habit reminder and tapping a routine widget (`quoteanime://routine`) both open Mi Rutina. A link that arrives during the splash or the onboarding waits for them to finish.
+**Deep links** go through one method, `AppRouter.open(_:)`: tapping a habit reminder and tapping a routine widget (`quoteanime://routine`) both open Mi Rutina; tapping the quote widget (`quoteanime://home?quoteId=…`) opens Home on that quote. A link that arrives during the splash or the onboarding waits for them to finish.
 
 **Why not a coordinator pattern:** SwiftUI's `NavigationStack` with a typed path already provides type-safe push navigation. A coordinator layer would duplicate that state.
 
