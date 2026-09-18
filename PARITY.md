@@ -136,11 +136,11 @@ Se reporta, no se arregla: el repo de Android es de sólo lectura para el agente
 | `syncPurchases()` | Sólo consulta `ProductType.SUBS`, pero `BillingClientFactory` habilita productos de una sola compra (`enableOneTimeProducts()`). Si algún día se vende uno, la restauración no lo va a ver. |
 | `handlePurchasesUpdated` | La rama `OK` con lista de compras vacía emite un error genérico y no tiene ningún test; no hay evidencia de que Play pueda producirla. |
 | `ITEM_ALREADY_OWNED` | Si la re-sincronización falla, el usuario ve "Algo salió mal con la compra" — justo el caso (ya suscrito en otro dispositivo) que merecería su propio mensaje. |
-| `values-es/strings.xml` | ~16 strings en voseo mezclados con el resto de la app. |
-| `values/strings.xml` | `icon_icecream` e `icon_auto_awesome` dicen los dos "Treat yourself": en inglés, TalkBack anuncia igual dos íconos distintos del selector. |
-| `HabitIconPicker.kt`, `HabitEditorSheet.kt` | Ni la celda del ícono ni el color elegido exponen el estado seleccionado (`selected`/`Role`): TalkBack no dice cuál está elegido. |
-| `values-es/strings.xml` (`0529500`) | Los dos mensajes de error nuevos del paywall vienen en voseo ("Intentá", "Revisá"). iOS ya los tenía en tuteo. |
-| `HabitIconPicker.kt` (`1d9e231`) | `matchesQuery` usa `contains(ignoreCase = true)` sin normalizar tildes: "musica" no encuentra "Tocar música". Tampoco recorta el texto. |
+| `values-es/strings.xml` | ~16 strings en voseo mezclados con el resto de la app. **Arreglado en Android (`2c545b2`, 2026-09-18).** |
+| `values/strings.xml` | `icon_icecream` e `icon_auto_awesome` dicen los dos "Treat yourself": en inglés, TalkBack anuncia igual dos íconos distintos del selector. **Arreglado en Android (`2c545b2`, 2026-09-18).** |
+| `HabitIconPicker.kt`, `HabitEditorSheet.kt` | Ni la celda del ícono ni el color elegido exponen el estado seleccionado (`selected`/`Role`): TalkBack no dice cuál está elegido. **Arreglado en Android (`2c545b2`, 2026-09-18).** |
+| `values-es/strings.xml` (`0529500`) | Los dos mensajes de error nuevos del paywall vienen en voseo ("Intentá", "Revisá"). iOS ya los tenía en tuteo. **Arreglado en Android (`2c545b2`, 2026-09-18).** |
+| `HabitIconPicker.kt` (`1d9e231`) | `matchesQuery` usa `contains(ignoreCase = true)` sin normalizar tildes: "musica" no encuentra "Tocar música". Tampoco recorta el texto. **Arreglado en Android (`2c545b2`, 2026-09-18).** |
 | `OnboardingViewModel.onCreateHabit` | Crea el hábito con `colorIndex = 0` y sin `coverAnimeSlug` ni descripción, mientras el editor, con la misma sugerencia, guarda el color del tema, la portada y la descripción. |
 | `RoutineViewModel.trackStreakChange` | Es el único lugar que mide rachas: completar un hito desde el calendario del detalle (`HabitDetailViewModel.onDayClick`) o desde el "Hecho" de la notificación nunca dispara `streak_milestone`. |
 | `RoutineAnalytics.kt` | Los booleanos van con `Bundle.putBoolean`, un tipo que Firebase no documenta como admitido (String, long, double). En iOS llegan como 0/1 (visto en el log de depuración). **No verificado** qué recibe Firebase desde Android: conviene mirarlo en DebugView antes de armar un informe que cruce las dos plataformas. |
