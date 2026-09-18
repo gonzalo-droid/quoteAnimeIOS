@@ -29,6 +29,8 @@ final class AppDependencies: ObservableObject {
     // MARK: Services
     let notificationScheduler: NotificationScheduler
     let rescheduleQuoteNotificationsUseCase: RescheduleQuoteNotificationsUseCase
+    /// Refills the quote notifications from a `BGAppRefreshTask` while the app stays closed.
+    let quoteNotificationBackgroundRefresh: QuoteNotificationBackgroundRefresh
 
     // MARK: Habits ("Mi Rutina") — SwiftData-only, nil below iOS 17 (no legacy fallback yet)
     let habitRepository: HabitRepository?
@@ -123,6 +125,10 @@ final class AppDependencies: ObservableObject {
         self.rescheduleQuoteNotificationsUseCase = RescheduleQuoteNotificationsUseCase(
             getAllQuotes: self.getAllQuotesUseCase,
             scheduler: scheduler
+        )
+        self.quoteNotificationBackgroundRefresh = QuoteNotificationBackgroundRefresh(
+            getPreferences: self.getUserPreferencesUseCase,
+            reschedule: self.rescheduleQuoteNotificationsUseCase
         )
 
         // ── Habits ("Mi Rutina") — SwiftData only, nil below iOS 17 ──

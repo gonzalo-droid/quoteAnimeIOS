@@ -214,6 +214,22 @@
         }
       }
     },
+    "Abre la app para seguir recibiendo frases de anime." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open the app to keep getting anime quotes."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre la app para seguir recibiendo frases de anime."
+          }
+        }
+      }
+    },
     "Accede a colecciones temáticas exclusivas, como Pokémon y Black Clover." : {
       "localizations" : {
         "en" : {
@@ -3904,6 +3920,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se pudo guardar"
+          }
+        }
+      }
+    },
+    "No te quedes sin frases" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Don't run out of quotes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No te quedes sin frases"
           }
         }
       }

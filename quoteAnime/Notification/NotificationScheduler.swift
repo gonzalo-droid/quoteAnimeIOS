@@ -63,6 +63,10 @@ final class NotificationScheduler: QuoteNotificationScheduling {
     /// frequency ends on a partial last day rather than skipping one. Home refills it on every
     /// launch, which is also what moves an existing install off the old spacing.
     ///
+    /// The last slot of the batch is not a quote but a notice to open the app
+    /// (`isRefillNotice`): a batch that nobody refilled — neither a launch nor
+    /// `QuoteNotificationBackgroundRefresh` — ends with an explanation instead of silence.
+    ///
     /// Only this app's **quote** requests are touched. Habit reminders share the 64-slot budget,
     /// so the quotes take what is left after them instead of crowding them out.
     func reschedule(preferences: UserPreferences, quotes: [Quote]) async {
@@ -88,11 +92,14 @@ final class NotificationScheduler: QuoteNotificationScheduling {
             return pool[poolIdx]
         }
 
-        for fireDate in fireDates {
+        for (index, fireDate) in fireDates.enumerated() {
             let comps = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate)
+            let content = Self.isRefillNotice(index: index, of: fireDates.count)
+                ? NotificationHelper.makeRefillNoticeContent()
+                : NotificationHelper.makeContent(for: nextQuote())
             let request = UNNotificationRequest(
                 identifier: Self.identifier(for: comps),
-                content: NotificationHelper.makeContent(for: nextQuote()),
+                content: content,
                 trigger: UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
             )
             try? await center.add(request)
@@ -115,6 +122,13 @@ final class NotificationScheduler: QuoteNotificationScheduling {
     /// are already pending. Never negative.
     static func quoteBudget(otherPendingCount: Int) -> Int {
         max(0, systemPendingLimit - otherPendingCount)
+    }
+
+    /// Whether the slot at `index` of a batch of `count` carries the "open the app" notice: only
+    /// the last one, and only when the batch has room for at least one quote before it — a budget
+    /// squeezed to a single slot by habit reminders keeps that slot for a quote.
+    static func isRefillNotice(index: Int, of count: Int) -> Bool {
+        count >= 2 && index == count - 1
     }
 
     static func isQuoteRequest(identifier: String) -> Bool {
@@ -144,12 +158,16 @@ final class NotificationScheduler: QuoteNotificationScheduling {
     private func logPendingQuoteRequests() async {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEE yyyy-MM-dd HH:mm"
-        let dates = await center.pendingNotificationRequests()
+        let pending = await center.pendingNotificationRequests()
             .filter { Self.isQuoteRequest(identifier: $0.identifier) }
-            .compactMap { ($0.trigger as? UNCalendarNotificationTrigger)?.nextTriggerDate() }
-            .sorted()
-        for (index, date) in dates.enumerated() {
-            Self.logger.debug("pending quote \(index + 1)/\(dates.count): \(formatter.string(from: date), privacy: .public)")
+            .compactMap { request -> (date: Date, title: String)? in
+                guard let date = (request.trigger as? UNCalendarNotificationTrigger)?.nextTriggerDate()
+                else { return nil }
+                return (date, request.content.title)
+            }
+            .sorted { $0.date < $1.date }
+        for (index, item) in pending.enumerated() {
+            Self.logger.debug("pending quote \(index + 1)/\(pending.count): \(formatter.string(from: item.date), privacy: .public) \(item.title, privacy: .public)")
         }
     }
     #endif
