@@ -85,7 +85,7 @@ vuelven a regir el día que `PremiumConfig.usesRealBilling` pase a `true`.
 | **Botón de QA "Quitar premium"** | Escribe `is_premium = false`; la siguiente sincronización con Play lo vuelve a poner en `true` sin avisar | `DebugPremiumOverrideSource` fija un override explícito que sólo se limpia al comprar de verdad, y **sólo existe en builds DEBUG** | El de Android miente durante el QA. |
 | **Anuncios** | Dos gates independientes: un flag `@Volatile` dentro de `ShareInterstitialManager` y un `if (!uiState.isPremium)` suelto en `CatalogScreen` | `ShareAdPolicy` (intersticial) y `BannerAdPolicy` (banner, con la lista de lugares), ambos puros y los únicos que preguntan por premium | Un `if` suelto en la vista es cómo una superficie nueva se olvida de preguntar. Tanda 10: el banner ya existe también en iOS. |
 | **Banner que no carga** | `AdView` sin listener: si no hay anuncio queda el hueco en blanco | `BannerAdView` reserva los 50 pt mientras carga y se colapsa si la carga falla | Un recuadro vacío al pie de la pantalla se lee como un error de maquetación. |
-| **Plantillas en el onboarding** | Elige la primera con `!isPremiumOnly \|\| isPremium` | `OnboardingViewModel` filtra siempre las premium, sin mirar el entitlement | Pendiente, no decidido: hoy un usuario premium que reinstala no ve Pokémon ni Black Clover en el onboarding. Impacto mínimo; anotado para no perderlo. |
+| **Plantillas en el onboarding** | Elige la primera con `!isPremiumOnly \|\| isPremium` | `OnboardingViewModel` filtra siempre las premium, sin mirar el entitlement | **Divergencia deliberada** (decidido por el usuario, 2026-09-18): un usuario premium que reinstala no ve Pokémon ni Black Clover en el onboarding. Impacto mínimo; puede elegirlas después desde el editor. |
 | **`selectedCategoryIds`** | Ids de Firestore (`amor`, `motivación`) | Nombres de anime | Espacios de ids distintos. Sincronizar el valor corrompe en silencio la selección del usuario. |
 | **Nombre visible de la app** | `Frases Anime` / `Anime Quotes` | `QuoteAnime` | Decisión de marca. Renombrar le cambia el nombre instalado a los usuarios actuales. |
 | **Registro del español** | `values-es/strings.xml` usa voseo ("Desbloqueá", "sos", "Probá", "Cancelá") | Tuteo en todas las pantallas | Convención del repo iOS. Cada string portado se convierte. |
@@ -215,4 +215,20 @@ Lo que queda abierto, en orden de historia:
 - **(b) Como está**: el primer bloqueo es `132e96b`, y el tag sólo puede ir a su padre,
   **`611c70a`** (2026-07-30, "fix: format compose").
 
-HEAD `4b5d21f` no califica mientras `fc16551` siga abierto. El tag no se ha creado.
+HEAD `4b5d21f` no califica mientras `fc16551` siga abierto.
+
+**Tag creado (2026-09-18): `ios-synced` → `0b76ed0`** en el repo de Android, después de registrar
+"Plantillas en el onboarding" como divergencia deliberada. Después de ese punto, todo está resuelto
+salvo la parte de `fc16551` que vive en el StoreKit dormido:
+
+| Commit | Estado |
+|---|---|
+| `fc16551` | pendiente hasta activar la compra real (ver Pendiente) |
+| `0529500` | portado (tanda 9) |
+| `e598652`, `caff5b2`, `51c5dfd` | Android-only (docs y configuración) |
+| `4b5d21f` | portado (tanda 12) |
+
+Por eso `git log ios-synced..master` lista esos seis commits aunque cinco ya estén resueltos: el
+tag atrasa por diseño mientras la compra real siga apagada. Este libro mayor es la referencia; el
+tag, una aproximación. Cuando se active la compra real y se cierre `fc16551`, el tag puede moverse
+al HEAD de Android.
