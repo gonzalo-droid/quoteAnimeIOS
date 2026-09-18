@@ -56,11 +56,7 @@ struct CreateHabitUseCase {
         let trimmedDescription = habit.description?.trimmingCharacters(in: .whitespacesAndNewlines)
         clean.description = (trimmedDescription?.isEmpty ?? true) ? nil : trimmedDescription
 
-        // Android: `reminderDays = if (reminderTime == null) emptySet() else reminderDays`.
-        // iOS models "has a reminder" as `reminderEnabled` rather than a nullable time.
-        if !habit.reminderEnabled {
-            clean.reminderWeekdays = []
-        }
+        clean.normaliseReminder()
 
         return clean
     }

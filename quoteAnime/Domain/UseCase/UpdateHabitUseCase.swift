@@ -35,9 +35,7 @@ struct UpdateHabitUseCase {
 
         let trimmedDescription = habit.description?.trimmingCharacters(in: .whitespacesAndNewlines)
         clean.description = (trimmedDescription?.isEmpty ?? true) ? nil : trimmedDescription
-        if !habit.reminderEnabled {
-            clean.reminderWeekdays = []
-        }
+        clean.normaliseReminder()
 
         try await repository.saveHabit(clean)
         return clean

@@ -1942,6 +1942,22 @@
         }
       }
     },
+    "Elige al menos un día. Sin días, el recordatorio queda apagado." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick at least one day. With no days, the reminder stays off."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige al menos un día. Sin días, el recordatorio queda apagado."
+          }
+        }
+      }
+    },
     "Elige de qué animes quieres ver frases en el inicio y recibir por notificación. Si no eliges ninguno, se muestran todos." : {
       "localizations" : {
         "en" : {

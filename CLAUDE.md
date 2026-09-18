@@ -429,8 +429,9 @@ una clave le falta cualquiera de los dos idiomas.
   escribir por el simulador, con la ruta completa y la app cerrada:
   `xcrun simctl spawn <udid> defaults write "$(xcrun simctl get_app_container <udid> com.gonzadev.quoteAnime data)/Library/Preferences/com.gonzadev.quoteAnime" pref_notification_frequency -int 3`.
   El `Slider` de Ajustes tampoco responde a un `touch_path` del simulador.
-- **Un recordatorio de hábito sin días elegidos no programa nada**: el editor deja guardar el
-  interruptor encendido con cero días. Para probar recordatorios, marca al menos un día.
+- **Recordatorio de hábito = interruptor + al menos un día.** `Habit.normaliseReminder()` (lo llaman
+  `CreateHabitUseCase` y `UpdateHabitUseCase`) guarda "encendido sin días" como apagado, y el editor
+  elige los siete días al encender el interruptor. Un hábito viejo guardado así se abre apagado.
 - **Duplicación deliberada del widget**: la extensión no puede importar tipos del target de la app,
   así que `QuoteAnimeWidget/WidgetSharedModel.swift` y los tokens `w`-prefijados repiten a mano el
   App Group, el snapshot, `HeatmapGrid`, `HabitPalette` y la URL del deep link. Cuando cambies un lado, cambia el otro y

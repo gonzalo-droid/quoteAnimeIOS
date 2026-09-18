@@ -382,6 +382,7 @@ struct RoutineAnalyticsTests {
         let viewModel = makeEditor(analytics: analytics)
         viewModel.uiState.title = "Leer"
         viewModel.uiState.reminderEnabled = true
+        viewModel.uiState.reminderWeekdays = [2, 4]
         viewModel.onEndDateEnabled(true)
 
         viewModel.save {}

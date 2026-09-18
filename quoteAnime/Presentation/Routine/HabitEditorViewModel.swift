@@ -24,6 +24,9 @@ struct HabitEditorUiState {
     var isSaving: Bool = false
     var isEditing: Bool = false
     var canSave: Bool { !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    /// The switch is on but no weekday is picked: nothing would ever fire. The editor says so
+    /// under the weekday row, and the use cases save it as "no reminder".
+    var reminderHasNoWeekdays: Bool { reminderEnabled && reminderWeekdays.isEmpty }
 }
 
 /// One alert slot for everything the editor has to tell the user: every reason a save can be
@@ -126,7 +129,9 @@ final class HabitEditorViewModel: ObservableObject {
                 uiState.startDate = habit.startDate
                 uiState.hasEndDate = habit.endDate != nil
                 uiState.endDate = habit.endDate ?? habit.startDate
-                uiState.reminderEnabled = habit.reminderEnabled
+                // A habit saved before the use cases normalised the reminder can still be
+                // "on" with no weekdays; it never fired, so it opens as off.
+                uiState.reminderEnabled = habit.reminderEnabled && !habit.reminderWeekdays.isEmpty
                 uiState.reminderWeekdays = habit.reminderWeekdays
                 uiState.reminderTime = Calendar.current.date(
                     bySettingHour: habit.reminderHour, minute: habit.reminderMinute, second: 0, of: Date()
@@ -195,9 +200,15 @@ final class HabitEditorViewModel: ObservableObject {
 
     /// The switch turns on optimistically and turns back off if notifications are denied — and
     /// then says why, instead of silently flipping back.
+    ///
+    /// Turning it on with no weekdays picked selects all seven, as Android's editor starts
+    /// (`reminderDays = DayOfWeek.entries.toSet()`): an armed switch must always fire somewhere.
     func onReminderToggled(_ enabled: Bool) {
         uiState.reminderEnabled = enabled
         guard enabled else { return }
+        if uiState.reminderWeekdays.isEmpty {
+            uiState.reminderWeekdays = Set(1...7)
+        }
         Task {
             let granted = await habitReminderScheduler.requestPermission()
             guard !granted else { return }
@@ -231,7 +242,7 @@ final class HabitEditorViewModel: ObservableObject {
                     // Only a successful creation counts, as on Android; an edit is never reported.
                     analytics.trackHabitCreated(
                         templateId: saved.templateId,
-                        hasReminder: uiState.reminderEnabled,
+                        hasReminder: saved.reminderEnabled,
                         hasEndDate: uiState.hasEndDate
                     )
                 }

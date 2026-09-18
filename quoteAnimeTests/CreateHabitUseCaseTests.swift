@@ -256,4 +256,15 @@ struct CreateHabitUseCaseTests {
 
         #expect(try await repository.fetchHabit(id: "h")?.reminderWeekdays == [2, 4, 6])
     }
+
+    @Test("un recordatorio activo sin días se guarda apagado")
+    func reminderWithoutWeekdaysIsSavedOff() async throws {
+        let (useCase, repository) = Self.makeSUT()
+        let habit = HabitFixture.make(id: "h", reminderEnabled: true, reminderWeekdays: [])
+
+        let saved = try await useCase.execute(habit)
+
+        #expect(saved.reminderEnabled == false)
+        #expect(try await repository.fetchHabit(id: "h")?.reminderEnabled == false)
+    }
 }

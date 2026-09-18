@@ -9,6 +9,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- Tests del recordatorio sin días en el editor y en los casos de uso (8 casos nuevos, 421 en total).
 - **Tocar el widget de frases abre esa frase.** La app se abre en Inicio justo en la frase que mostraba el widget, como en Android, esté cerrada o abierta en otra pantalla. Si la frase ya no está o no es de los animes que elegiste, se abre Inicio como siempre.
 - Tests de los horarios de las notificaciones (las tablas de horarios de Android, ventanas que cruzan la medianoche, el día entero y el tope de 64 en varios días) y del widget de frases (30 casos nuevos, 413 en total).
 - **Tocar un recordatorio abre Mi Rutina.** Al tocar la notificación de un hábito la app se abre directo en Mi Rutina, como en Android, esté cerrada o en segundo plano. Si todavía no terminaste la bienvenida, primero la completas y después llegas a Mi Rutina. "Hecho" sigue marcando el día sin abrir la app.
@@ -65,6 +66,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - Typography: `quoteSerif` changed from `Georgia` to `Didot`; `quoteSerifItalic` changed from `Georgia-Italic` to `Georgia`.
 
 ### Fixed
+- **Un recordatorio ya no queda encendido sin días.** Al activar el recordatorio de un hábito se eligen los siete días, y si quitas todos el editor te avisa de que así no va a sonar; si guardas igual, se guarda apagado en vez de parecer activo sin programar nada.
 - **Los recordatorios de hábitos ya no desaparecen.** Con las notificaciones de frases activadas, cada vez que abrías la app se borraban los recordatorios de tus hábitos (y también al apagar las de frases); ahora conviven.
 - Inicio cargaba las frases dos veces al abrir la app.
 - **"Hecho" en el recordatorio de un hábito ya no desmarca el día.** Si ya lo habías marcado desde la app, tocar "Hecho" en la notificación lo dejaba sin marcar; ahora lo deja marcado, como en Android.
