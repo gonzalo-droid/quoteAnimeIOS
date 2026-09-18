@@ -285,3 +285,110 @@ Always dark (`.preferredColorScheme(.dark)` at root). All colors defined as `Col
 - Portrait only
 - Bundle ID: `com.gonzadev.quoteAnime`
 - No linting configured
+
+---
+
+## Perfil de paridad
+
+Capa específica de este proyecto para el agente `android-to-ios-sync`. El agente es genérico y no
+sabe nada de quoteAnime: todo lo concreto lo lee de aquí. Si algo de esta sección deja de ser
+cierto, corrígelo aquí — el agente la trata como autoridad por encima de sus propios hábitos.
+
+**1. El par**
+
+| | Ruta | Remoto |
+|---|---|---|
+| Android (sólo lectura) | `/Volumes/Neko/AndroidStudioProjects/quoteAnime` | `gonzalo-droid/quoteAnime` |
+| iOS (donde se escribe) | `/Volumes/Neko/apps_ios/quoteAnime` | `gonzalo-droid/quoteAnimeIOS` |
+
+No hay tag de sincronización en el repo Android: `ios-synced` nunca se ha creado. El alcance sale
+de **`PARITY.md`**, que es el libro mayor de este par: léelo antes de calcular cualquier brecha.
+
+**2. Build y tests** — ver [Build & Run](#build--run). Proyecto Xcode clásico,
+`quoteanime.xcodeproj` (**minúscula en disco**, el target no). Dos schemes que compilan por
+separado: `quoteAnime` y `QuoteAnimeWidgetExtension` — toca el widget y compila los dos.
+Tests en el target `quoteAnimeTests` con **Swift Testing** (`@Test`, `#expect`, `@Test(arguments:)`),
+fakes a mano sobre protocolos, sin framework de mocking. Correr siempre con
+`-parallel-testing-enabled NO`: en esta máquina los clones paralelos del simulador fallan con
+`Mach error -308`, que es un problema de entorno y no un test roto.
+
+**3. Arquitectura** — ver [Architecture](#architecture) y [Key patterns](#key-patterns).
+Clean Architecture + MVVM; DI manual con `AppDependencies` (**nunca introducir un framework de DI**);
+navegación con `AppRouter` + `AppScreen`/`AppRoute` sobre `NavigationStack`; persistencia SwiftData
+en iOS 17+ con fallback `UserDefaults` donde existe. Los ViewModels son `ObservableObject` con
+`@Published` — este repo **no** usa `@Observable`, y mezclar los dos sistemas rompe la observación.
+
+**4. Design system** — ver [Theme](#theme). Colores sólo desde `Theme/Colors.swift`, tipografía sólo
+vía `Font.quoteSerif(size:)` / `.quoteSerifItalic(size:)`; nunca un hex ni un nombre de fuente en una
+vista. La app es **dark-only** (`.preferredColorScheme(.dark)` en la raíz): no agregues variante
+clara salvo que se pida. `#Preview` en cada vista nueva — el repo los tiene en todas.
+
+Busca aquí antes de escribir algo nuevo: `QuoteDetailView`, `HabitCardView`, `HeatmapGrid`,
+`CalendarMonthGrid`, `ActivityViewController`, `ShareCardView`, `QuoteCard`, `HabitPalette`,
+`HabitIcons`. Lo compartido vive en `Presentation/Components/`.
+
+**5. Localización** — ver [Localization](#localization--string-catalogs-english-source-spanish-keys-tú),
+que es el reglamento completo. En corto: **nada visible se hardcodea**, todo pasa por String Catalog;
+la clave es el texto en español; cada clave nueva viaja con su valor en inglés en el mismo commit;
+los conteos usan variaciones de plural, nunca `if count == 1`; el registro es **tuteo, nunca voseo**
+— `values-es/strings.xml` de Android trae ~16 strings en voseo ("Desbloqueá", "sos", "Cancelá"),
+que se convierten al portarlos y se reportan como deuda de Android. `LocalizationTests` falla si a
+una clave le falta cualquiera de los dos idiomas.
+
+**6. Decisiones de producto que condicionan el port**
+
+- **StoreKit 2 está implementado pero dormido, por decisión de producto.** Todo el premium pasa
+  por un interruptor, `PremiumConfig.usesRealBilling`, que hoy está en **`false`**: el mock responde,
+  y los tipos de StoreKit ni siquiera se construyen. Ver
+  [Key patterns → Premium](#key-patterns), que es el reglamento completo, y `PARITY.md` para la
+  divergencia con Play Billing. Portar trabajo de billing de Android significa respetar el
+  interruptor: el comportamiento tiene que funcionar con el switch en `false` (paywall
+  "Próximamente") y en `true`. **Nunca cambies el switch a `true`**: requiere el producto en App
+  Store Connect, el acuerdo de apps pagas y una prueba en sandbox — es un fork, pregunta.
+  **Nunca llames `AppTransaction.shared` sin condición**: dispara un login interactivo del App Store
+  al arrancar.
+- **Sin selector de idioma en la app**, igual que Android: se sigue el idioma del dispositivo.
+
+**7. Valores que nunca cruzan de plataforma**
+
+- **`selectedCategoryIds`** — espacios de ids distintos. Android guarda ids de Firestore
+  (`amor`, `motivación`); iOS guarda **nombres de anime**. Sincronizar el valor corrompe en silencio
+  la selección del usuario.
+- **El orden de `HabitPalette.colors` y las claves de `HabitIcons`** — se persisten por índice y por
+  clave. Reordenar o renombrar repinta todos los hábitos existentes y ningún test lo detecta.
+- **Bundle id, App Group (`group.com.gonzadev.quoteAnime`), product ids, firma y keystore** —
+  específicos de plataforma por definición.
+- **El nombre visible de la app** — distinto a propósito (`QuoteAnime` en iOS, `Frases Anime` /
+  `Anime Quotes` en Android). Renombrarlo le cambia el nombre instalado a los usuarios actuales:
+  es una decisión de marca, no de paridad.
+
+**8. Documentos que hay que mantener ciertos**
+
+- `CHANGELOG.md` — **Keep a Changelog**: entradas bajo `[Unreleased]` en `Added` / `Changed` /
+  `Fixed`, escritas para el usuario, en español, una línea cada una. No subir `MARKETING_VERSION`
+  salvo que se pida una release.
+- `PARITY.md` — el libro mayor de paridad: una fila por feature con el SHA de Android del que salió,
+  y cada divergencia deliberada con su porqué. Se actualiza en el mismo pase que el código.
+- `CLAUDE.md` (este archivo) y `README.md` — si el trabajo vuelve falsa una afirmación, se corrige
+  en el mismo pase.
+
+**9. Rama, commits y PR**
+
+- Rama en el repo iOS: `feature/ios-sync-<slug>`.
+- **Nunca mergear a `main` y nunca pushear.** El usuario revisa la rama, la mergea a `main` él mismo
+  (commits `merge: …`) y la pushea; se dice al final del reporte, no se pregunta a mitad del trabajo.
+- Commits Conventional Commits con scope `(ios)` y asunto en español, como el historial reciente.
+
+**10. Trampas del repo**
+
+- `core.fileMode` ya está en `false` (el volumen externo hacía ver ~83 archivos modificados por
+  cambios de permisos). Si vuelve a aparecer esa avalancha, revísalo antes de commitear.
+- **Nunca `git add -A` aquí.** Stagea tus archivos por nombre: el árbol suele cargar trabajo sin
+  commitear que es de otro run y no tuyo.
+- Los archivos fuente nuevos **no** necesitan paso en Xcode — el proyecto usa carpetas
+  sincronizadas. Un **target** nuevo o un build setting sí tocan `project.pbxproj`, y eso es un
+  fork: pregunta primero.
+- **Duplicación deliberada del widget**: la extensión no puede importar tipos del target de la app,
+  así que `QuoteAnimeWidget/WidgetSharedModel.swift` y los tokens `w`-prefijados repiten a mano el
+  App Group, el snapshot, `HeatmapGrid` y `HabitPalette`. Cuando cambies un lado, cambia el otro y
+  dilo en el reporte.
