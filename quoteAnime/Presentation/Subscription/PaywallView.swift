@@ -188,9 +188,14 @@ struct PaywallView: View {
                 let isSelected = viewModel.uiState.selectedOffer?.id == offer.id
                 Button { viewModel.selectOffer(offer) } label: {
                     HStack(spacing: 12) {
-                        Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-                            .font(.system(size: 20))
-                            .foregroundColor(isSelected ? .accentPurple : .textSecondary)
+                        // A radio button next to a single option is noise. The App Store sells
+                        // one product id per plan, so today there is exactly one — a second plan
+                        // means a second product id, and then the picker earns its place.
+                        if viewModel.uiState.offers.count > 1 {
+                            Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
+                                .font(.system(size: 20))
+                                .foregroundColor(isSelected ? .accentPurple : .textSecondary)
+                        }
                         VStack(alignment: .leading, spacing: 2) {
                             Text(verbatim: offer.priceDescription)
                                 .font(.system(size: 15, weight: .semibold))
