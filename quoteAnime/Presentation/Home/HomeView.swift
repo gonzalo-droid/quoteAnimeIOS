@@ -173,10 +173,9 @@ private struct QuotePageView: View {
                 }
                 .padding(.bottom, 16)
 
-                // Banner desactivado temporalmente — reemplazado por intersticial en flujo de compartir
-                // BannerAdView(adUnitID: AdConstants.homeBannerID)
-                //     .frame(height: 50)
-                //     .padding(.bottom, 12)
+                // No banner here, same as Android today (`HomeScreen.kt`, commented out since the
+                // share interstitial replaced it): `BannerAdPolicy.showsBanner(at: .home, …)` is
+                // false. The banner lives in the quote detail opened from Explorar.
             }
         }
     }

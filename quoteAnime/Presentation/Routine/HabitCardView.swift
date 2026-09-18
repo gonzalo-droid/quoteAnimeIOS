@@ -60,7 +60,7 @@ struct HabitCardView: View {
                 }
             }
             .padding(14)
-            .background(Color.surface)
+            .background(cardBackground)
             .cornerRadius(16)
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
@@ -77,6 +77,25 @@ struct HabitCardView: View {
             Button("Cancelar", role: .cancel) {}
         } message: {
             Text("Se borra el hábito y todo su historial. Esta acción no se puede deshacer.")
+        }
+    }
+
+    /// A habit created from a themed suggestion shows its cover behind the card, scrimmed to 82 %
+    /// of the card's own colour so the text and the heatmap stay legible — Android's `HabitCard`
+    /// (`923e552`). Everyone else gets the plain surface.
+    @ViewBuilder
+    private var cardBackground: some View {
+        if let asset = HabitThemeImages.assetName(for: item.habit.coverAnimeSlug) {
+            Color.surface
+                .overlay(Image(asset).resizable().scaledToFill())
+                .overlay(Color.surface.opacity(0.82))
+                .clipped()
+                // The cropped overflow still hit-tests; without this it steals taps from the
+                // neighbouring cards (see `ThemedSuggestionPreview`).
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        } else {
+            Color.surface
         }
     }
 

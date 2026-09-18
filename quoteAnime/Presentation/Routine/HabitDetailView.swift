@@ -24,7 +24,8 @@ struct HabitDetailView: View {
         unarchiveHabitUseCase: UnarchiveHabitUseCase,
         deleteHabitUseCase: DeleteHabitUseCase,
         habitReminderScheduler: HabitReminderScheduling,
-        routineWidgetRefresher: RoutineWidgetRefreshing
+        routineWidgetRefresher: RoutineWidgetRefreshing,
+        analytics: RoutineAnalytics
     ) {
         _viewModel = StateObject(wrappedValue: HabitDetailViewModel(
             habitId: habitId,
@@ -34,7 +35,8 @@ struct HabitDetailView: View {
             unarchiveHabitUseCase: unarchiveHabitUseCase,
             deleteHabitUseCase: deleteHabitUseCase,
             habitReminderScheduler: habitReminderScheduler,
-            routineWidgetRefresher: routineWidgetRefresher
+            routineWidgetRefresher: routineWidgetRefresher,
+            analytics: analytics
         ))
     }
 
@@ -363,7 +365,8 @@ private final class PreviewHabitRepository: HabitRepository {
             unarchiveHabitUseCase: UnarchiveHabitUseCase(repository: repository),
             deleteHabitUseCase: DeleteHabitUseCase(repository: repository),
             habitReminderScheduler: HabitReminderScheduler(),
-            routineWidgetRefresher: NoopRoutineWidgetRefresher()
+            routineWidgetRefresher: NoopRoutineWidgetRefresher(),
+            analytics: NoopRoutineAnalytics()
         )
         .environmentObject(AppRouter())
     }

@@ -9,6 +9,11 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **Busca íconos por su nombre.** El selector de íconos de los hábitos tiene un buscador: escribe "agua", "leer" o "música" (con o sin tilde) y ves solo los íconos que coinciden, agrupados por categoría, en el idioma de tu iPhone, como en Android. Si nada coincide te lo dice.
+- **Las sugerencias temáticas traen su portada.** Camino ninja, Buscar el One Piece, Sé un saiyan, Sé un maestro Pokémon y Sé el Rey Mago muestran su ilustración y una frase del tema al elegirlas en el onboarding y en el editor, y el hábito creado la lleva de fondo en su tarjeta de Mi Rutina, como en Android.
+- **Anuncio en el detalle de frase de Explorar.** Al abrir una frase desde Explorar aparece un banner debajo de los botones, como en Android; con premium no aparece. El inicio sigue sin banner.
+- Mi Rutina envía a Firebase Analytics los mismos eventos que Android (abrir Mi Rutina y el detalle, crear, completar y archivar hábitos, rachas de 7, 21, 50 y 100 días y rachas perdidas), para ver las dos apps juntas.
+- Tests del buscador de íconos, de los eventos de Mi Rutina, de las portadas y de la política del banner (56 casos nuevos, 339 en total).
 - **El selector de íconos se puede usar con VoiceOver.** Cada uno de los 126 íconos se lee con su nombre ("Entrenar", "Beber agua", "Tender la cama"…), en español o en inglés según el iPhone, igual que en Android; el que tiene el hábito se anuncia como seleccionado y los títulos de categoría se leen como encabezados.
 - Con VoiceOver, "Elegir ícono" dice qué ícono tiene el hábito, cada color dice si es el elegido y el mapa de actividad del detalle dice cuántos días completaste en esas semanas.
 - Tests de las etiquetas de VoiceOver: los 126 íconos en los dos idiomas, los 14 colores y el conteo de días del mapa de actividad (15 casos nuevos, 283 en total).
@@ -39,6 +44,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Settings — Información section**: "Política de privacidad" and "Términos y condiciones" items that open their respective pages in-app via `SFSafariViewController` (new `SafariView` component in `Presentation/Components/`).
 
 ### Changed
+- **Un hábito nuevo empieza desde una sugerencia.** El editor abre con la primera sugerencia que puedes usar ya aplicada (nombre, descripción, ícono, color y portada), y elegir otra la reemplaza entera; puedes cambiar todo antes de guardar. La sugerencia elegida se marca en la fila.
 - **Perder premium ya no te quita nada de lo que creaste.** Si la suscripción caduca, los hábitos que pasan del límite gratuito se quedan donde están y solo deja de poderse crear uno nuevo, igual que en Android.
 - **El widget de frases respeta los animes que elegiste**, igual que en Android. Si ya los habías elegido, se conservan solos. El widget también deja de mostrar siempre frases del mismo bloque: ahora sale de todo el catálogo.
 - **Los widgets se actualizan apenas cambias algo.** Marcar un día, crear, editar, archivar, restaurar o borrar un hábito refresca la pantalla de inicio al instante, sin esperar. También al marcar desde la notificación.
@@ -52,6 +58,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - Typography: `quoteSerif` changed from `Georgia` to `Didot`; `quoteSerifItalic` changed from `Georgia-Italic` to `Georgia`.
 
 ### Fixed
+- **"Hecho" en el recordatorio de un hábito ya no desmarca el día.** Si ya lo habías marcado desde la app, tocar "Hecho" en la notificación lo dejaba sin marcar; ahora lo deja marcado, como en Android.
 - **El widget de frases volvía a quedarse en gris.** Descargaba la ilustración del anime a tamaño completo y iOS se negaba a guardar el widget con una imagen tan grande, así que descartaba la frase que acababa de traer. Ahora la reduce antes de mostrarla.
 - **Las sugerencias de hábito muestran su ícono.** Camino ninja, Buscar el One Piece, Sé un saiyan y las demás sugerencias mostraban un check genérico en el onboarding, el editor y la tarjeta; ahora tienen su ícono, el mismo que en Android. Los hábitos que ya habías creado desde una sugerencia también lo recuperan.
 - **"1 días seguidos" ahora dice "1 día seguido".**

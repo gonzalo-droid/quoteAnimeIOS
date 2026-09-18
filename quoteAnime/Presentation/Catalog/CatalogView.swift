@@ -4,12 +4,16 @@ struct CatalogView: View {
     @StateObject private var viewModel: CatalogViewModel
     @EnvironmentObject private var router: AppRouter
     @Environment(\.dismiss) private var dismiss
+    /// Observed so the banner disappears the moment premium turns on.
+    @ObservedObject private var premiumGate: PremiumGate
 
     init(
         getAllQuotesUseCase: GetAllQuotesUseCase,
         getFavoriteQuotesUseCase: GetFavoriteQuotesUseCase,
-        toggleFavoriteUseCase: ToggleFavoriteUseCase
+        toggleFavoriteUseCase: ToggleFavoriteUseCase,
+        premiumGate: PremiumGate
     ) {
+        _premiumGate = ObservedObject(wrappedValue: premiumGate)
         _viewModel = StateObject(wrappedValue: CatalogViewModel(
             getAllQuotesUseCase: getAllQuotesUseCase,
             getFavoriteQuotesUseCase: getFavoriteQuotesUseCase,
@@ -174,23 +178,30 @@ struct CatalogView: View {
 
     private func detailView(quote: Quote) -> some View {
         QuoteDetailView(quote: quote, onBack: { viewModel.onBackFromDetail() }) {
-            HStack(spacing: 20) {
-                // Favorite
-                CircleActionButton(
-                    icon: quote.isFavorite ? "heart.fill" : "heart",
-                    color: quote.isFavorite ? .heartRed : .white
-                ) {
-                    viewModel.onToggleFavorite(quote)
-                }
-                .accessibilityLabel(quote.isFavorite ? "Quitar favorito" : "Añadir favorito")
-
-                // Share
-                CircleActionButton(icon: "square.and.arrow.up", color: .white) {
-                    ShareInterstitialManager.shared.onShareRequested {
-                        viewModel.buildShareImage(for: quote)
+            VStack(spacing: 16) {
+                HStack(spacing: 20) {
+                    // Favorite
+                    CircleActionButton(
+                        icon: quote.isFavorite ? "heart.fill" : "heart",
+                        color: quote.isFavorite ? .heartRed : .white
+                    ) {
+                        viewModel.onToggleFavorite(quote)
                     }
+                    .accessibilityLabel(quote.isFavorite ? "Quitar favorito" : "Añadir favorito")
+
+                    // Share
+                    CircleActionButton(icon: "square.and.arrow.up", color: .white) {
+                        ShareInterstitialManager.shared.onShareRequested {
+                            viewModel.buildShareImage(for: quote)
+                        }
+                    }
+                    .accessibilityLabel("Compartir")
                 }
-                .accessibilityLabel("Compartir")
+
+                // Android 727f872: the banner lives here, under the actions, for free users only.
+                if BannerAdPolicy.showsBanner(at: .catalogQuoteDetail, isPremium: premiumGate.isPremium) {
+                    BannerAdView(adUnitID: AdConstants.bannerID)
+                }
             }
         }
     }

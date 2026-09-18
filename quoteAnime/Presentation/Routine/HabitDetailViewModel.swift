@@ -34,6 +34,9 @@ final class HabitDetailViewModel: ObservableObject {
     /// Injected so the screen can be tested at a fixed date, the same reason Android's view
     /// model takes a `Clock`.
     private let today: Date
+    private let analytics: RoutineAnalytics
+    /// `habit_detail_opened` once per visit — `onAppear` fires again when the editor is popped.
+    private var didTrackOpen = false
 
     init(
         habitId: String,
@@ -45,7 +48,8 @@ final class HabitDetailViewModel: ObservableObject {
         habitReminderScheduler: HabitReminderScheduling,
         routineWidgetRefresher: RoutineWidgetRefreshing,
         today: Date = Date(),
-        calendar: Calendar = .current
+        calendar: Calendar = .current,
+        analytics: RoutineAnalytics = NoopRoutineAnalytics()
     ) {
         self.habitId = habitId
         self.repository = repository
@@ -58,6 +62,7 @@ final class HabitDetailViewModel: ObservableObject {
         self.calculateStreak = CalculateStreakUseCase(calendar: calendar)
         self.calendar = calendar
         self.today = today
+        self.analytics = analytics
         self.uiState.visibleMonth = today
     }
 
@@ -65,6 +70,10 @@ final class HabitDetailViewModel: ObservableObject {
     var currentToday: Date { today }
 
     func onAppear() {
+        if !didTrackOpen {
+            didTrackOpen = true
+            analytics.trackHabitDetailOpened()
+        }
         Task { await load() }
     }
 
@@ -74,8 +83,15 @@ final class HabitDetailViewModel: ObservableObject {
     func onDayTap(_ date: Date) {
         Task {
             do {
-                try await toggleHabitCompletionUseCase.execute(habitId: habitId, date: date, today: today)
+                let completed = try await toggleHabitCompletionUseCase.execute(habitId: habitId, date: date, today: today)
                 uiState.selectedDate = calendar.startOfDay(for: date)
+                if completed {
+                    analytics.trackHabitCompleted(
+                        habitId: habitId,
+                        isRetroactive: !calendar.isDate(date, inSameDayAs: today),
+                        source: .app
+                    )
+                }
             } catch {
                 print("[HabitDetailViewModel] toggle rechazado: \(error)")
             }
@@ -89,10 +105,14 @@ final class HabitDetailViewModel: ObservableObject {
     }
 
     func onArchive() {
+        let habit = uiState.habit
         Task {
             do {
                 try await archiveHabitUseCase.execute(id: habitId)
                 await habitReminderScheduler.cancel(habitId: habitId)
+                if let habit {
+                    analytics.trackHabitArchived(createdAt: habit.createdAt, now: today)
+                }
                 await routineWidgetRefresher.refresh()
                 uiState.shouldDismiss = true
             } catch {

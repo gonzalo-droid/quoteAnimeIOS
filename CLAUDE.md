@@ -39,7 +39,10 @@ xcrun simctl launch booted com.gonzadev.quoteAnime -AppleLanguages "(en)" -Apple
 3. **Add `GoogleService-Info.plist`** (Firebase project config) to the app target root.
 
 4. **Info.plist keys** needed (auto-generated plist via `GENERATE_INFOPLIST_FILE = YES`, add in Build Settings → Info):
-   - `GADApplicationIdentifier` — AdMob app ID
+   - `GADApplicationIdentifier` — AdMob app ID, and `SKAdNetworkItems` (Google's
+     `cstr6suwn9.skadnetwork`) — both already in `quoteAnime/Info.plist`. No ATT prompt and no
+     `NSUserTrackingUsageDescription`: the app does not request tracking. Debug builds use Google's
+     test ad units (`AdConstants`).
    - `BGTaskSchedulerPermittedIdentifiers` — if using background refresh
    - Visible Info.plist values (today only `CFBundleDisplayName`) are translated in `quoteAnime/InfoPlist.xcstrings`.
 
@@ -63,6 +66,8 @@ quoteAnime/
 │   └── AppRootView.swift       switches Splash / Onboarding / Main
 ├── Domain/
 │   ├── Model/              Quote, Category, UserPreferences (pure structs)
+│   ├── Analytics/          RoutineAnalytics (protocol, one `log(_:)`) + RoutineAnalyticsEvents
+│   │                       (pure factories — names and params copied verbatim from Android)
 │   ├── Premium/            PremiumGate + PremiumEntitlementSource (protocol) +
 │   │                       PremiumEntitlementDecision (pure) + PremiumStore (protocol) +
 │   │                       AppDistribution (debug / TestFlight / App Store, pure)
@@ -73,6 +78,7 @@ quoteAnime/
 │   │                       AppTransactionDistributionDetector (switch off);
 │   │                       StoreKitEntitlementSource, StoreKitPremiumStore,
 │   │                       DebugPremiumOverrideSource (#if DEBUG only) (switch on)
+│   ├── Analytics/          FirebaseRoutineAnalytics (Analytics.logEvent)
 │   ├── Remote/             QuoteRemoteDataSource (Firebase) + DTOs
 │   ├── Local/
 │   │   ├── SwiftData/      FavoriteQuoteDAO (iOS 17+), UserDefaultsFavoriteStorage (iOS 16)
@@ -92,7 +98,8 @@ quoteAnime/
 │   │                       mensual con marcado retroactivo), HabitEditorView/ViewModel,
 │   │                       HabitCardView, HabitHeatmapView, HabitCalendarMonthView,
 │   │                       HeatmapGrid + CalendarMonthGrid (geometría pura), HabitPalette,
-│   │                       HabitIcons
+│   │                       HabitIcons + HabitIconSearch (buscador del selector),
+│   │                       HabitThemeImages + ThemedSuggestionPreview (portadas de las plantillas)
 │   ├── Subscription/       PaywallView/ViewModel, CancelSubscriptionSheet (hoja de
 │   │                       retención), ManageSubscription, SubscriptionOfferText
 │   ├── Common/             AppLinks (URLs legales y de App Store, espejo de AppLinks.kt)
@@ -165,9 +172,9 @@ Android — whose repository documents the foreground re-sync but never wires it
   Play's acknowledgement, its 72-hour deadline and its retry worker have no iOS counterpart:
   `Transaction.finish()` is local and cannot fail over the network. Restore, conversely, exists
   only on iOS — the App Store requires it and Play does not.
-- **The three gates** read the same gate and nothing else: `CreateHabitUseCase` (active-habit cap),
-  `HabitTemplate.isLocked(isPremium:)` (locked suggestions) and `ShareAdPolicy` (share
-  interstitial). Losing premium blocks the next creation and never deletes anything.
+- **The four gates** read the same gate and nothing else: `CreateHabitUseCase` (active-habit cap),
+  `HabitTemplate.isLocked(isPremium:)` (locked suggestions), `ShareAdPolicy` (share
+  interstitial) and `BannerAdPolicy` (the banner in the quote opened from Explorar). Losing premium blocks the next creation and never deletes anything.
 - Views that show premium state hold the gate as `@ObservedObject` (`SettingsView`,
   `HabitEditorView`, `PaywallView`), or they will not redraw when StoreKit changes its mind.
 
@@ -276,7 +283,7 @@ hardcoded any more**: every string goes through a catalog.
 
 ### Theme
 
-Always dark (`.preferredColorScheme(.dark)` at root). All colors defined as `Color` static extensions in `Theme/Colors.swift`. Quote text uses Georgia (serif) via `Font.quoteSerif(size:)` / `Font.quoteSerifItalic(size:)`.
+Always dark (`.preferredColorScheme(.dark)` at root). All colors defined as `Color` static extensions in `Theme/Colors.swift`. Quote text uses the system serifs Didot (`Font.quoteSerif(size:)`) and Georgia (`Font.quoteSerifItalic(size:)`) — no bundled fonts; Android bundles Fraunces/Lora/Playfair (see `PARITY.md`).
 
 ## Deployment
 

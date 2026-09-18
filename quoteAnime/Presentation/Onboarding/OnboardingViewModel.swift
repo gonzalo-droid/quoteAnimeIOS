@@ -16,6 +16,7 @@ final class OnboardingViewModel: ObservableObject {
     /// to be told about it — otherwise a widget added right after onboarding would find an empty
     /// snapshot and offer no habit to follow.
     private var routineWidgetRefresher: RoutineWidgetRefreshing = NoopRoutineWidgetRefresher()
+    private var analytics: RoutineAnalytics = NoopRoutineAnalytics()
     private var onComplete: (() -> Void)?
 
     private var setupDone = false
@@ -24,6 +25,7 @@ final class OnboardingViewModel: ObservableObject {
         setOnboardingCompleted: SetOnboardingCompletedUseCase,
         createHabitUseCase: CreateHabitUseCase?,
         routineWidgetRefresher: RoutineWidgetRefreshing = NoopRoutineWidgetRefresher(),
+        analytics: RoutineAnalytics = NoopRoutineAnalytics(),
         onComplete: @escaping () -> Void
     ) {
         guard !setupDone else { return }
@@ -31,7 +33,13 @@ final class OnboardingViewModel: ObservableObject {
         self.setOnboardingCompleted = setOnboardingCompleted
         self.createHabitUseCase     = createHabitUseCase
         self.routineWidgetRefresher = routineWidgetRefresher
+        self.analytics              = analytics
         self.onComplete             = onComplete
+    }
+
+    /// The suggestion whose preview the habit page shows, if any.
+    var selectedTemplate: HabitTemplate? {
+        habitTemplates.first { $0.id == selectedTemplateId }
     }
 
     func selectTemplate(_ id: String) {
@@ -48,15 +56,22 @@ final class OnboardingViewModel: ObservableObject {
                 let habit = Habit(
                     id: UUID().uuidString,
                     title: template.title,
-                    description: nil,
+                    // Android's onboarding saves neither the description nor the cover, so a
+                    // habit started here looked different from the same suggestion picked in the
+                    // editor. iOS saves both — see `PARITY.md`.
+                    description: HabitThemeImages.description(for: template.themeKey),
                     iconKey: template.iconKey,
                     colorIndex: template.themeColorIndex ?? 0,
                     startDate: Date(),
                     templateId: template.id,
-                    coverAnimeSlug: nil,
+                    coverAnimeSlug: template.themeKey,
                     createdAt: Date()
                 )
-                _ = try? await createHabitUseCase.execute(habit)
+                if (try? await createHabitUseCase.execute(habit)) != nil {
+                    // Android's onboarding reports the same three `false`s: no reminder or end
+                    // date can be set on this page.
+                    analytics.trackHabitCreated(templateId: template.id, hasReminder: false, hasEndDate: false)
+                }
                 await routineWidgetRefresher.refresh()
                 onComplete?()
             }

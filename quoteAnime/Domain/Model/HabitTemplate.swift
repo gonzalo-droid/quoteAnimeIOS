@@ -8,9 +8,8 @@ struct HabitTemplate: Identifiable, Hashable {
     let order: Int
     /// Suggested HabitPalette index, for themed templates.
     let themeColorIndex: Int?
-    /// Opaque key the presentation layer can resolve to a theme description. No bundled
-    /// cover images exist yet on iOS (Android has naruto.png/onepiece.png/etc. — not
-    /// ported here), so this is currently just a description hook.
+    /// Resolves to the suggestion's cover and description (`HabitThemeImages`). Persisted on the
+    /// habit as `coverAnimeSlug`, so these values are stored data — never rename one.
     let themeKey: String?
     var isPremiumOnly: Bool = false
 }

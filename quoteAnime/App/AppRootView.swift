@@ -61,6 +61,7 @@ struct OnboardingContainerView: View {
                 setOnboardingCompleted: deps.setOnboardingCompletedUseCase,
                 createHabitUseCase: deps.createHabitUseCase,
                 routineWidgetRefresher: deps.routineWidgetRefresher,
+                analytics: deps.routineAnalytics,
                 onComplete: { router.navigateToMain() }
             )
         }
@@ -89,7 +90,8 @@ struct MainContainerView: View {
             CatalogView(
                 getAllQuotesUseCase: deps.getAllQuotesUseCase,
                 getFavoriteQuotesUseCase: deps.getFavoriteQuotesUseCase,
-                toggleFavoriteUseCase: deps.toggleFavoriteUseCase
+                toggleFavoriteUseCase: deps.toggleFavoriteUseCase,
+                premiumGate: deps.premiumGate
             )
 
         case .settings:
@@ -131,7 +133,8 @@ struct MainContainerView: View {
                     deleteHabitUseCase: deleteHabit,
                     habitReminderScheduler: deps.habitReminderScheduler,
                     routineWidgetRefresher: deps.routineWidgetRefresher,
-                    premiumGate: deps.premiumGate
+                    premiumGate: deps.premiumGate,
+                    analytics: deps.routineAnalytics
                 )
             } else {
                 unavailableView(message: "Mi Rutina requiere iOS 17 o superior")
@@ -151,7 +154,8 @@ struct MainContainerView: View {
                     unarchiveHabitUseCase: unarchiveHabit,
                     deleteHabitUseCase: deleteHabit,
                     habitReminderScheduler: deps.habitReminderScheduler,
-                    routineWidgetRefresher: deps.routineWidgetRefresher
+                    routineWidgetRefresher: deps.routineWidgetRefresher,
+                    analytics: deps.routineAnalytics
                 )
             } else {
                 unavailableView(message: "Mi Rutina requiere iOS 17 o superior")
@@ -168,7 +172,8 @@ struct MainContainerView: View {
                     habitRepository: habitRepository,
                     habitReminderScheduler: deps.habitReminderScheduler,
                     routineWidgetRefresher: deps.routineWidgetRefresher,
-                    premiumGate: deps.premiumGate
+                    premiumGate: deps.premiumGate,
+                    analytics: deps.routineAnalytics
                 )
             } else {
                 unavailableView(message: "Mi Rutina requiere iOS 17 o superior")

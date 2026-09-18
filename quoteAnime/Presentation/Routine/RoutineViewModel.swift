@@ -33,6 +33,12 @@ final class RoutineViewModel: ObservableObject {
     private let habitReminderScheduler: HabitReminderScheduling
     private let routineWidgetRefresher: RoutineWidgetRefreshing
     private let premiumGate: PremiumGate
+    private let analytics: RoutineAnalytics
+    /// `routine_tab_opened` once per visit: `onAppear` also fires on the way back from a habit's
+    /// detail, which Android's `init {}` never sees.
+    private var didTrackOpen = false
+    /// "Now", injectable so a test can pin the day the streaks are computed on.
+    private let clock: () -> Date
 
     init(
         getActiveHabitsUseCase: GetActiveHabitsUseCase,
@@ -44,7 +50,9 @@ final class RoutineViewModel: ObservableObject {
         deleteHabitUseCase: DeleteHabitUseCase,
         habitReminderScheduler: HabitReminderScheduling,
         routineWidgetRefresher: RoutineWidgetRefreshing,
-        premiumGate: PremiumGate
+        premiumGate: PremiumGate,
+        analytics: RoutineAnalytics = NoopRoutineAnalytics(),
+        clock: @escaping () -> Date = Date.init
     ) {
         self.getActiveHabitsUseCase = getActiveHabitsUseCase
         self.getArchivedHabitsUseCase = getArchivedHabitsUseCase
@@ -56,10 +64,16 @@ final class RoutineViewModel: ObservableObject {
         self.habitReminderScheduler = habitReminderScheduler
         self.routineWidgetRefresher = routineWidgetRefresher
         self.premiumGate = premiumGate
+        self.analytics = analytics
+        self.clock = clock
         self.uiState.maxHabits = premiumGate.maxActiveHabits
     }
 
     func onAppear() {
+        if !didTrackOpen {
+            didTrackOpen = true
+            analytics.trackTabOpened()
+        }
         Task {
             await load()
             // Coming back to the list is also the moment to re-sync the widgets: a habit may have
@@ -74,11 +88,25 @@ final class RoutineViewModel: ObservableObject {
         Task { await load() }
     }
 
+    /// Android's `onToggleDay` from the list: `habit_completed` only when the day ends up marked,
+    /// then the streak comparison. Android only tracks streak events here, never from the detail
+    /// screen — mirrored so both platforms count milestones the same way (see `PARITY.md`).
     func onToggleToday(_ habitId: String) {
+        let now = clock()
+        let previousStreak = uiState.habits.first { $0.id == habitId }?.streak.current ?? 0
         Task {
             do {
-                try await toggleHabitCompletionUseCase.execute(habitId: habitId, date: Date())
+                let completed = try await toggleHabitCompletionUseCase.execute(habitId: habitId, date: now, today: now)
+                if completed {
+                    // Always today from the list, so never retroactive — kept explicit for parity.
+                    analytics.trackHabitCompleted(habitId: habitId, isRetroactive: false, source: .app)
+                }
                 await load()
+                // Read after `load()` has awaited the store, so it can't race the new state —
+                // the reason Android reads the repository instead of its reactive list.
+                if let current = uiState.habits.first(where: { $0.id == habitId })?.streak.current {
+                    analytics.trackStreakChange(previous: previousStreak, current: current)
+                }
                 await routineWidgetRefresher.refresh()
             } catch {
                 print("[RoutineViewModel] toggleToday error: \(error)")
@@ -87,10 +115,14 @@ final class RoutineViewModel: ObservableObject {
     }
 
     func onArchive(_ habitId: String) {
+        let habit = uiState.habits.first { $0.id == habitId }?.habit
         Task {
             do {
                 try await archiveHabitUseCase.execute(id: habitId)
                 await habitReminderScheduler.cancel(habitId: habitId)
+                if let habit {
+                    analytics.trackHabitArchived(createdAt: habit.createdAt, now: clock())
+                }
                 await load()
                 await routineWidgetRefresher.refresh()
             } catch {
@@ -131,8 +163,9 @@ final class RoutineViewModel: ObservableObject {
     private func load() async {
         uiState.isLoading = uiState.habits.isEmpty
         do {
-            async let activeHabits = getActiveHabitsUseCase.execute()
-            async let streak = getGlobalStreakUseCase.execute()
+            let today = clock()
+            async let activeHabits = getActiveHabitsUseCase.execute(today: today)
+            async let streak = getGlobalStreakUseCase.execute(today: today)
 
             let active = try await activeHabits
             uiState.activeCount = active.count
@@ -142,7 +175,7 @@ final class RoutineViewModel: ObservableObject {
             case .active:
                 uiState.habits = active
             case .archived:
-                uiState.habits = try await getArchivedHabitsUseCase.execute()
+                uiState.habits = try await getArchivedHabitsUseCase.execute(today: today)
             }
         } catch {
             print("[RoutineViewModel] load error: \(error)")

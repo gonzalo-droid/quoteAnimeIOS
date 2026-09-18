@@ -743,6 +743,38 @@
         }
       }
     },
+    "Buscar…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar…"
+          }
+        }
+      }
+    },
+    "Cada hábito cumplido es un paso más cerca de tu propio tesoro." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every habit kept is one step closer to your own treasure."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada hábito cumplido es un paso más cerca de tu propio tesoro."
+          }
+        }
+      }
+    },
     "Caminar" : {
       "comment" : "VoiceOver name of a habit icon in the icon picker",
       "localizations" : {
@@ -1023,6 +1055,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Comer sano"
+          }
+        }
+      }
+    },
+    "Como todo ninja, la disciplina diaria es tu mayor entrenamiento." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Like every ninja, daily discipline is your greatest training."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Como todo ninja, la disciplina diaria es tu mayor entrenamiento."
           }
         }
       }
@@ -2003,6 +2051,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Entendido"
+          }
+        }
+      }
+    },
+    "Entrena cada día hasta superar tus límites, como un guerrero saiyan." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Train every day until you surpass your limits, like a Saiyan warrior."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrena cada día hasta superar tus límites, como un guerrero saiyan."
+          }
+        }
+      }
+    },
+    "Entrena cada día para hacerte más fuerte, como un verdadero maestro Pokémon." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Train every day to grow stronger, like a true Pokémon master."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrena cada día para hacerte más fuerte, como un verdadero maestro Pokémon."
           }
         }
       }
@@ -3780,6 +3860,22 @@
         }
       }
     },
+    "No se encontraron íconos" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No icons found"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontraron íconos"
+          }
+        }
+      }
+    },
     "No se pudo guardar" : {
       "localizations" : {
         "en" : {
@@ -4823,6 +4919,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sin frases en esta categoría"
+          }
+        }
+      }
+    },
+    "Sin magia, con pura garra: cada hábito te acerca a ser el Rey Mago." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No magic, pure grit: every habit brings you closer to becoming the Wizard King."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin magia, con pura garra: cada hábito te acerca a ser el Rey Mago."
           }
         }
       }
