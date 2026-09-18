@@ -90,7 +90,8 @@ struct MainContainerView: View {
             CatalogView(
                 getAllQuotesUseCase: deps.getAllQuotesUseCase,
                 getFavoriteQuotesUseCase: deps.getFavoriteQuotesUseCase,
-                toggleFavoriteUseCase: deps.toggleFavoriteUseCase
+                toggleFavoriteUseCase: deps.toggleFavoriteUseCase,
+                premiumGate: deps.premiumGate
             )
 
         case .settings:
