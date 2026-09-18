@@ -6,7 +6,6 @@ struct HabitEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showIconPicker = false
 
-    private let templates = DefaultHabitTemplates.all
     /// Observed so a template unlocked mid-session stops showing its padlock.
     @ObservedObject private var premiumGate: PremiumGate
 
@@ -18,7 +17,8 @@ struct HabitEditorView: View {
         habitReminderScheduler: HabitReminderScheduling,
         routineWidgetRefresher: RoutineWidgetRefreshing,
         premiumGate: PremiumGate,
-        analytics: RoutineAnalytics
+        analytics: RoutineAnalytics,
+        getHabitTemplates: GetHabitTemplatesUseCase = GetHabitTemplatesUseCase()
     ) {
         _viewModel = StateObject(wrappedValue: HabitEditorViewModel(
             habitId: habitId,
@@ -27,7 +27,8 @@ struct HabitEditorView: View {
             habitRepository: habitRepository,
             habitReminderScheduler: habitReminderScheduler,
             routineWidgetRefresher: routineWidgetRefresher,
-            analytics: analytics
+            analytics: analytics,
+            getHabitTemplates: getHabitTemplates
         ))
         _premiumGate = ObservedObject(wrappedValue: premiumGate)
     }
@@ -65,7 +66,10 @@ struct HabitEditorView: View {
         .navigationBarHidden(true)
         .onAppear {
             viewModel.onAppear()
-            viewModel.applyDefaultTemplate(from: templates, isPremium: premiumGate.isPremium)
+            viewModel.applyDefaultTemplate(from: viewModel.templates, isPremium: premiumGate.isPremium)
+        }
+        .task {
+            await viewModel.loadTemplates(isPremium: { premiumGate.isPremium })
         }
         .sheet(isPresented: $showIconPicker) {
             HabitIconPickerView(selectedKey: $viewModel.uiState.iconKey)
@@ -138,7 +142,7 @@ struct HabitEditorView: View {
             sectionLabel("Sugerencias")
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
-                    ForEach(templates) { template in
+                    ForEach(viewModel.templates) { template in
                         let isLocked = template.isLocked(isPremium: premiumGate.isPremium)
                         // Android's `FilterChip(selected = templateId == template.id)`: now that a
                         // new habit starts from a suggestion, the chip has to say which one.

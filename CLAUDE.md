@@ -44,6 +44,7 @@ xcrun simctl launch booted com.gonzadev.quoteAnime -AppleLanguages "(en)" -Apple
      `NSUserTrackingUsageDescription`: the app does not request tracking. Debug builds use Google's
      test ad units (`AdConstants`).
    - `BGTaskSchedulerPermittedIdentifiers` — if using background refresh
+   - `CFBundleURLTypes` — the `quoteanime://` scheme, so the routine widgets' `widgetURL` opens the app (see Navigation). Already in `quoteAnime/Info.plist`.
    - Visible Info.plist values (today only `CFBundleDisplayName`) are translated in `quoteAnime/InfoPlist.xcstrings`.
 
 5. **App Group** for widget data sharing: Add capability `group.com.gonzadev.quoteAnime` to both the main app target and the widget extension target.
@@ -79,14 +80,16 @@ quoteAnime/
 │   │                       StoreKitEntitlementSource, StoreKitPremiumStore,
 │   │                       DebugPremiumOverrideSource (#if DEBUG only) (switch on)
 │   ├── Analytics/          FirebaseRoutineAnalytics (Analytics.logEvent)
-│   ├── Remote/             QuoteRemoteDataSource (Firebase) + DTOs
+│   ├── Remote/             QuoteRemoteDataSource (Firebase) + DTOs,
+│   │                       HabitTemplateRemoteDataSource (`/habitTemplates`) + HabitTemplateDTO
 │   ├── Local/
 │   │   ├── SwiftData/      FavoriteQuoteDAO (iOS 17+), UserDefaultsFavoriteStorage (iOS 16)
 │   │   │                   HabitDAO + HabitModel/HabitCompletionModel (iOS 17+, sin fallback)
 │   │   └── Preferences/    UserPreferencesStore (UserDefaults)
 │   └── Repository/         QuoteRepositoryImpl, UserPreferencesRepositoryImpl
 ├── Presentation/
-│   ├── Navigation/         AppRouter (ObservableObject, NavigationPath + AppScreen enum)
+│   ├── Navigation/         AppRouter (ObservableObject, [AppRoute] path + AppScreen enum)
+│   │                       + AppDeepLink (reminder tap / widget URL → one entry point)
 │   ├── Splash/             SplashView (no ViewModel, callback-based)
 │   ├── Onboarding/         OnboardingView + OnboardingViewModel
 │   ├── Home/               HomeContainerView → HomeContentView + HomeViewModel
@@ -178,7 +181,9 @@ Android — whose repository documents the foreground re-sync but never wires it
 - Views that show premium state hold the gate as `@ObservedObject` (`SettingsView`,
   `HabitEditorView`, `PaywallView`), or they will not redraw when StoreKit changes its mind.
 
-**Navigation**: `AppRouter` holds `currentScreen: AppScreen` (splash/onboarding/main) and `navigationPath: NavigationPath`. `AppRootView` switches the root; `MainContainerView` wraps `NavigationStack` for in-app push navigation using `AppRoute` enum cases.
+**Navigation**: `AppRouter` holds `currentScreen: AppScreen` (splash/onboarding/main) and `navigationPath: [AppRoute]` (typed, so a deep link can see what is on screen). `AppRootView` switches the root; `MainContainerView` wraps `NavigationStack` for in-app push navigation using `AppRoute` enum cases.
+
+**Deep links — one door, `AppRouter.open(_:)`**: `AppDeepLink` has one case, `.routine` (Mi Rutina's list, Android's `EXTRA_OPEN_ROUTINE`). Two entry points reach it: the body of a habit reminder (`HabitReminderNotificationDelegate`, via `AppDeepLink.forNotification`) and the routine widgets' `widgetURL(quoteanime://routine)` (received by `.onOpenURL` in `QuoteAnimeApp`). Before `.main` the link is kept as `pendingDeepLink` and applied by `navigateToMain()`, so neither the splash nor an unfinished onboarding is skipped; in `.main` the path becomes `[.routine]`, never a second copy. Below iOS 17 (`isRoutineAvailable == false`) the router ignores it. `QuoteAnimeApp.init` builds `AppDependencies` eagerly — not lazily through `StateObject` — because the notification delegate must exist before launch finishes to receive the tap that cold-launched the app. The widget extension keeps its own copy of the URL (`WidgetDeepLink`); `AppDeepLinkTests` reads its source and fails if they drift.
 
 **Widget data**: todo viaja por el App Group `group.com.gonzadev.quoteAnime`, porque la extensión
 es otro binario y no puede abrir ni SwiftData ni `UserDefaults.standard` de la app.
@@ -205,7 +210,8 @@ edición mostraba el hábito elegido y la extensión recibía `nil`). Ver el com
 `HabitWidget.swift` antes de volver a intentarlo.
 
 **Duplicación deliberada en el target del widget**: `QuoteAnimeWidget/WidgetSharedModel.swift`
-reúne las copias a mano del App Group, el snapshot, `HeatmapGrid` y `HabitPalette`; los tokens de
+reúne las copias a mano del App Group, el snapshot, `HeatmapGrid`, `HabitPalette` y la URL del deep
+link (`WidgetDeepLink`); los tokens de
 color (`w`-prefijados) viven en `QuoteAnimeWidget.swift`. **Cuando cambies un lado, cambia el
 otro.** `HabitWidgetSnapshot.activeHabits` / `habit(id:)` existen también en el target de la app,
 sin llamador, sólo para que los tests puedan fijar lo que decide el selector del widget.
@@ -224,6 +230,13 @@ struct UserPreferences { selectedCategoryIds, notificationsEnabled, notification
 - Node `/quotes` — flat array of `{ id, quote, author, anime }` objects
 - `QuoteRemoteDataSource` handles both array and dictionary root structures
 - Categories derived dynamically from unique `anime` field values (19 hoy, 307 frases)
+- Node `/habitTemplates/{id}` — `title` (an **Android string-resource key**, e.g. `template_theme_ninja`,
+  or a literal text), `iconKey`, `order`, `themeColorIndex?`, `themeKey?`, `isPremiumOnly`. Read once
+  per editor / onboarding with `getData()`; `GetHabitTemplatesUseCase` falls back to
+  `DefaultHabitTemplates` when it is empty, missing, unreachable or entirely invalid. Screens show
+  the bundled list first and swap in the remote one. `HabitTemplateTitles` maps Android keys to
+  catalog text; an unknown key drops the template (never shown raw). **Absent in production as of
+  2026-09-18** — the root only has `imagenes` and `quotes`.
 - `selectedCategoryIds` guarda **nombres de anime**, no ids remotos. Set vacío = todos, igual que
   en Android. Se aplica en `GetAllQuotesUseCase.filtered` (feed) y en
   `RescheduleQuoteNotificationsUseCase` (pozo de notificaciones); se elige en
@@ -395,7 +408,15 @@ una clave le falta cualquiera de los dos idiomas.
 - Los archivos fuente nuevos **no** necesitan paso en Xcode — el proyecto usa carpetas
   sincronizadas. Un **target** nuevo o un build setting sí tocan `project.pbxproj`, y eso es un
   fork: pregunta primero.
+- **Probar un recordatorio o un deep link en el simulador**: `xcrun simctl push <udid> com.gonzadev.quoteAnime payload.apns`
+  con `"aps": {"category": "HABIT_REMINDER", …}` y `"habitId"` simula el recordatorio, pero **sólo
+  se muestra si la app ya tiene permiso de notificaciones** (actívalo desde Ajustes → "Activar
+  notificaciones", con un `swipe` corto: el `tap` no mueve el `Toggle`). El banner dura ~5 s: haz
+  `push` y el `tap` sobre el banner en llamadas seguidas, sin captura en medio. Tocar la
+  notificación desde el Centro de notificaciones **no** abrió la app en el simulador. `simctl openurl
+  quoteanime://routine` con la app en segundo plano o cerrada pide confirmar "Open in QuoteAnime?".
+  Prueba de que la respuesta llegó: `log show --predicate 'eventMessage CONTAINS "UNNotificationDefaultActionIdentifier"'`.
 - **Duplicación deliberada del widget**: la extensión no puede importar tipos del target de la app,
   así que `QuoteAnimeWidget/WidgetSharedModel.swift` y los tokens `w`-prefijados repiten a mano el
-  App Group, el snapshot, `HeatmapGrid` y `HabitPalette`. Cuando cambies un lado, cambia el otro y
+  App Group, el snapshot, `HeatmapGrid`, `HabitPalette` y la URL del deep link. Cuando cambies un lado, cambia el otro y
   dilo en el reporte.

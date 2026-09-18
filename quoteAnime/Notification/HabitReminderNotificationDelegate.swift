@@ -1,12 +1,18 @@
 import Foundation
 import UserNotifications
 
-/// Handles the "Hecho" action tapped directly from a habit reminder notification, without
-/// opening the app. Registered as `UNUserNotificationCenter.current().delegate` once
-/// `AppDependencies` exists (needs `ToggleHabitCompletionUseCase`, nil below iOS 17).
+/// Handles a habit reminder: its "Hecho" action, which marks the day without opening the app, and
+/// a tap on its body, which opens Mi Rutina (`AppDeepLink.forNotification`). Registered as
+/// `UNUserNotificationCenter.current().delegate` by `AppDependencies`, which `QuoteAnimeApp`
+/// builds in its `init` — before launch finishes, as the delegate must be for the tap that
+/// cold-launched the app to reach it. Needs `ToggleHabitCompletionUseCase`, so nil below iOS 17,
+/// where there are no habits and so no reminders to tap.
 final class HabitReminderNotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     private let markDone: HabitReminderDoneAction
     private let routineWidgetRefresher: RoutineWidgetRefreshing
+    /// `AppRouter.open(_:)`, wired by `QuoteAnimeApp` once the router exists. Until then a tap is
+    /// dropped — it can't be, in practice: both are built in the same `init`.
+    var openDeepLink: ((AppDeepLink) -> Void)?
 
     init(
         markDone: HabitReminderDoneAction,
@@ -21,9 +27,19 @@ final class HabitReminderNotificationDelegate: NSObject, UNUserNotificationCente
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
+        let content = response.notification.request.content
+        if let link = AppDeepLink.forNotification(
+            actionIdentifier: response.actionIdentifier,
+            categoryIdentifier: content.categoryIdentifier
+        ) {
+            openDeepLink?(link)
+            completionHandler()
+            return
+        }
+
         guard
             response.actionIdentifier == HabitReminderScheduler.markDoneActionIdentifier,
-            let habitId = response.notification.request.content.userInfo["habitId"] as? String
+            let habitId = content.userInfo["habitId"] as? String
         else {
             completionHandler()
             return

@@ -6,7 +6,11 @@ final class OnboardingViewModel: ObservableObject {
     @Published var currentPage: Int = 0
     @Published var selectedTemplateId: String?
 
-    let habitTemplates = DefaultHabitTemplates.all.filter { !$0.isPremiumOnly }
+    /// The page's suggestions: bundled at once, `/habitTemplates` once `loadTemplates()` answers.
+    /// Premium-only ones are always left out here — see "Plantillas en el onboarding" in
+    /// `PARITY.md`, still undecided.
+    @Published private(set) var habitTemplates = OnboardingViewModel.offerable(GetHabitTemplatesUseCase().bundled)
+    private var getHabitTemplates = GetHabitTemplatesUseCase()
 
     private var setOnboardingCompleted: SetOnboardingCompletedUseCase?
     /// Nil below iOS 17. When it is nil the habit page is not offered at all — see
@@ -26,6 +30,7 @@ final class OnboardingViewModel: ObservableObject {
         createHabitUseCase: CreateHabitUseCase?,
         routineWidgetRefresher: RoutineWidgetRefreshing = NoopRoutineWidgetRefresher(),
         analytics: RoutineAnalytics = NoopRoutineAnalytics(),
+        getHabitTemplates: GetHabitTemplatesUseCase = GetHabitTemplatesUseCase(),
         onComplete: @escaping () -> Void
     ) {
         guard !setupDone else { return }
@@ -34,7 +39,24 @@ final class OnboardingViewModel: ObservableObject {
         self.createHabitUseCase     = createHabitUseCase
         self.routineWidgetRefresher = routineWidgetRefresher
         self.analytics              = analytics
+        self.getHabitTemplates      = getHabitTemplates
         self.onComplete             = onComplete
+    }
+
+    /// Replaces the bundled suggestions with the remote ones. A pick that the remote list no
+    /// longer has is cleared — the page starts with nothing selected, and "Comenzar" then finishes
+    /// without a habit — rather than creating a habit from a suggestion no longer offered.
+    func loadTemplates() async {
+        let loaded = Self.offerable(await getHabitTemplates.execute())
+        guard loaded != habitTemplates else { return }
+        habitTemplates = loaded
+        if let selectedTemplateId, !loaded.contains(where: { $0.id == selectedTemplateId }) {
+            self.selectedTemplateId = nil
+        }
+    }
+
+    private static func offerable(_ templates: [HabitTemplate]) -> [HabitTemplate] {
+        templates.filter { !$0.isPremiumOnly }
     }
 
     /// The suggestion whose preview the habit page shows, if any.

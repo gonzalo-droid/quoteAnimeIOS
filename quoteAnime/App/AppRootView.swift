@@ -62,8 +62,10 @@ struct OnboardingContainerView: View {
                 createHabitUseCase: deps.createHabitUseCase,
                 routineWidgetRefresher: deps.routineWidgetRefresher,
                 analytics: deps.routineAnalytics,
+                getHabitTemplates: deps.getHabitTemplatesUseCase,
                 onComplete: { router.navigateToMain() }
             )
+            await viewModel.loadTemplates()
         }
     }
 }
@@ -173,7 +175,8 @@ struct MainContainerView: View {
                     habitReminderScheduler: deps.habitReminderScheduler,
                     routineWidgetRefresher: deps.routineWidgetRefresher,
                     premiumGate: deps.premiumGate,
-                    analytics: deps.routineAnalytics
+                    analytics: deps.routineAnalytics,
+                    getHabitTemplates: deps.getHabitTemplatesUseCase
                 )
             } else {
                 unavailableView(message: "Mi Rutina requiere iOS 17 o superior")

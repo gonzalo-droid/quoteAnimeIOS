@@ -83,7 +83,7 @@ quoteAnime/
 │   ├── Local/                  # SwiftData (iOS 17+) + UserDefaults fallback
 │   └── Repository/             # Concrete implementations
 ├── Presentation/               # SwiftUI views + ViewModels
-│   ├── Navigation/             # AppRouter (NavigationPath + screen enum)
+│   ├── Navigation/             # AppRouter ([AppRoute] path + screen enum) + AppDeepLink
 │   ├── Home/                   # Full-screen quote feed
 │   ├── Catalog/                # Browse/filter quotes by anime
 │   ├── Settings/               # Preferences + anime selection + widget tutorial
@@ -129,15 +129,17 @@ Both conform to `FavoriteStorageProtocol`. Selection is made at runtime in `AppD
 
 Both SwiftData containers (favorites and habits) pass a **named** `ModelConfiguration`. An anonymous one defaults to a shared `default.store`, which two different schemas cannot share: each container would find the file incompatible and recreate it, wiping the other's data on every cold launch.
 
-### Navigation — AppRouter + NavigationPath
+### Navigation — AppRouter + a typed path
 
 `AppRouter` is an `ObservableObject` that owns two pieces of state:
 - `currentScreen: AppScreen` — switches the root view between splash / onboarding / main.
-- `navigationPath: NavigationPath` — drives the `NavigationStack` inside main.
+- `navigationPath: [AppRoute]` — drives the `NavigationStack` inside main.
 
-Routes are typed via the `AppRoute` enum (`catalog`, `settings`, `widgetTutorial`).
+Routes are typed via the `AppRoute` enum (`catalog`, `settings`, `routine`, `habitDetail`, `habitEditor`, `paywall`…).
 
-**Why not a coordinator pattern:** SwiftUI's `NavigationStack` + `NavigationPath` already provides type-safe push navigation. A coordinator layer would duplicate that state.
+**Deep links** go through one method, `AppRouter.open(_:)`: tapping a habit reminder and tapping a routine widget (`quoteanime://routine`) both open Mi Rutina. A link that arrives during the splash or the onboarding waits for them to finish.
+
+**Why not a coordinator pattern:** SwiftUI's `NavigationStack` with a typed path already provides type-safe push navigation. A coordinator layer would duplicate that state.
 
 ### Firebase — flat array structure
 

@@ -77,6 +77,8 @@ struct HabitEditorAlert: Identifiable, Equatable {
 final class HabitEditorViewModel: ObservableObject {
     @Published var uiState = HabitEditorUiState()
     @Published var alert: HabitEditorAlert?
+    /// The suggestion chips: bundled at once, replaced by `/habitTemplates` when it answers.
+    @Published private(set) var templates: [HabitTemplate]
 
     private let createHabitUseCase: CreateHabitUseCase
     private let updateHabitUseCase: UpdateHabitUseCase
@@ -84,6 +86,7 @@ final class HabitEditorViewModel: ObservableObject {
     private let habitReminderScheduler: HabitReminderScheduling
     private let routineWidgetRefresher: RoutineWidgetRefreshing
     private let analytics: RoutineAnalytics
+    private let getHabitTemplates: GetHabitTemplatesUseCase
     private let habitId: String?
     private var existingHabit: Habit?
 
@@ -94,9 +97,12 @@ final class HabitEditorViewModel: ObservableObject {
         habitRepository: HabitRepository,
         habitReminderScheduler: HabitReminderScheduling,
         routineWidgetRefresher: RoutineWidgetRefreshing,
-        analytics: RoutineAnalytics = NoopRoutineAnalytics()
+        analytics: RoutineAnalytics = NoopRoutineAnalytics(),
+        getHabitTemplates: GetHabitTemplatesUseCase = GetHabitTemplatesUseCase()
     ) {
         self.habitId = habitId
+        self.getHabitTemplates = getHabitTemplates
+        self.templates = getHabitTemplates.bundled
         self.analytics = analytics
         self.createHabitUseCase = createHabitUseCase
         self.updateHabitUseCase = updateHabitUseCase
@@ -154,6 +160,21 @@ final class HabitEditorViewModel: ObservableObject {
               let first = templates.first(where: { !$0.isLocked(isPremium: isPremium) })
         else { return }
         onTemplateSelected(first)
+    }
+
+    /// Swaps the bundled chips for the remote ones once they arrive, then applies the first
+    /// usable one if nothing was applied yet. A suggestion already applied — by the user or by
+    /// the automatic default — is never swapped for another, same as Android's `templateId == null`
+    /// guard; if the remote list doesn't contain it, the form keeps its values and no chip is
+    /// marked. Editing an existing habit shows no chips, so it doesn't ask the network at all.
+    /// `isPremium` is read after the fetch, not before it.
+    func loadTemplates(isPremium: () -> Bool) async {
+        guard !uiState.isEditing else { return }
+        let loaded = await getHabitTemplates.execute()
+        if loaded != templates {
+            templates = loaded
+        }
+        applyDefaultTemplate(from: templates, isPremium: isPremium())
     }
 
     /// Keeps the pair consistent while editing: moving the start past the end drags the end
