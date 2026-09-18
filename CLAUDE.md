@@ -43,7 +43,10 @@ xcrun simctl launch booted com.gonzadev.quoteAnime -AppleLanguages "(en)" -Apple
      `cstr6suwn9.skadnetwork`) — both already in `quoteAnime/Info.plist`. No ATT prompt and no
      `NSUserTrackingUsageDescription`: the app does not request tracking. Debug builds use Google's
      test ad units (`AdConstants`).
-   - `BGTaskSchedulerPermittedIdentifiers` — if using background refresh
+   - `BGTaskSchedulerPermittedIdentifiers` (`com.gonzadev.quoteAnime.quoteNotificationsRefresh`) and
+     `UIBackgroundModes` = `fetch` — the quote notifications' background refill
+     (`QuoteNotificationBackgroundRefresh`). Both already in `quoteAnime/Info.plist`; no entitlement
+     and no pbxproj change are involved. Renaming the identifier means changing both places.
    - `CFBundleURLTypes` — the `quoteanime://` scheme, so the widgets' `widgetURL` opens the app (see Navigation). Already in `quoteAnime/Info.plist`.
    - Visible Info.plist values (today only `CFBundleDisplayName`) are translated in `quoteAnime/InfoPlist.xcstrings`.
 
@@ -108,8 +111,11 @@ quoteAnime/
 │   ├── Common/             AppLinks (URLs legales y de App Store, espejo de AppLinks.kt)
 │   └── Components/         QuoteCard, BannerAdView, ShareCardView, ActivityViewController
 ├── Notification/           NotificationScheduler (quote notifications, 64-request budget shared
-│                           with habit reminders) + QuoteNotificationSlotCalculator (pure, the
-│                           slot arithmetic of Android 4b5d21f) + HabitReminderScheduler + NotificationHelper
+│                           with habit reminders; the last slot is an "open the app" notice) +
+│                           QuoteNotificationSlotCalculator (pure, the slot arithmetic of Android
+│                           4b5d21f) + QuoteNotificationBackgroundRefresh (daily BGAppRefreshTask
+│                           that refills them, registered with `.backgroundTask` in QuoteAnimeApp)
+│                           + HabitReminderScheduler + NotificationHelper
 ├── Widget/                 WidgetDataWriter (frase actual) + HabitWidgetDataWriter (snapshot de
 │                           hábitos) + RoutineWidgetRefresher — todos en el target de la app
 
@@ -424,6 +430,12 @@ una clave le falta cualquiera de los dos idiomas.
   `xcrun simctl spawn <udid> log config --subsystem com.gonzadev.quoteAnime --mode "level:debug,persist:debug"`,
   después `log show --start "<hora>" --debug --info --predicate 'category == "QuoteNotifications"'`.
   La línea `scheduled N … (M other pending …)` dice cuántos recordatorios de hábitos hay pendientes.
+- **La reposición en segundo plano no se puede forzar en el simulador.** `BGTaskScheduler.submit`
+  falla ahí con `BGTaskSchedulerErrorDomain Code=1` (no disponible; se ve en el log de la categoría
+  `QuoteNotifications`), y `_simulateLaunchForTaskWithIdentifier` desde `lldb -p <pid>` se colgó
+  (> 3 min) sin ejecutar nada. Se prueba en un dispositivo desde Xcode: pausar la app en segundo
+  plano y `e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.gonzadev.quoteAnime.quoteNotificationsRefresh"]`.
+  La lista de pendientes (log debug de `NotificationScheduler`) sí muestra el aviso como último horario.
 - **Cambiar preferencias de la app sin la UI**: `defaults write` sobre el `.plist` del contenedor
   **desde el Mac** lo pisa el `cfprefsd` del simulador al abrir la app (el valor vuelve). Hay que
   escribir por el simulador, con la ruta completa y la app cerrada:

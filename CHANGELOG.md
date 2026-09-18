@@ -9,6 +9,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **Las frases por notificación ya no se acaban si no abres la app.** La app pide a iOS repasar las notificaciones en segundo plano más o menos una vez al día y vuelve a llenar la tanda con tus animes y horarios, sin tocar los recordatorios de hábitos. iOS decide cuándo lo hace, así que la última notificación de cada tanda es un aviso para abrir la app: solo llega si nada la repuso a tiempo.
+- Tests de la reposición en segundo plano y del aviso final (11 casos nuevos, 432 en total).
 - Tests del recordatorio sin días en el editor y en los casos de uso (8 casos nuevos, 421 en total).
 - **Tocar el widget de frases abre esa frase.** La app se abre en Inicio justo en la frase que mostraba el widget, como en Android, esté cerrada o abierta en otra pantalla. Si la frase ya no está o no es de los animes que elegiste, se abre Inicio como siempre.
 - Tests de los horarios de las notificaciones (las tablas de horarios de Android, ventanas que cruzan la medianoche, el día entero y el tope de 64 en varios días) y del widget de frases (30 casos nuevos, 413 en total).
