@@ -239,7 +239,7 @@
       }
     },
     "Activar premium (solo pruebas)" : {
-      "comment" : "DEBUG builds only",
+      "comment" : "QA switch on the paywall: DEBUG and TestFlight builds only, never the App Store",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1331,6 +1331,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esta acción no se puede deshacer. Se pierde todo su historial de forma permanente."
+          }
+        }
+      }
+    },
+    "Estamos preparando las suscripciones premium." : {
+      "comment" : "Paywall caption under the disabled 'Coming soon' button",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We're getting premium subscriptions ready."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estamos preparando las suscripciones premium."
           }
         }
       }
@@ -2476,6 +2493,23 @@
         }
       }
     },
+    "Próximamente" : {
+      "comment" : "Paywall main button, disabled, while premium is not on sale yet (PremiumConfig.usesRealBilling == false)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coming soon"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Próximamente"
+          }
+        }
+      }
+    },
     "Puedes cambiarlo o crear otro más tarde, desde Mi Rutina." : {
       "localizations" : {
         "en" : {
@@ -2525,8 +2559,7 @@
       }
     },
     "Quitar premium (solo pruebas)" : {
-      "comment" : "DEBUG builds only, so a Release export doesn't see it.",
-      "extractionState" : "manual",
+      "comment" : "QA switch on the paywall: DEBUG and TestFlight builds only, never the App Store",
       "localizations" : {
         "en" : {
           "stringUnit" : {

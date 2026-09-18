@@ -5,10 +5,20 @@ struct PaywallView: View {
     @ObservedObject private var premiumGate: PremiumGate
     @Environment(\.dismiss) private var dismiss
 
-    init(premiumGate: PremiumGate, store: PremiumStore) {
+    init(
+        premiumGate: PremiumGate,
+        store: PremiumStore,
+        purchaseAvailability: PremiumPurchaseAvailability = .store,
+        testControls: TestPremiumControlling? = nil
+    ) {
         self.premiumGate = premiumGate
         _viewModel = StateObject(
-            wrappedValue: PaywallViewModel(premiumGate: premiumGate, store: store)
+            wrappedValue: PaywallViewModel(
+                premiumGate: premiumGate,
+                store: store,
+                purchaseAvailability: purchaseAvailability,
+                testControls: testControls
+            )
         )
     }
 
@@ -108,34 +118,43 @@ struct PaywallView: View {
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(.textPrimary)
 
-            Button(action: viewModel.onManageSubscriptionTapped) {
-                Text("Gestionar suscripción")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(.accentPurple)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 48)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.accentPurple.opacity(0.6), lineWidth: 1)
-                    )
+            if viewModel.uiState.showsManageSubscription {
+                Button(action: viewModel.onManageSubscriptionTapped) {
+                    Text("Gestionar suscripción")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.accentPurple)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 48)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.accentPurple.opacity(0.6), lineWidth: 1)
+                        )
+                }
             }
 
             messageBanner
 
-            #if DEBUG
-            // QA affordances only — Android keeps the same control behind BuildConfig.DEBUG.
-            Button("Quitar premium (solo pruebas)") { viewModel.debugSetPremium(false) }
-                .font(.system(size: 13))
-                .foregroundColor(.textSecondary)
-                .frame(height: 44)
-            #endif
+            // QA affordance — Android keeps the same control behind BuildConfig.DEBUG. Here it
+            // also reaches TestFlight while billing is a mock, and never the App Store.
+            if viewModel.uiState.canUseTestPremium {
+                Button("Quitar premium (solo pruebas)") { viewModel.setTestPremium(false) }
+                    .font(.system(size: 13))
+                    .foregroundColor(.textSecondary)
+                    .frame(height: 44)
+            }
         }
     }
 
     @ViewBuilder
     private var purchaseSection: some View {
         VStack(spacing: 12) {
-            if viewModel.uiState.isLoadingOffers {
+            if viewModel.uiState.isComingSoon {
+                comingSoonButton
+                Text("Estamos preparando las suscripciones premium.")
+                    .font(.system(size: 11))
+                    .foregroundColor(.textSecondary)
+                    .multilineTextAlignment(.center)
+            } else if viewModel.uiState.isLoadingOffers {
                 ProgressView()
                     .tint(.accentPurple)
                     .frame(height: 52)
@@ -150,16 +169,33 @@ struct PaywallView: View {
                     .multilineTextAlignment(.center)
             }
 
-            restoreButton
+            if viewModel.uiState.showsRestore {
+                restoreButton
+            }
             messageBanner
 
-            #if DEBUG
-            Button("Activar premium (solo pruebas)") { viewModel.debugSetPremium(true) }
-                .font(.system(size: 13))
-                .foregroundColor(.textSecondary)
-                .frame(height: 44)
-            #endif
+            if viewModel.uiState.canUseTestPremium {
+                Button("Activar premium (solo pruebas)") { viewModel.setTestPremium(true) }
+                    .font(.system(size: 13))
+                    .foregroundColor(.textSecondary)
+                    .frame(height: 44)
+            }
         }
+    }
+
+    /// Same shape as "Suscribirme" so the screen does not jump when billing goes live — only
+    /// dimmed and disabled, the way iOS shows a control that cannot be used yet.
+    private var comingSoonButton: some View {
+        Button {} label: {
+            Text("Próximamente")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.bgDark)
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
+                .background(Color.accentPurple.opacity(0.5))
+                .cornerRadius(16)
+        }
+        .disabled(true)
     }
 
     /// Android's equivalent is a bare sentence with no way out. A retry is cheap here and the
@@ -301,5 +337,17 @@ struct PaywallView: View {
         // Without this each row is only as wide as its text and gets centred on its own, so the
         // icons stop lining up as soon as one body wraps differently (visible in English).
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+#Preview("Próximamente") {
+    let premium = PremiumServices.make(usesRealBilling: false)
+    return NavigationStack {
+        PaywallView(
+            premiumGate: premium.gate,
+            store: premium.store,
+            purchaseAvailability: premium.purchaseAvailability,
+            testControls: premium.testControls
+        )
     }
 }
