@@ -9,6 +9,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **El texto sigue el tamaño de letra de tu iPhone.** Si agrandas la letra en Ajustes → Pantalla y brillo → Tamaño del texto (o en Accesibilidad), la app la agranda también: Inicio, Mi Rutina, el detalle y el editor de hábitos, el paywall, la bienvenida y los widgets de Mi Rutina. Con el tamaño normal todo se ve exactamente igual que antes. En los tamaños más grandes las rachas del detalle se apilan, los nombres largos de hábitos pasan a dos líneas y la página de elegir hábito de la bienvenida se puede desplazar; la frase a pantalla completa, el mapa de actividad y las barras superiores crecen hasta un límite para no romperse, y los widgets de frases mantienen su tamaño.
+- Tests del escalado de la tipografía (5 casos nuevos, 437 en total).
 - **Las frases por notificación ya no se acaban si no abres la app.** La app pide a iOS repasar las notificaciones en segundo plano más o menos una vez al día y vuelve a llenar la tanda con tus animes y horarios, sin tocar los recordatorios de hábitos. iOS decide cuándo lo hace, así que la última notificación de cada tanda es un aviso para abrir la app: solo llega si nada la repuso a tiempo.
 - Tests de la reposición en segundo plano y del aviso final (11 casos nuevos, 432 en total).
 - Tests del recordatorio sin días en el editor y en los casos de uso (8 casos nuevos, 421 en total).

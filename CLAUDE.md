@@ -306,6 +306,24 @@ hardcoded any more**: every string goes through a catalog.
 
 Always dark (`.preferredColorScheme(.dark)` at root). All colors defined as `Color` static extensions in `Theme/Colors.swift`. Quote text uses the system serifs Didot (`Font.quoteSerif(size:)`) and Georgia (`Font.quoteSerifItalic(size:)`) — no bundled fonts; Android bundles Fraunces/Lora/Playfair (see `PARITY.md`).
 
+**Dynamic Type — never `.font(.system(size:))` on text.** The rule lives in the doc comment of
+`Theme/Typography.swift`; in short:
+- a design size that *is* a text style's default size takes the style: 17 semibold → `.headline`,
+  13 medium → `.footnote.weight(.medium)`, 11 → `.caption2`…;
+- any other size takes `.scaledFont(size:weight:)` (same size at the default setting, scaled along
+  the nearest text style);
+- **text that wraps** takes `.scaledFont` even at a text style's size — a text style adds its own
+  leading and a two-line paragraph would grow ~3 pt at the default size;
+- the serifs scale through `Font.custom(_:size:relativeTo:)` inside `quoteSerif`/`quoteSerifItalic`;
+- standalone SF Symbols (bar chevrons, the heart, icons in fixed circles) keep a fixed size;
+- a fixed frame caps its own subtree with `.dynamicTypeSize(...)`, never the whole app: the
+  full-screen quote, calendar, suggestion preview and the custom top bars at `xxxLarge`, the
+  heatmap at `xxLarge`; the stats row stacks and the onboarding habit page scrolls at
+  accessibility sizes; buttons with text use `minHeight`, not a fixed height.
+The widget target mirrors this by hand (`WTypography`, `wScaledFont`, `wQuoteSerif*` in
+`QuoteAnimeWidget.swift`): routine widgets capped at `xLarge`, quote widgets at `.large` (they
+don't scale — the quote collapsed to one line at `xLarge`).
+
 ## Deployment
 
 - Minimum: iOS 16.6 (app and widget extension)
@@ -346,9 +364,10 @@ navegación con `AppRouter` + `AppScreen`/`AppRoute` sobre `NavigationStack`; pe
 en iOS 17+ con fallback `UserDefaults` donde existe. Los ViewModels son `ObservableObject` con
 `@Published` — este repo **no** usa `@Observable`, y mezclar los dos sistemas rompe la observación.
 
-**4. Design system** — ver [Theme](#theme). Colores sólo desde `Theme/Colors.swift`, tipografía sólo
-vía `Font.quoteSerif(size:)` / `.quoteSerifItalic(size:)`; nunca un hex ni un nombre de fuente en una
-vista. La app es **dark-only** (`.preferredColorScheme(.dark)` en la raíz): no agregues variante
+**4. Design system** — ver [Theme](#theme). Colores sólo desde `Theme/Colors.swift`; tipografía con
+estilos de texto, `.scaledFont(size:weight:)` o `Font.quoteSerif(size:)` / `.quoteSerifItalic(size:)`
+— **nunca `.font(.system(size:))` sobre texto** (la regla de Dynamic Type está en Theme); nunca un
+hex ni un nombre de fuente en una vista. La app es **dark-only** (`.preferredColorScheme(.dark)` en la raíz): no agregues variante
 clara salvo que se pida. `#Preview` en cada vista nueva — el repo los tiene en todas.
 
 Busca aquí antes de escribir algo nuevo: `QuoteDetailView`, `HabitCardView`, `HeatmapGrid`,
@@ -436,6 +455,11 @@ una clave le falta cualquiera de los dos idiomas.
   (> 3 min) sin ejecutar nada. Se prueba en un dispositivo desde Xcode: pausar la app en segundo
   plano y `e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.gonzadev.quoteAnime.quoteNotificationsRefresh"]`.
   La lista de pendientes (log debug de `NotificationScheduler`) sí muestra el aviso como último horario.
+- **Verificar Dynamic Type**: `xcrun simctl ui <udid> content_size accessibility-extra-large` (y
+  `large` para volver) cambia el tamaño sin tocar Ajustes; relanzar la app. Para comparar Inicio
+  "antes/después" hay que ver la misma frase: `simctl openurl <udid> "quoteanime://home?quoteId=<clave>"`
+  (la clave del nodo en `/quotes`); el fondo sigue siendo aleatorio por anime, así que compara la
+  zona del texto. Las demás pantallas se comparan píxel a píxel debajo de la barra de estado.
 - **Cambiar preferencias de la app sin la UI**: `defaults write` sobre el `.plist` del contenedor
   **desde el Mac** lo pisa el `cfprefsd` del simulador al abrir la app (el valor vuelve). Hay que
   escribir por el simulador, con la ruta completa y la app cerrada:
