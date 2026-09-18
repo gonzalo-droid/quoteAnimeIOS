@@ -137,4 +137,62 @@ struct OnboardingViewModelTests {
         #expect(finished)
         #expect(preferences.isOnboardingCompleted())
     }
+
+    // MARK: - Remote templates (492f80f)
+
+    @Test("el onboarding muestra las locales al instante y las remotas al llegar, sin las premium")
+    func loadsRemoteTemplates() async {
+        let remote = FakeHabitTemplateRemoteSource([
+            HabitTemplateDTO(id: "remote_read", title: "template_read", iconKey: "book", order: 1),
+            HabitTemplateDTO(id: "remote_pokemon", title: "template_theme_pokemon", iconKey: "emoji_events", order: 2, isPremiumOnly: true),
+        ])
+        let viewModel = OnboardingViewModel()
+        #expect(viewModel.habitTemplates.map(\.id) == ["theme_ninja", "theme_one_piece", "theme_saiyan"])
+
+        viewModel.setup(
+            setOnboardingCompleted: SetOnboardingCompletedUseCase(repository: FakeUserPreferencesRepository()),
+            createHabitUseCase: nil,
+            getHabitTemplates: GetHabitTemplatesUseCase(remote: remote),
+            onComplete: {}
+        )
+        await viewModel.loadTemplates()
+
+        #expect(viewModel.habitTemplates.map(\.id) == ["remote_read"])
+    }
+
+    @Test("una elección que ya no está entre las remotas se limpia")
+    func staleSelectionCleared() async {
+        let remote = FakeHabitTemplateRemoteSource([
+            HabitTemplateDTO(id: "remote_read", title: "template_read", iconKey: "book", order: 1),
+        ])
+        let viewModel = OnboardingViewModel()
+        viewModel.setup(
+            setOnboardingCompleted: SetOnboardingCompletedUseCase(repository: FakeUserPreferencesRepository()),
+            createHabitUseCase: nil,
+            getHabitTemplates: GetHabitTemplatesUseCase(remote: remote),
+            onComplete: {}
+        )
+        viewModel.selectTemplate("theme_ninja")
+
+        await viewModel.loadTemplates()
+
+        #expect(viewModel.selectedTemplateId == nil)
+    }
+
+    @Test("sin red el onboarding conserva las locales y la elección")
+    func offlineKeepsSelection() async {
+        let viewModel = OnboardingViewModel()
+        viewModel.setup(
+            setOnboardingCompleted: SetOnboardingCompletedUseCase(repository: FakeUserPreferencesRepository()),
+            createHabitUseCase: nil,
+            getHabitTemplates: GetHabitTemplatesUseCase(remote: FakeHabitTemplateRemoteSource(error: FakeHabitTemplateRemoteSource.Offline())),
+            onComplete: {}
+        )
+        viewModel.selectTemplate("theme_ninja")
+
+        await viewModel.loadTemplates()
+
+        #expect(viewModel.selectedTemplateId == "theme_ninja")
+        #expect(viewModel.habitTemplates.count == 3)
+    }
 }

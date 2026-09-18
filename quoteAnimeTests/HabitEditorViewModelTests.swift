@@ -12,7 +12,8 @@ struct HabitEditorViewModelTests {
         habitId: String? = nil,
         seed: [Habit] = [],
         reminderScheduler: FakeHabitReminderScheduler = FakeHabitReminderScheduler(),
-        widgetRefresher: FakeRoutineWidgetRefresher = FakeRoutineWidgetRefresher()
+        widgetRefresher: FakeRoutineWidgetRefresher = FakeRoutineWidgetRefresher(),
+        templates: GetHabitTemplatesUseCase = GetHabitTemplatesUseCase()
     ) -> (HabitEditorViewModel, FakeHabitRepository) {
         let gate = PremiumGate.fake()
         let repository = FakeHabitRepository(calendar: TestCalendar.fixed)
@@ -25,7 +26,8 @@ struct HabitEditorViewModelTests {
             updateHabitUseCase: UpdateHabitUseCase(repository: repository, calendar: TestCalendar.fixed),
             habitRepository: repository,
             habitReminderScheduler: reminderScheduler,
-            routineWidgetRefresher: widgetRefresher
+            routineWidgetRefresher: widgetRefresher,
+            getHabitTemplates: templates
         )
         return (viewModel, repository)
     }
@@ -238,5 +240,79 @@ struct HabitEditorViewModelTests {
 
         #expect(viewModel.alert?.reason == .habitLimitReached(max: PremiumGate.freeHabitLimit))
         #expect(refresher.refreshCount == 0)
+    }
+
+    // MARK: - Remote templates (492f80f)
+
+    private static let remoteTemplates = [
+        HabitTemplateDTO(id: "remote_read", title: "template_read", iconKey: "book", order: 1, themeColorIndex: 2),
+        HabitTemplateDTO(id: "remote_walk", title: "Caminar al sol", iconKey: "directions_walk", order: 2),
+    ]
+
+    @Test("las sugerencias locales están al instante, antes de la red")
+    func bundledTemplatesAreImmediate() {
+        let remote = FakeHabitTemplateRemoteSource(Self.remoteTemplates)
+        let (viewModel, _) = Self.makeSUT(templates: GetHabitTemplatesUseCase(remote: remote))
+
+        #expect(viewModel.templates == DefaultHabitTemplates.all)
+        #expect(remote.fetchCount == 0)
+    }
+
+    @Test("las remotas reemplazan a las locales cuando llegan")
+    func remoteReplacesBundled() async {
+        let remote = FakeHabitTemplateRemoteSource(Self.remoteTemplates)
+        let (viewModel, _) = Self.makeSUT(templates: GetHabitTemplatesUseCase(remote: remote))
+
+        await viewModel.loadTemplates(isPremium: { false })
+
+        #expect(viewModel.templates.map(\.id) == ["remote_read", "remote_walk"])
+    }
+
+    @Test("una sugerencia ya aplicada no se cambia cuando llegan las remotas")
+    func appliedSuggestionIsKept() async {
+        let remote = FakeHabitTemplateRemoteSource(Self.remoteTemplates)
+        let (viewModel, _) = Self.makeSUT(templates: GetHabitTemplatesUseCase(remote: remote))
+        viewModel.applyDefaultTemplate(from: viewModel.templates, isPremium: false)
+        let applied = viewModel.uiState.title
+
+        await viewModel.loadTemplates(isPremium: { false })
+
+        #expect(viewModel.uiState.templateId == "theme_ninja")
+        #expect(viewModel.uiState.title == applied)
+    }
+
+    @Test("sin sugerencia aplicada, se aplica la primera remota")
+    func firstRemoteAppliedWhenNoneYet() async {
+        let remote = FakeHabitTemplateRemoteSource(Self.remoteTemplates)
+        let (viewModel, _) = Self.makeSUT(templates: GetHabitTemplatesUseCase(remote: remote))
+
+        await viewModel.loadTemplates(isPremium: { false })
+
+        #expect(viewModel.uiState.templateId == "remote_read")
+        #expect(viewModel.uiState.title == String(localized: "Leer"))
+        #expect(viewModel.uiState.colorIndex == 2)
+        #expect(viewModel.uiState.themeKey == nil)
+    }
+
+    @Test("sin red el editor se queda con las locales")
+    func offlineKeepsBundled() async {
+        let remote = FakeHabitTemplateRemoteSource(error: FakeHabitTemplateRemoteSource.Offline())
+        let (viewModel, _) = Self.makeSUT(templates: GetHabitTemplatesUseCase(remote: remote))
+
+        await viewModel.loadTemplates(isPremium: { false })
+
+        #expect(viewModel.templates == DefaultHabitTemplates.all)
+        #expect(viewModel.uiState.templateId == "theme_ninja")
+    }
+
+    @Test("editando un hábito no se piden plantillas a la red")
+    func editingSkipsFetch() async {
+        let remote = FakeHabitTemplateRemoteSource(Self.remoteTemplates)
+        let (viewModel, _) = Self.makeSUT(habitId: "h1", templates: GetHabitTemplatesUseCase(remote: remote))
+
+        await viewModel.loadTemplates(isPremium: { false })
+
+        #expect(remote.fetchCount == 0)
+        #expect(viewModel.uiState.templateId == nil)
     }
 }

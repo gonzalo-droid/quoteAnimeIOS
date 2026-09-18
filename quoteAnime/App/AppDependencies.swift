@@ -44,7 +44,8 @@ final class AppDependencies: ObservableObject {
     var archiveHabitUseCase: ArchiveHabitUseCase?
     var unarchiveHabitUseCase: UnarchiveHabitUseCase?
     var deleteHabitUseCase: DeleteHabitUseCase?
-    var getHabitTemplatesUseCase = GetHabitTemplatesUseCase()
+    /// Bundled suggestions at once, `/habitTemplates` (Realtime Database) when it answers.
+    let getHabitTemplatesUseCase = GetHabitTemplatesUseCase(remote: FirebaseHabitTemplateRemoteDataSource())
     let habitReminderScheduler = HabitReminderScheduler()
     /// Single entry point for keeping the home-screen widgets in sync, mirroring Android's
     /// `RoutineWidgetScheduler`. A no-op below iOS 17, where there is no habit store to read.
