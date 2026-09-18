@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 // MARK: - Container (reads env, initialises ViewModel)
 
@@ -18,6 +19,12 @@ struct HomeContainerView: View {
             )}
             // Fires again when Settings is popped — reloads only if the anime selection changed.
             .onAppear { Task { await viewModel.reloadIfCategorySelectionChanged() } }
+            // The quote widget's tap (`AppDeepLink.quote`). `@Published` replays the current
+            // value on subscribe, so a cold launch's request is picked up here too.
+            .onReceive(router.$quoteFocusRequest.compactMap { $0 }) { id in
+                viewModel.focus(onQuoteId: id)
+                router.consumeQuoteFocusRequest()
+            }
             .sheet(isPresented: $viewModel.showShareSheet) {
                 if let img = viewModel.shareImage {
                     ActivityViewController(activityItems: [img])
@@ -85,17 +92,22 @@ private struct HomeContentView: View {
     @ViewBuilder
     private func pager(geo: GeometryProxy) -> some View {
         if #available(iOS 17, *) {
-            ScrollView(.vertical, showsIndicators: false) {
-                LazyVStack(spacing: 0) {
-                    ForEach(viewModel.quotes.indices, id: \.self) { index in
-                        pageView(for: index)
-                            .frame(width: geo.size.width, height: geo.size.height)
+            ScrollViewReader { proxy in
+                ScrollView(.vertical, showsIndicators: false) {
+                    LazyVStack(spacing: 0) {
+                        ForEach(viewModel.quotes.indices, id: \.self) { index in
+                            pageView(for: index)
+                                .frame(width: geo.size.width, height: geo.size.height)
+                        }
                     }
+                    .scrollTargetLayout()
                 }
-                .scrollTargetLayout()
+                .scrollTargetBehavior(.paging)
+                .ignoresSafeArea()
+                // On appear too: a cold launch from the widget asks before the pager exists.
+                .onAppear { scrollIfRequested(proxy) }
+                .onChange(of: viewModel.scrollRequest) { _, _ in scrollIfRequested(proxy) }
             }
-            .scrollTargetBehavior(.paging)
-            .ignoresSafeArea()
         } else {
             TabView(selection: $viewModel.currentIndex) {
                 ForEach(viewModel.quotes.indices, id: \.self) { index in
@@ -105,6 +117,16 @@ private struct HomeContentView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .frame(width: geo.size.width, height: geo.size.height)
             .ignoresSafeArea()
+        }
+    }
+
+    /// Jumps (no animation, like Android's `scrollToPage`) to the page the widget asked for.
+    /// Deferred one runloop so the lazy stack has laid out its first pages.
+    private func scrollIfRequested(_ proxy: ScrollViewProxy) {
+        guard let index = viewModel.scrollRequest else { return }
+        DispatchQueue.main.async {
+            proxy.scrollTo(index, anchor: .top)
+            viewModel.scrollRequestConsumed()
         }
     }
 

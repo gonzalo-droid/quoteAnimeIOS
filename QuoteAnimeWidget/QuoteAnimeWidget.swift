@@ -37,14 +37,21 @@ struct QuoteEntry: TimelineEntry {
     let author: String
     let anime: String
     let backgroundImageData: Data?
+    /// The app's `Quote.id` of the quote shown, for the tap's deep link. Nil for the placeholder
+    /// (a tap then just opens the app).
+    let quoteId: String?
 
     static let placeholder = QuoteEntry(
         date: .now,
         quoteText: "El esfuerzo supera al talento cuando el talento no se esfuerza.",
         author: "Rock Lee",
         anime: "Naruto",
-        backgroundImageData: nil
+        backgroundImageData: nil,
+        quoteId: nil
     )
+
+    /// Where tapping the widget opens the app: Home, on this quote.
+    var openURL: URL? { quoteId.flatMap(WidgetDeepLink.quote(id:)) }
 }
 
 // MARK: - Network Service
@@ -66,12 +73,13 @@ private enum WidgetNetworkService {
             quoteText: quote.text,
             author: quote.author,
             anime: quote.anime,
-            backgroundImageData: imageData
+            backgroundImageData: imageData,
+            quoteId: quote.id
         )
     }
 
     private static func fetchRandomQuote() async
-        -> (text: String, author: String, anime: String, animeSlug: String?)? {
+        -> (text: String, author: String, anime: String, animeSlug: String?, id: String?)? {
         // The whole node, with no `limitToFirst`. It used to ask for the first 100 keys, which
         // meant the widget could only ever show quotes from that fixed slice — and, now that the
         // anime selection is honoured, would have shown nothing at all to anyone whose animes
@@ -81,21 +89,23 @@ private enum WidgetNetworkService {
         guard let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
         guard let json = try? JSONSerialization.jsonObject(with: data) else { return nil }
 
-        var quotes: [[String: Any]] = []
+        // The node key is kept: it is the quote's id in the app (`WidgetQuoteID`).
+        var quotes: [(key: String?, fields: [String: Any])] = []
         if let array = json as? [[String: Any]] {
-            quotes = array
+            quotes = array.map { (nil, $0) }
         } else if let dict = json as? [String: Any] {
-            quotes = dict.values.compactMap { $0 as? [String: Any] }
+            quotes = dict.compactMap { key, value in (value as? [String: Any]).map { (key, $0) } }
         }
 
         guard
-            let q      = pick(from: quotes, matching: selectedAnimes()),
-            let text   = q["quote"]  as? String,
-            let author = q["author"] as? String,
-            let anime  = q["anime"]  as? String
+            let picked = pick(from: quotes, matching: selectedAnimes()),
+            let text   = picked.fields["quote"]  as? String,
+            let author = picked.fields["author"] as? String,
+            let anime  = picked.fields["anime"]  as? String
         else { return nil }
 
-        return (text, author, anime, q["animeSlug"] as? String)
+        return (text, author, anime, picked.fields["animeSlug"] as? String,
+                WidgetQuoteID.resolve(fields: picked.fields, key: picked.key))
     }
 
     /// The animes the user picked in Ajustes → Contenido → Animes, mirrored into the App Group by
@@ -113,10 +123,13 @@ private enum WidgetNetworkService {
     /// The fallback matters. If the selection matches nothing in the catalogue — an anime that was
     /// renamed or withdrawn remotely — the widget shows a quote from the whole pool rather than an
     /// error, because a stale filter is not a reason to leave the home screen blank.
-    static func pick(from quotes: [[String: Any]], matching selection: Set<String>) -> [String: Any]? {
+    static func pick(
+        from quotes: [(key: String?, fields: [String: Any])],
+        matching selection: Set<String>
+    ) -> (key: String?, fields: [String: Any])? {
         guard !selection.isEmpty else { return quotes.randomElement() }
         let filtered = quotes.filter { quote in
-            guard let anime = quote["anime"] as? String else { return false }
+            guard let anime = quote.fields["anime"] as? String else { return false }
             return selection.contains(anime)
         }
         return filtered.randomElement() ?? quotes.randomElement()
@@ -181,12 +194,15 @@ private enum WidgetNetworkService {
             // archiving limit.
             imageData = (try? Data(contentsOf: url)).flatMap { downsampled($0) }
         }
+        let storedText = d?.string(forKey: WidgetSharedKey.quoteText)
         return QuoteEntry(
             date: .now,
-            quoteText: d?.string(forKey: WidgetSharedKey.quoteText)   ?? QuoteEntry.placeholder.quoteText,
+            quoteText: storedText ?? QuoteEntry.placeholder.quoteText,
             author:    d?.string(forKey: WidgetSharedKey.quoteAuthor) ?? QuoteEntry.placeholder.author,
             anime:     d?.string(forKey: WidgetSharedKey.quoteAnime)  ?? QuoteEntry.placeholder.anime,
-            backgroundImageData: imageData
+            backgroundImageData: imageData,
+            // Only with a stored quote: the placeholder text must not point at some other quote.
+            quoteId:   storedText == nil ? nil : d?.string(forKey: WidgetSharedKey.quoteId)
         )
     }
 }
@@ -393,13 +409,16 @@ struct QuoteAnimeWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: QuoteProvider()) { entry in
+            // Tapping opens Home on this quote — Android's `widget_quote_id` open intent.
             if #available(iOS 17.0, *) {
                 QuoteAnimeWidgetEntryView(entry: entry)
                     .containerBackground(for: .widget) {
                         QuoteWidgetBackground(imageData: entry.backgroundImageData)
                     }
+                    .widgetURL(entry.openURL)
             } else {
                 QuoteAnimeWidgetEntryView(entry: entry)
+                    .widgetURL(entry.openURL)
             }
         }
         .configurationDisplayName("Quote Anime")
@@ -417,11 +436,14 @@ struct QuoteAnimeLockWidget: Widget {
             // iOS 17+ requires an explicit container background; on iOS 16 the system
             // renders accessory widgets with its own vibrant treatment and the modifier
             // does not exist yet.
+            // Same destination as the home-screen widget (Android has no lock-screen widget).
             if #available(iOS 17.0, *) {
                 QuoteAnimeLockWidgetEntryView(entry: entry)
                     .containerBackground(for: .widget) { Color.clear }
+                    .widgetURL(entry.openURL)
             } else {
                 QuoteAnimeLockWidgetEntryView(entry: entry)
+                    .widgetURL(entry.openURL)
             }
         }
         .configurationDisplayName("Quote Anime — Pantalla bloqueada")

@@ -9,6 +9,9 @@ final class HomeViewModel: ObservableObject {
     @Published var currentIndex: Int = 0
     @Published var showShareSheet = false
     @Published var shareImage: UIImage? = nil
+    /// A page the view should scroll to, set when the quote widget opened Home on a quote.
+    /// The view calls `scrollRequestConsumed()` once it has scrolled.
+    @Published private(set) var scrollRequest: Int? = nil
 
     private var getAllQuotes: GetAllQuotesUseCase?
     private var toggleFavoriteUseCase: ToggleFavoriteUseCase?
@@ -16,6 +19,8 @@ final class HomeViewModel: ObservableObject {
     private var rescheduleNotifications: RescheduleQuoteNotificationsUseCase?
     private var router: AppRouter?
     private var setupDone = false
+    /// A quote id from the widget that arrived before the feed finished loading.
+    private var pendingFocusQuoteId: String?
 
     /// Anime selection the currently loaded feed was built from, so returning from Settings
     /// can tell whether the feed is stale without refetching every time.
@@ -55,6 +60,7 @@ final class HomeViewModel: ObservableObject {
             loadError = error.localizedDescription
         }
         isLoading = false
+        applyPendingFocus()
 
         // Refill notification budget on every app launch
         // (iOS allows max 64 pending notifications; with high frequency they drain in days).
@@ -69,6 +75,32 @@ final class HomeViewModel: ObservableObject {
         guard setupDone, let prefs = getUserPreferences?.execute() else { return }
         guard prefs.selectedCategoryIds != appliedCategoryIds else { return }
         await loadQuotes()
+    }
+
+    // MARK: - Widget deep link
+
+    /// Positions the feed on the quote the widget was showing — Android's `scrollToPage`, from
+    /// `home?quoteId=`. Waits for the feed if it is still loading.
+    ///
+    /// A quote the feed doesn't hold — removed remotely, or outside the current anime selection
+    /// (the widget can show one from before the selection changed) — leaves Home where it is,
+    /// as Android does when `indexOfFirst` finds nothing. The feed is never refiltered or
+    /// reloaded for it.
+    func focus(onQuoteId id: String) {
+        pendingFocusQuoteId = id
+        if !isLoading { applyPendingFocus() }
+    }
+
+    func scrollRequestConsumed() {
+        scrollRequest = nil
+    }
+
+    private func applyPendingFocus() {
+        guard let id = pendingFocusQuoteId else { return }
+        pendingFocusQuoteId = nil
+        guard let index = quotes.firstIndex(where: { $0.id == id }) else { return }
+        currentIndex = index
+        scrollRequest = index
     }
 
     // MARK: - Favorites
