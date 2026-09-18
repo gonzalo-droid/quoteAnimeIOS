@@ -49,6 +49,7 @@ enum PaywallMessage: Equatable {
 }
 
 struct PaywallUiState {
+    var purchaseAvailability: PremiumPurchaseAvailability = .store
     var isPremium: Bool = false
     var isLoadingOffers: Bool = true
     var offers: [SubscriptionOffer] = []
@@ -56,15 +57,28 @@ struct PaywallUiState {
     var isPurchasing: Bool = false
     var isRestoring: Bool = false
     var message: PaywallMessage?
+    /// The "(solo pruebas)" switch: DEBUG and TestFlight builds only, never the App Store.
+    var canUseTestPremium: Bool = false
+
+    /// Premium is not on sale yet (`PremiumConfig.usesRealBilling == false`): the benefits are
+    /// shown and the button says "Próximamente", disabled.
+    var isComingSoon: Bool { purchaseAvailability == .comingSoon }
 
     /// The elegant empty state Android has: plans were asked for and none came back.
-    var offersUnavailable: Bool { !isLoadingOffers && offers.isEmpty }
+    var offersUnavailable: Bool { !isComingSoon && !isLoadingOffers && offers.isEmpty }
 
     var selectedOffer: SubscriptionOffer? {
         offers.first { $0.id == selectedOfferId } ?? offers.first
     }
 
-    var canSubscribe: Bool { selectedOffer != nil && !isPurchasing && !isRestoring }
+    var canSubscribe: Bool { !isComingSoon && selectedOffer != nil && !isPurchasing && !isRestoring }
+
+    /// Nothing was ever sold, so there is nothing to restore.
+    var showsRestore: Bool { !isComingSoon }
+
+    /// Nothing was ever sold, so there is no subscription to manage — a test-premium user sees
+    /// "ya eres premium" and the switch to turn it off instead.
+    var showsManageSubscription: Bool { !isComingSoon }
 }
 
 @MainActor
@@ -75,30 +89,52 @@ final class PaywallViewModel: ObservableObject {
 
     private let premiumGate: PremiumGate
     private let store: PremiumStore
-    private var cancellable: AnyCancellable?
+    private let testControls: TestPremiumControlling?
+    private var cancellables = Set<AnyCancellable>()
     private var didLoadOffers = false
 
-    init(premiumGate: PremiumGate, store: PremiumStore) {
+    init(
+        premiumGate: PremiumGate,
+        store: PremiumStore,
+        purchaseAvailability: PremiumPurchaseAvailability = .store,
+        testControls: TestPremiumControlling? = nil
+    ) {
         self.premiumGate = premiumGate
         self.store = store
+        self.testControls = testControls
+        uiState.purchaseAvailability = purchaseAvailability
+        uiState.isLoadingOffers = purchaseAvailability == .store
         uiState.isPremium = premiumGate.isPremium
+        uiState.canUseTestPremium = testControls?.isTestPremiumAvailable ?? false
         // The entitlement can change while this screen is open — the purchase itself, obviously,
         // but also a cancellation made in Settings and picked up by `Transaction.updates`.
-        cancellable = premiumGate.isPremiumPublisher
+        premiumGate.isPremiumPublisher
             .receive(on: RunLoop.main)
             .sink { [weak self] isPremium in
                 self?.uiState.isPremium = isPremium
             }
+            .store(in: &cancellables)
+        // A release build starts out assuming "App Store" and may learn it is TestFlight a
+        // moment later, once `AppTransaction` answers.
+        testControls?.isTestPremiumAvailablePublisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] isAvailable in
+                self?.uiState.canUseTestPremium = isAvailable
+            }
+            .store(in: &cancellables)
     }
 
     func onAppear() {
         uiState.isPremium = premiumGate.isPremium
-        guard !didLoadOffers else { return }
+        // "Próximamente" never asks the store for plans: with real billing off the app does not
+        // talk to the App Store at all.
+        guard !uiState.isComingSoon, !didLoadOffers else { return }
         didLoadOffers = true
         Task { await loadOffers() }
     }
 
     func loadOffers() async {
+        guard !uiState.isComingSoon else { return }
         uiState.isLoadingOffers = true
         let offers = await store.loadOffers()
         uiState.offers = offers
@@ -115,7 +151,7 @@ final class PaywallViewModel: ObservableObject {
     }
 
     func subscribe() async {
-        guard let offer = uiState.selectedOffer, !uiState.isPurchasing else { return }
+        guard uiState.canSubscribe, let offer = uiState.selectedOffer else { return }
         uiState.isPurchasing = true
         let outcome = await store.purchase(offer)
         uiState.isPurchasing = false
@@ -137,7 +173,7 @@ final class PaywallViewModel: ObservableObject {
     }
 
     func restorePurchases() async {
-        guard !uiState.isRestoring else { return }
+        guard uiState.showsRestore, !uiState.isRestoring else { return }
         uiState.isRestoring = true
         let outcome = await store.restore()
         uiState.isRestoring = false
@@ -154,6 +190,7 @@ final class PaywallViewModel: ObservableObject {
     }
 
     func onManageSubscriptionTapped() {
+        guard uiState.showsManageSubscription else { return }
         isShowingCancelSheet = true
     }
 
@@ -170,25 +207,21 @@ final class PaywallViewModel: ObservableObject {
         uiState.message = nil
     }
 
-    // MARK: - QA only
+    // MARK: - Test premium
 
-    #if DEBUG
-    /// The pre-billing mock, now an explicit override instead of a write to the same flag the
-    /// store owns. Absent from release builds.
-    func debugSetPremium(_ value: Bool) {
-        (premiumGate.source as? DebugPremiumOverrideSource)?.setOverride(value)
+    /// The "(solo pruebas)" buttons. Does nothing in an App Store build, where the switch is
+    /// neither shown nor honoured.
+    func setTestPremium(_ enabled: Bool) {
+        guard uiState.canUseTestPremium, let testControls else { return }
+        testControls.setTestPremium(enabled)
+        uiState.isPremium = premiumGate.isPremium
     }
-
-    func debugFollowStore() {
-        (premiumGate.source as? DebugPremiumOverrideSource)?.clearOverride()
-    }
-    #endif
 
     /// A real purchase must win over a QA override — otherwise a tester who forced premium off
     /// buys the subscription and still sees the free app.
     private func clearDebugOverrideAfterPurchase() {
         #if DEBUG
-        debugFollowStore()
+        (premiumGate.source as? DebugPremiumOverrideSource)?.clearOverride()
         #endif
     }
 }

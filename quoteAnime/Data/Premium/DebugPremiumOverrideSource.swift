@@ -73,4 +73,16 @@ final class DebugPremiumOverrideSource: PremiumEntitlementSource {
         subject.send(newValue)
     }
 }
+
+/// In a DEBUG build with real billing the "(solo pruebas)" buttons drive this override — always
+/// available, since a DEBUG build never reaches a customer.
+extension DebugPremiumOverrideSource: TestPremiumControlling {
+    var isTestPremiumAvailable: Bool { true }
+
+    var isTestPremiumAvailablePublisher: AnyPublisher<Bool, Never> { Just(true).eraseToAnyPublisher() }
+
+    func setTestPremium(_ enabled: Bool) {
+        setOverride(enabled)
+    }
+}
 #endif

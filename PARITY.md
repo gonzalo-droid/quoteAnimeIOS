@@ -42,14 +42,20 @@ inventar un SHA.
 | Snapshot de hábitos y refresco instantáneo de los widgets | sin determinar | portado | Equivale a `RoutineWidgetScheduler.triggerImmediateUpdate()`. |
 | Localización inglés/español, tuteo y respaldo en inglés | `ad4a871` | portado | |
 | URLs de privacidad y términos → animequote.app | `0b76ed0` | portado | Citado en `AppLinks.swift`. |
-| Premium con StoreKit 2 — entitlement, paywall con planes reales, restaurar, gestionar/cancelar | `7822372`, `72048cb`, `7d4d5f8`, `fc16551`, `0529500` | portado | Tanda 7. Se portó el *comportamiento* del billing, no su implementación: ver divergencias. |
+| Premium con StoreKit 2 — entitlement, paywall con planes reales, restaurar, gestionar/cancelar | `7822372`, `72048cb`, `7d4d5f8`, `fc16551`, `0529500` | portado, **apagado** | Tanda 7. Se portó el *comportamiento* del billing, no su implementación: ver divergencias. Desde la tanda 8 está dormido detrás de `PremiumConfig.usesRealBilling = false` — ver "Premium en mock". |
 
 ---
 
 ## Divergencias deliberadas
 
+Las filas de billing (verificación, acknowledge, restaurar, re-sincronización, planes, texto del
+período, estado vacío, botón de QA) describen el código de StoreKit, que hoy está **apagado**:
+vuelven a regir el día que `PremiumConfig.usesRealBilling` pase a `true`.
+
 | Tema | Android | iOS | Por qué |
 |---|---|---|---|
+| **Premium en mock hasta la versión productiva** | Google Play Billing real (`billing-ktx`): el paywall vende `premium_subscription` | `PremiumConfig.usesRealBilling = false`. StoreKit sigue en el código pero no se construye: ni productos, ni `Transaction.updates`, ni re-sincronización. En la App Store el paywall muestra los beneficios con "Próximamente" deshabilitado, sin restaurar ni gestionar, y los límites gratuitos se aplican. En DEBUG y TestFlight hay un "Activar premium (solo pruebas)" que da premium local (`MockPremiumEntitlementSource`, clave `pref_is_premium`) | Decisión del usuario (tanda 8): el producto todavía no existe en App Store Connect ni están firmados los contratos de Paid Apps; en release el paywall habría mostrado "planes no disponibles". Pasar a producción es cambiar esa línea; qué hay que tener listo está en su `///`. Fijado por el test `DIVERGENCIA: premium es un mock hasta la versión productiva`. |
+| **Cómo se detecta TestFlight** | No aplica | `AppTransaction.shared` verificado con `environment == .sandbox`, **preguntado sólo si `appStoreReceiptURL` ya termina en `sandboxReceipt`**. Un build de release se trata como App Store hasta demostrar lo contrario | Sin transacción local, `AppTransaction.shared` pide una a la tienda con autenticación interactiva: en un build Release del simulador la app arrancó con "Sign in to Apple Account". Un cliente con el recibo perdido (dispositivo restaurado de un backup) estaría en el mismo caso. El nombre del archivo del recibo no toca la red. **Punto ciego**: App Review también corre contra sandbox, así que un revisor vería el botón "(solo pruebas)". Ver "Antes de enviar a revisión". |
 | **Verificación de la compra** | Confía en cualquier compra que Play reporte como `PURCHASED`; su propio comentario admite que no hay backend que verifique nada | Una transacción `.unverified` **nunca** da premium (`PremiumEntitlementDecision`) | StoreKit 2 verifica la firma criptográficamente. Reproducir la debilidad de Android sería portar el bug. |
 | **Acknowledge y worker de reintento** | `acknowledgePurchase` con 3 intentos en línea + `AcknowledgePurchasesWorker` (hasta 15 reintentos). Play revoca y reembolsa la compra si no se confirma en 72 h | No existe | Es una exigencia de Play. El equivalente iOS es `Transaction.finish()`: local, sin red, sin plazo y sin nada que reintentar. |
 | **Restaurar compras** | No existe ninguna acción de usuario; sólo una re-sincronización automática y silenciosa | Botón "Restaurar compras" en el paywall | App Store Review lo exige para suscripciones; Play no. |
@@ -72,10 +78,12 @@ inventar un SHA.
 
 ## Valores que nunca cruzan de plataforma
 
-- `pref_is_premium` (iOS) — desde la tanda 7 significa **"override de QA"** y sólo existe en DEBUG.
-  El entitlement real se cachea en `pref_premium_entitlement_cache`. No se reutilizó la clave vieja
-  porque el mock pre-billing le daba premium local a cualquiera que tocara "Suscribirme", y
-  reutilizarla les habría regalado un caché de premium a todos ellos.
+- `pref_is_premium` (iOS) — desde la tanda 8, con el interruptor en `false`, es **el flag del
+  premium de prueba**: sólo cuenta en DEBUG y TestFlight; en una instalación de la App Store se
+  ignora aunque valga `true` (el mock pre-billing de antes de la tanda 7 se lo dejó en `true` a
+  cualquiera que tocó "Suscribirme"). Con el interruptor en `true` vuelve a ser el override de QA
+  de DEBUG. El entitlement real se cachea en `pref_premium_entitlement_cache`, que nunca se
+  reutilizó por el mismo motivo.
 - El orden de `HabitPalette.colors` y las claves de `HabitIcons` — se persisten por índice y por
   clave.
 - Bundle id, App Group (`group.com.gonzadev.quoteAnime`), product ids, firma y keystore.
@@ -98,12 +106,24 @@ Se reporta, no se arregla: el repo de Android es de sólo lectura para el agente
 
 ---
 
+## Antes de enviar a revisión con el premium en mock
+
+- **App Review corre contra sandbox**, igual que TestFlight: `AppTransaction.environment` le dice
+  `.sandbox`, así que el revisor vería "Activar premium (solo pruebas)" y podría activarlo. Pendiente
+  de decisión: aceptarlo (y avisarlo en las notas de revisión), o subir a TestFlight un binario
+  distinto del de la App Store (una configuración de build con su propio flag de compilación — es
+  un cambio de `project.pbxproj`).
+- **Un paywall "Próximamente"** puede chocar con la guía 2.1 (funciones incompletas). Alternativa si
+  lo rechazan: ocultar las entradas al paywall en builds de la App Store y dejar sólo el aviso
+  del límite.
+
 ## Pendiente
 
 | Función | Estado | Notas |
 |---|---|---|
+| Activar la compra real (`PremiumConfig.usesRealBilling = true`) | pendiente, bloqueado fuera del código | Requiere el producto `premium_subscription` en App Store Connect, el contrato de Paid Apps activo y una prueba en sandbox en un dispositivo real. La lista completa está en el `///` de `PremiumConfig`. |
 | Etiquetas de VoiceOver de los íconos | pendiente | Último punto de paridad conocido antes de poder mover un tag de sincronización. |
-| Plan anual | pendiente | Necesita un product id nuevo en App Store Connect; el paywall ya soporta varios planes. |
+| Plan anual | pendiente, después de activar la compra real | Necesita un product id nuevo en App Store Connect; el paywall ya soporta varios planes. |
 | Dynamic Type | pendiente (todo el repo) | Las 106 llamadas a `.font(.system(size:))` son tamaños fijos; no hay ni una fuente semántica. No es de esta tanda, pero nadie lo tenía anotado. |
 | Plantillas de hábito remotas | pendiente | `GetHabitTemplatesUseCase` es sólo local; Android las puede sobrescribir desde Firestore. |
 | Imágenes de portada de las plantillas | pendiente | Android trae `naruto.png`, `onepiece.png`…; iOS no tiene los assets. |

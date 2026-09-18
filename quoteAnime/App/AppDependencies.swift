@@ -32,16 +32,9 @@ final class AppDependencies: ObservableObject {
 
     // MARK: Habits ("Mi Rutina") — SwiftData-only, nil below iOS 17 (no legacy fallback yet)
     let habitRepository: HabitRepository?
-    let premiumGate = PremiumGate.shared
-    /// Buying premium. Shares the gate's entitlement source on purpose — a second one would mean
-    /// a second `Transaction.updates` listener and a second cache disagreeing with the first.
-    let premiumStore: PremiumStore = StoreKitPremiumStore(entitlementSource: PremiumGate.shared.source)
-    #if DEBUG
-    /// QA affordances on the paywall. Absent from release builds along with the type itself.
-    var debugPremiumOverride: DebugPremiumOverrideSource? {
-        premiumGate.source as? DebugPremiumOverrideSource
-    }
-    #endif
+    /// Mock or StoreKit, decided by `PremiumConfig.usesRealBilling` — see `PremiumServices`.
+    let premium = PremiumServices.live
+    var premiumGate: PremiumGate { premium.gate }
     var getActiveHabitsUseCase: GetActiveHabitsUseCase?
     var getArchivedHabitsUseCase: GetArchivedHabitsUseCase?
     var getGlobalStreakUseCase: GetGlobalStreakUseCase?

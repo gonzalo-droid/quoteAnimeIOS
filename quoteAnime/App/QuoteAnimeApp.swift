@@ -26,7 +26,9 @@ struct QuoteAnimeApp: App {
                 // Android re-syncs the entitlement on every process start, and its billing
                 // repository asks for a re-sync on every return to the foreground too (which its
                 // own code never wires up). iOS does both: a subscription cancelled or refunded
-                // in Settings has to be noticed without a cold launch.
+                // in Settings has to be noticed without a cold launch. While
+                // `PremiumConfig.usesRealBilling` is false the same call never reaches StoreKit's
+                // entitlements — it only settles whether this release build is TestFlight.
                 .task { await dependencies.premiumGate.refresh() }
                 .onChange(of: scenePhase) { newPhase in
                     guard newPhase == .active else { return }

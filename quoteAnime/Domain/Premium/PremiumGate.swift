@@ -2,8 +2,9 @@ import Foundation
 import Combine
 
 /// Single place plan-based limits live, and the only type the rest of the app talks to about
-/// premium. Where `isPremium` comes from is behind `PremiumEntitlementSource`: StoreKit in every
-/// build, wrapped by a QA override in DEBUG ones.
+/// premium. Where `isPremium` comes from is behind `PremiumEntitlementSource`, chosen once by
+/// `PremiumConfig.usesRealBilling`: the local mock (`MockPremiumEntitlementSource`) while it is
+/// `false`, StoreKit — wrapped by a QA override in DEBUG builds — once it is `true`.
 ///
 /// `isPremium` still *proxies* straight to the source rather than caching a copy — there is no
 /// in-memory state to go stale across the app's several independent view models, so it is safe to
@@ -12,11 +13,11 @@ import Combine
 /// that reads `isPremium` in its body and holds the gate as `@ObservedObject` re-renders the
 /// moment StoreKit changes its mind, which a plain `UserDefaults` read never did.
 final class PremiumGate: ObservableObject {
-    static let shared = PremiumGate(source: PremiumGate.makeDefaultSource())
+    static let shared = PremiumServices.live.gate
     static let freeHabitLimit = 3
 
-    /// Exposed for the composition root only: `StoreKitPremiumStore` has to refresh *this* source
-    /// after a purchase, and a second instance would mean a second cache and a second listener.
+    /// Exposed for the paywall's DEBUG path only: a real purchase clears the QA override on
+    /// *this* source (`DebugPremiumOverrideSource`).
     let source: PremiumEntitlementSource
     private var cancellable: AnyCancellable?
 
@@ -37,19 +38,9 @@ final class PremiumGate: ObservableObject {
         isPremium ? Int.max : Self.freeHabitLimit
     }
 
-    /// Re-reads the store. Called at launch and on every return to the foreground.
+    /// Called at launch and on every return to the foreground. With real billing it re-reads
+    /// StoreKit; with the mock it only finishes working out whether this is a TestFlight build.
     func refresh() async {
         await source.refresh()
-    }
-
-    /// The QA override only exists in DEBUG builds, so a release binary has exactly one possible
-    /// answer to "is this user premium": StoreKit's.
-    private static func makeDefaultSource() -> PremiumEntitlementSource {
-        let storeKit = StoreKitEntitlementSource()
-        #if DEBUG
-        return DebugPremiumOverrideSource(wrapping: storeKit)
-        #else
-        return storeKit
-        #endif
     }
 }
