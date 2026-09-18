@@ -355,49 +355,33 @@ struct HabitEditorView: View {
 private struct HabitIconPickerView: View {
     @Binding var selectedKey: String
     @Environment(\.dismiss) private var dismiss
+    /// Android `1d9e231` filters the 126 icons by name — see `HabitIconSearch` for the rule.
+    @State private var query = ""
+
+    private var visibleCategories: [HabitIconCategory] {
+        HabitIconSearch.filter(HabitIcons.categories, query: query) { key in
+            HabitIcons.localizedLabel(for: key)
+        }
+    }
 
     var body: some View {
         NavigationView {
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 20) {
-                    ForEach(HabitIcons.categories) { category in
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text(category.title)
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.textSecondary)
-                                .accessibilityAddTraits(.isHeader)
-
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 12) {
-                                ForEach(category.keys, id: \.self) { key in
-                                    Button {
-                                        selectedKey = key
-                                        dismiss()
-                                    } label: {
-                                        Image(systemName: HabitIcons.symbol(for: key))
-                                            .font(.system(size: 20))
-                                            .foregroundColor(selectedKey == key ? .accentPurple : .textPrimary)
-                                            .frame(width: 44, height: 44)
-                                            .background(Color.surface)
-                                            .cornerRadius(10)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 10)
-                                                    .stroke(selectedKey == key ? Color.accentPurple : Color.clear, lineWidth: 1.5)
-                                            )
-                                    }
-                                    // Android 4f8e6d2 names each icon (`describeIcon`); iOS also
-                                    // says which one is chosen, which TalkBack there does not.
-                                    .accessibilityLabel(Text(HabitIcons.label(for: key)))
-                                    .accessibilityAddTraits(selectedKey == key ? .isSelected : [])
-                                }
-                            }
-                        }
-                    }
+            Group {
+                if visibleCategories.isEmpty {
+                    noResults
+                } else {
+                    iconGrid
                 }
-                .padding(16)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.bgDark.ignoresSafeArea())
             .navigationTitle("Elegir ícono")
             .navigationBarTitleDisplayMode(.inline)
+            .searchable(
+                text: $query,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: Text("Buscar…")
+            )
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Listo") { dismiss() }
@@ -406,4 +390,69 @@ private struct HabitIconPickerView: View {
             }
         }
     }
+
+    private var iconGrid: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 20) {
+                ForEach(visibleCategories) { category in
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(category.title)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.textSecondary)
+                            .accessibilityAddTraits(.isHeader)
+
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 12) {
+                            ForEach(category.keys, id: \.self) { key in
+                                Button {
+                                    selectedKey = key
+                                    dismiss()
+                                } label: {
+                                    Image(systemName: HabitIcons.symbol(for: key))
+                                        .font(.system(size: 20))
+                                        .foregroundColor(selectedKey == key ? .accentPurple : .textPrimary)
+                                        .frame(width: 44, height: 44)
+                                        .background(Color.surface)
+                                        .cornerRadius(10)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(selectedKey == key ? Color.accentPurple : Color.clear, lineWidth: 1.5)
+                                        )
+                                }
+                                // Android 4f8e6d2 names each icon (`describeIcon`); iOS also
+                                // says which one is chosen, which TalkBack there does not.
+                                .accessibilityLabel(Text(HabitIcons.label(for: key)))
+                                .accessibilityAddTraits(selectedKey == key ? .isSelected : [])
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(16)
+        }
+        .scrollDismissesKeyboard(.immediately)
+    }
+
+    /// Android's `habit_icon_picker_empty`. The stock `ContentUnavailableView` where it exists
+    /// (iOS 17); the same title and glyph by hand on 16.
+    @ViewBuilder
+    private var noResults: some View {
+        if #available(iOS 17, *) {
+            ContentUnavailableView("No se encontraron íconos", systemImage: "magnifyingglass")
+        } else {
+            VStack(spacing: 12) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 40))
+                    .foregroundColor(.textSecondary)
+                    .accessibilityHidden(true)
+                Text("No se encontraron íconos")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundColor(.textPrimary)
+            }
+        }
+    }
+}
+
+#Preview("Selector de íconos") {
+    HabitIconPickerView(selectedKey: .constant("book"))
+        .preferredColorScheme(.dark)
 }

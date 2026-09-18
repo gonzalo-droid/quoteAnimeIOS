@@ -743,6 +743,22 @@
         }
       }
     },
+    "Buscar…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar…"
+          }
+        }
+      }
+    },
     "Caminar" : {
       "comment" : "VoiceOver name of a habit icon in the icon picker",
       "localizations" : {
@@ -3776,6 +3792,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No pudimos verificar la compra con la App Store."
+          }
+        }
+      }
+    },
+    "No se encontraron íconos" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No icons found"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontraron íconos"
           }
         }
       }
