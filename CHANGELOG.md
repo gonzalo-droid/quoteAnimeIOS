@@ -9,6 +9,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [Unreleased]
 
 ### Added
+- **El selector de íconos se puede usar con VoiceOver.** Cada uno de los 126 íconos se lee con su nombre ("Entrenar", "Beber agua", "Tender la cama"…), en español o en inglés según el iPhone, igual que en Android; el que tiene el hábito se anuncia como seleccionado y los títulos de categoría se leen como encabezados.
+- Con VoiceOver, "Elegir ícono" dice qué ícono tiene el hábito, cada color dice si es el elegido y el mapa de actividad del detalle dice cuántos días completaste en esas semanas.
+- Tests de las etiquetas de VoiceOver: los 126 íconos en los dos idiomas, los 14 colores y el conteo de días del mapa de actividad (15 casos nuevos, 283 en total).
 - **Premium llega próximamente.** El paywall ya muestra lo que incluye premium (hábitos ilimitados, sin anuncios y los temas de Pokémon y Black Clover), con el botón "Próximamente" mientras preparamos las suscripciones. El plan gratuito sigue igual: 3 hábitos activos y las plantillas premium con candado.
 - Premium de prueba solo en las versiones de desarrollo y TestFlight, para revisar las pantallas premium; la versión de la App Store no lo ofrece ni lo acepta.
 - La compra con la App Store (planes, restaurar compras, gestionar o cancelar la suscripción) ya está hecha pero apagada hasta la versión productiva: la app no se conecta a la tienda mientras tanto.
