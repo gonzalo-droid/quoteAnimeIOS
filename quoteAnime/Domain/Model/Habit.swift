@@ -40,4 +40,18 @@ struct Habit: Identifiable, Hashable {
         guard let endDate else { return true }
         return day <= calendar.startOfDay(for: endDate)
     }
+
+    /// Weekdays the reminder actually fires on: none when the reminder is off, and the reminder is
+    /// off when there are no weekdays. Android keeps the same invariant from the other side
+    /// (`reminderDays = if (reminderTime == null) emptySet() else reminderDays`), and its
+    /// scheduler skips a habit with a time and no days. Saving "on" with zero days used to leave
+    /// a switch that looked armed and scheduled nothing, so the use cases store that as "off".
+    mutating func normaliseReminder() {
+        if reminderEnabled, reminderWeekdays.isEmpty {
+            reminderEnabled = false
+        }
+        if !reminderEnabled {
+            reminderWeekdays = []
+        }
+    }
 }

@@ -339,6 +339,12 @@ struct HabitEditorView: View {
                         }
                     }
 
+                    if viewModel.uiState.reminderHasNoWeekdays {
+                        Label("Elige al menos un día. Sin días, el recordatorio queda apagado.", systemImage: "exclamationmark.circle")
+                            .font(.system(size: 12))
+                            .foregroundColor(.textSecondary)
+                    }
+
                     DatePicker(
                         "Hora",
                         selection: $viewModel.uiState.reminderTime,

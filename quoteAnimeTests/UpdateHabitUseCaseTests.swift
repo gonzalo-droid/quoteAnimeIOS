@@ -103,4 +103,15 @@ struct UpdateHabitUseCaseTests {
         #expect(saved.title == "Leer")
         #expect(try await repository.fetchHabit(id: "meditar")?.title == "Leer")
     }
+
+    @Test("al editar, un recordatorio activo sin días se guarda apagado")
+    func reminderWithoutWeekdaysIsSavedOff() async throws {
+        let (useCase, repository) = makeSUT()
+        let edited = HabitFixture.make(id: "meditar", title: "Meditar", reminderEnabled: true, reminderWeekdays: [])
+
+        let saved = try await useCase.execute(edited)
+
+        #expect(saved.reminderEnabled == false)
+        #expect(try await repository.fetchHabit(id: "meditar")?.reminderEnabled == false)
+    }
 }

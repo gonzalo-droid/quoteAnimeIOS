@@ -315,4 +315,81 @@ struct HabitEditorViewModelTests {
         #expect(remote.fetchCount == 0)
         #expect(viewModel.uiState.templateId == nil)
     }
+
+    // MARK: - Reminder weekdays
+
+    @Test("encender el recordatorio sin días elige los siete")
+    func enablingReminderWithNoWeekdaysPicksAll() async {
+        let (viewModel, _) = Self.makeSUT()
+        #expect(viewModel.uiState.reminderWeekdays.isEmpty)
+
+        viewModel.onReminderToggled(true)
+
+        #expect(viewModel.uiState.reminderWeekdays == Set(1...7))
+        #expect(viewModel.uiState.reminderHasNoWeekdays == false)
+    }
+
+    @Test("encender el recordatorio conserva los días ya elegidos")
+    func enablingReminderKeepsPickedWeekdays() async {
+        let (viewModel, _) = Self.makeSUT()
+        viewModel.onWeekdayToggled(2)
+        viewModel.onWeekdayToggled(4)
+
+        viewModel.onReminderToggled(true)
+
+        #expect(viewModel.uiState.reminderWeekdays == [2, 4])
+    }
+
+    @Test("quitar el último día avisa en el editor")
+    func removingLastWeekdayWarns() async {
+        let (viewModel, _) = Self.makeSUT()
+        viewModel.onReminderToggled(true)
+        for weekday in 1...7 { viewModel.onWeekdayToggled(weekday) }
+
+        #expect(viewModel.uiState.reminderEnabled == true)
+        #expect(viewModel.uiState.reminderHasNoWeekdays == true)
+    }
+
+    @Test("guardar con el recordatorio encendido y sin días lo guarda apagado")
+    func savingReminderWithNoWeekdaysStoresItOff() async {
+        let scheduler = FakeHabitReminderScheduler()
+        let (viewModel, repository) = Self.makeSUT(reminderScheduler: scheduler)
+        viewModel.uiState.title = "Leer"
+        viewModel.onReminderToggled(true)
+        await settle()
+        for weekday in 1...7 { viewModel.onWeekdayToggled(weekday) }
+
+        var didSave = false
+        viewModel.save(onSaved: { didSave = true })
+        await settle()
+
+        let saved = try! await repository.fetchActiveHabits().first
+        #expect(didSave)
+        #expect(saved?.reminderEnabled == false)
+        #expect(saved?.reminderWeekdays.isEmpty == true)
+    }
+
+    @Test("un hábito viejo con recordatorio encendido y sin días se abre apagado")
+    func legacyReminderWithoutWeekdaysOpensOff() async {
+        let legacy = HabitFixture.make(id: "viejo", title: "Correr", reminderEnabled: true, reminderWeekdays: [])
+        let (viewModel, _) = Self.makeSUT(habitId: "viejo", seed: [legacy])
+
+        viewModel.onAppear()
+        await settle()
+
+        #expect(viewModel.uiState.title == "Correr")
+        #expect(viewModel.uiState.reminderEnabled == false)
+    }
+
+    @Test("un hábito con recordatorio y días se abre encendido")
+    func reminderWithWeekdaysOpensOn() async {
+        let habit = HabitFixture.make(id: "h", title: "Correr", reminderEnabled: true, reminderWeekdays: [2, 6])
+        let (viewModel, _) = Self.makeSUT(habitId: "h", seed: [habit])
+
+        viewModel.onAppear()
+        await settle()
+
+        #expect(viewModel.uiState.reminderEnabled == true)
+        #expect(viewModel.uiState.reminderWeekdays == [2, 6])
+    }
 }
