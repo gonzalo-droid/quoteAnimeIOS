@@ -9,14 +9,15 @@
   "settings" : {
     "_applicationInternalID" : "",
     "_developerTeamID" : "",
+    "_askToBuyEnabled" : false,
+    "_billingIssuesEnabled" : false,
     "_failTransactionsEnabled" : false,
     "_lastSynchronizedDate" : 0,
     "_locale" : "es_ES",
     "_storeKitErrors" : [
 
     ],
-    "_storefront" : "ESP",
-    "_timeRate" : 0
+    "_storefront" : "ESP"
   },
   "subscriptionGroups" : [
     {
@@ -39,6 +40,7 @@
           "internalID" : "21000001",
           "introductoryOffer" : {
             "internalID" : "21000002",
+            "numberOfPeriods" : 1,
             "paymentMode" : "free",
             "subscriptionPeriod" : "P1W"
           },
@@ -58,16 +60,13 @@
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Premium mensual",
           "subscriptionGroupID" : "21000000",
-          "type" : "RecurringSubscription",
-          "winbackOffers" : [
-
-          ]
+          "type" : "RecurringSubscription"
         }
       ]
     }
   ],
   "version" : {
-    "major" : 4,
+    "major" : 3,
     "minor" : 0
   }
 }
