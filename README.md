@@ -13,7 +13,9 @@ iOS app that displays anime quotes in a full-screen, swipeable feed. Users can s
 - Share quote as a generated image card
 - WidgetKit — current quote (home + lock screen), a routine summary, and a per-habit widget with its activity map
 - Daily push notifications with a random quote
-- AdMob interstitial between every 3 shares (configurable)
+- "Mi Rutina" habits: themed suggestions with cover art, an icon picker you can search by name, a heatmap and a month calendar
+- AdMob interstitial between every 3 shares (configurable), plus a banner under a quote opened from Explorar — none of either for premium
+- "Mi Rutina" events in Firebase Analytics, with the same names and parameters as the Android app
 - Dark-only UI
 - Spanish and English, following the device language (String Catalogs)
 
@@ -72,10 +74,12 @@ quoteAnime/
 ├── App/                        # Entry point and DI composition root
 ├── Domain/                     # Business rules, no framework imports
 │   ├── Model/                  # Quote, Category, UserPreferences
+│   ├── Analytics/              # RoutineAnalytics protocol + event factories (Android's names)
 │   ├── Repository/             # Protocols only
 │   └── UseCase/                # One struct per operation
 ├── Data/                       # Implements domain protocols
 │   ├── Remote/                 # Firebase + image fetching
+│   ├── Analytics/              # FirebaseRoutineAnalytics
 │   ├── Local/                  # SwiftData (iOS 17+) + UserDefaults fallback
 │   └── Repository/             # Concrete implementations
 ├── Presentation/               # SwiftUI views + ViewModels
@@ -86,7 +90,7 @@ quoteAnime/
 │   ├── Onboarding/             # First-launch flow
 │   ├── Routine/                # "Mi Rutina": habit list, detail (heatmap + month
 │   │                           #  calendar with retroactive marking), editor
-│   ├── Ads/                    # Interstitial ad manager
+│   ├── Ads/                    # Interstitial manager, ShareAdPolicy, BannerAdPolicy
 │   ├── Common/                 # AppLinks (legal + App Store URLs)
 │   └── Components/             # Shared: QuoteDetailView, QuoteCard, ShareCardView
 ├── Notification/               # Local notification scheduling
@@ -141,11 +145,13 @@ Quotes are stored under `/quotes` as a flat array of `{ id, quote, author, anime
 
 **Why:** Reduces Firebase read overhead and avoids keeping two nodes in sync. Category filtering happens in memory after a single fetch.
 
-### Ad strategy — interstitial on share
+### Ad strategy — interstitial on share, one banner in Explorar
 
-A banner ad was evaluated and removed. Instead, `ShareInterstitialManager` shows a full-screen interstitial every `sharesPerAd` (default: 3) share taps. If the ad fails to load or present, the share always proceeds immediately.
+`ShareInterstitialManager` shows a full-screen interstitial every `sharesPerAd` (default: 3) share taps. If the ad fails to load or present, the share always proceeds immediately. A 320×50 banner sits under the actions of a quote opened from Explorar; Home has none. That is exactly what the Android app ships today (its Home banner is commented out since the interstitial replaced it). Premium users see neither: `ShareAdPolicy` and `BannerAdPolicy` are the only places that ask.
 
-**Why:** Interstitials at natural breakpoints (sharing intent) are less disruptive than a persistent banner and typically yield higher eCPM.
+Debug builds request Google's public test ad units (`AdConstants`); serving live ads to our own devices is invalid traffic. The app does not request App Tracking Transparency, so the SDK never reads the IDFA.
+
+**Why:** Interstitials at natural breakpoints (sharing intent) are less disruptive than a persistent banner and typically yield higher eCPM; the single banner mirrors Android so both apps monetise the same screens.
 
 ### Widget data sharing — App Group UserDefaults
 
