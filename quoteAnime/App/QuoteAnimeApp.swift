@@ -42,9 +42,22 @@ struct QuoteAnimeApp: App {
                 // entitlements — it only settles whether this release build is TestFlight.
                 .task { await dependencies.premiumGate.refresh() }
                 .onChange(of: scenePhase) { newPhase in
-                    guard newPhase == .active else { return }
-                    Task { await dependencies.premiumGate.refresh() }
+                    switch newPhase {
+                    case .active:
+                        Task { await dependencies.premiumGate.refresh() }
+                    case .background:
+                        // Apple's pattern: ask for the next refresh on the way out. Also withdraws
+                        // it when quote notifications were turned off in this session.
+                        dependencies.quoteNotificationBackgroundRefresh.scheduleNext()
+                    default:
+                        break
+                    }
                 }
+        }
+        // Registers the refresh handler (the identifier is listed in `Info.plist` under
+        // `BGTaskSchedulerPermittedIdentifiers`). iOS cancels the task when its time runs out.
+        .backgroundTask(.appRefresh(QuoteNotificationBackgroundRefresh.taskIdentifier)) { [refresh = dependencies.quoteNotificationBackgroundRefresh] in
+            await refresh.run()
         }
     }
 }

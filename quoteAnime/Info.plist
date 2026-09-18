@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.gonzadev.quoteAnime.quoteNotificationsRefresh</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -17,6 +21,10 @@
 	</array>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-1427341798923689~5172948580</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
