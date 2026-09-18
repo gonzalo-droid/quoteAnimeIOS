@@ -12,6 +12,12 @@ para un clon nuevo, para otra máquina y para quien revise la rama.
 
 No existe tag `ios-synced` en el repo de Android. El alcance de cada tanda sale de este archivo.
 
+**Regla del tag**: sólo puede apuntar al commit de Android más nuevo tal que él y todos los anteriores
+estén portados, sean Android-only o sean una divergencia deliberada de la tabla de abajo. Una fila
+"pendiente" lo bloquea. Tras la tanda 9 el primer bloqueo es `fcfcd28` (banners de AdMob,
+2026-04-02), así que el tag hoy sólo podría ir a `027c830` — inútil. Para llegar al HEAD hace falta
+decidir cada fila de "Pendiente": portarla o pasarla a divergencia deliberada.
+
 ---
 
 ## Portado
@@ -28,7 +34,7 @@ inventar un SHA.
 | Archivar y restaurar hábitos | `5583b91` | portado | |
 | Archivar, restaurar y borrar desde el detalle, con confirmación | `3fa6d61` | portado | |
 | Recordatorios por hábito con acción "Hecho" | `5e3afcb` | portado | |
-| Aviso cuando el recordatorio no se puede activar | `e60ef6f` | portado | |
+| Aviso cuando el recordatorio no se puede activar | `e60ef6f`, `ef7cc81` | portado | `e60ef6f` sólo pide el permiso; el aviso con botón a Ajustes llegó en `ef7cc81` (corregido en la tanda 9: antes se citaba sólo el primero). |
 | Pantalla de detalle del hábito (heatmap + calendario mensual) | `6a8d177` | portado | El heatmap de iOS es de sólo lectura — ver divergencias. |
 | Etiquetas de día de la semana según locale | `6251574` | portado | |
 | Fecha de fin y estado archivado en el modelo de hábito | sin determinar | portado | |
@@ -42,7 +48,8 @@ inventar un SHA.
 | Snapshot de hábitos y refresco instantáneo de los widgets | sin determinar | portado | Equivale a `RoutineWidgetScheduler.triggerImmediateUpdate()`. |
 | Localización inglés/español, tuteo y respaldo en inglés | `ad4a871` | portado | |
 | URLs de privacidad y términos → animequote.app | `0b76ed0` | portado | Citado en `AppLinks.swift`. |
-| Premium con StoreKit 2 — entitlement, paywall con planes reales, restaurar, gestionar/cancelar | `7822372`, `72048cb`, `7d4d5f8`, `fc16551`, `0529500` | portado, **apagado** | Tanda 7. Se portó el *comportamiento* del billing, no su implementación: ver divergencias. Desde la tanda 8 está dormido detrás de `PremiumConfig.usesRealBilling = false` — ver "Premium en mock". |
+| Etiquetas de VoiceOver: selector de íconos, colores y mapa de actividad | `4f8e6d2` | portado | Tanda 9. Los 126 íconos con los textos `icon_*` de Android (`HabitIcons.label(for:)`), el elegido con `.isSelected`, las 13 categorías como encabezados, "Color N" con su estado, "Elegir ícono" con el ícono actual como valor. El heatmap se anuncia distinto — ver divergencias. El "Más opciones" de la tarjeta ya existía como "Acciones de <hábito>". |
+| Premium con StoreKit 2 — entitlement, paywall con planes reales, restaurar, gestionar/cancelar | `7822372`, `72048cb`, `7d4d5f8`, `fc16551`, `0529500` | portado, **apagado** | Tanda 7. Se portó el *comportamiento* del billing, no su implementación: ver divergencias. Desde la tanda 8 está dormido detrás de `PremiumConfig.usesRealBilling = false` — ver "Premium en mock". Revisión commit por commit (tanda 9): `0529500` cubierto (`PremiumErrorReason` → `PaywallMessage` `.network` / `.storeUnavailable`, el texto de la tienda nunca llega a la pantalla, fijado en `PaywallViewModelTests`); `fc16551` **en parte**: su ventana de throttle no aplica (iOS no tiene throttle y `currentEntitlements` es local), pero faltan la serialización y el reporte de fallos — ver Pendiente. |
 
 ---
 
@@ -70,7 +77,10 @@ vuelven a regir el día que `PremiumConfig.usesRealBilling` pase a `true`.
 | **Nombre visible de la app** | `Frases Anime` / `Anime Quotes` | `QuoteAnime` | Decisión de marca. Renombrar le cambia el nombre instalado a los usuarios actuales. |
 | **Registro del español** | `values-es/strings.xml` usa voseo ("Desbloqueá", "sos", "Probá", "Cancelá") | Tuteo en todas las pantallas | Convención del repo iOS. Cada string portado se convierte. |
 | **Notificaciones de frases** | El worker elige la frase en cada disparo | Se pre-programan todas por adelantado (`RescheduleQuoteNotificationsUseCase`) | iOS no ejecuta código propio en el momento del disparo. |
-| **Heatmap del detalle** | Tocar una celda marca o desmarca el día | Sólo lectura | A 10 pt cada celda es un cuarto de un target de toque fiable. El calendario mensual cubre el marcado retroactivo. |
+| **Heatmap (detalle y tarjeta)** | Tocar una celda marca o desmarca el día, en el detalle **y en la tarjeta de Mi Rutina** (`HabitCard.kt`, `onDayClick = onToggleDay`) | Sólo lectura en las dos superficies | A 10–12 pt cada celda es un cuarto de un target de toque fiable. El calendario mensual del detalle cubre el marcado retroactivo; en la tarjeta, el botón "Marcar hoy". (Tanda 9: la fila decía sólo "del detalle"; la divergencia siempre fue en las dos.) |
+| **Heatmap con VoiceOver** | Cada día visible es un nodo de TalkBack ("12 mar 2026, completed"), accionable, más un resumen "Habit completion calendar" | Un solo elemento: "Mapa de actividad de las últimas 26 semanas", con valor "N días completados" (los que el mapa pinta). El anuncio día por día, accionable, vive en el calendario mensual (`"<fecha>, completado / sin completar / no se puede marcar"`). El heatmap compacto de la tarjeta no se anuncia: la tarjeta es un botón que ya lee título, racha y mejor racha | Consecuencia de la fila anterior: si el heatmap no es donde se marcan los días, 182 nodos que no hacen nada son sólo ruido para quien navega deslizando. |
+| **Nombre en inglés del ícono `auto_awesome`** | "Treat yourself" — el mismo que `icecream` | "Pamper yourself" | Dos íconos con el mismo nombre son dos botones indistinguibles para VoiceOver. El español ya los distingue ("Darte un gusto" / "Darte un capricho"). Fijado por `dos íconos nunca se anuncian igual`. |
+| **Estado seleccionado en los selectores** | TalkBack no dice cuál ícono ni cuál color está elegido (sólo el borde lo muestra) | `.isSelected` en íconos, colores y días del recordatorio | Lo pidió el usuario en la tanda 9; en Android es deuda. |
 | **Widgets tras la acción "Hecho" de la notificación** | No refresca | Refresca (`HabitReminderNotificationDelegate`) | Gap de Android, ya anotado en el propio archivo. |
 | **Comparación de días** | `LocalDate`, sin hora | `Date` + guarda para que una marca de "hoy" no se rechace al cambiar la hora | Caso que Android nunca enfrenta. |
 
@@ -103,6 +113,9 @@ Se reporta, no se arregla: el repo de Android es de sólo lectura para el agente
 | `handlePurchasesUpdated` | La rama `OK` con lista de compras vacía emite un error genérico y no tiene ningún test; no hay evidencia de que Play pueda producirla. |
 | `ITEM_ALREADY_OWNED` | Si la re-sincronización falla, el usuario ve "Algo salió mal con la compra" — justo el caso (ya suscrito en otro dispositivo) que merecería su propio mensaje. |
 | `values-es/strings.xml` | ~16 strings en voseo mezclados con el resto de la app. |
+| `values/strings.xml` | `icon_icecream` e `icon_auto_awesome` dicen los dos "Treat yourself": en inglés, TalkBack anuncia igual dos íconos distintos del selector. |
+| `HabitIconPicker.kt`, `HabitEditorSheet.kt` | Ni la celda del ícono ni el color elegido exponen el estado seleccionado (`selected`/`Role`): TalkBack no dice cuál está elegido. |
+| `values-es/strings.xml` (`0529500`) | Los dos mensajes de error nuevos del paywall vienen en voseo ("Intentá", "Revisá"). iOS ya los tenía en tuteo. |
 
 ---
 
@@ -122,7 +135,10 @@ Se reporta, no se arregla: el repo de Android es de sólo lectura para el agente
 | Función | Estado | Notas |
 |---|---|---|
 | Activar la compra real (`PremiumConfig.usesRealBilling = true`) | pendiente, bloqueado fuera del código | Requiere el producto `premium_subscription` en App Store Connect, el contrato de Paid Apps activo y una prueba en sandbox en un dispositivo real. La lista completa está en el `///` de `PremiumConfig`. |
-| Etiquetas de VoiceOver de los íconos | pendiente | Último punto de paridad conocido antes de poder mover un tag de sincronización. |
+| Buscador del selector de íconos | pendiente (encontrado en la tanda 9) | Android filtra los 126 íconos por su nombre desde `1d9e231` (`HabitIconPicker.kt`, `habit_icon_picker_search`). iOS no tiene buscador. Los nombres ya están en `HabitIcons.label(for:)`: el paso natural es un `.searchable` en `HabitIconPickerView`. |
+| TikTok en Ajustes → Síguenos | a decidir (encontrado en la tanda 9) | Android lo muestra desde `38fd472` (`@frasesanime`). En iOS el botón está comentado en `SettingsView.swift` y apunta a otra cuenta (`@quoteanimeapp`). Ningún registro dice si fue a propósito. |
+| Serializar la re-sincronización del entitlement (`fc16551`) | pendiente, **antes** de activar la compra real | `StoreKitEntitlementSource.refresh()` no está serializado: se llama desde el `.task` de arranque, cada `scenePhase == .active`, el listener de `Transaction.updates`, después de comprar y al restaurar. Una lectura que empezó antes de que la compra quedara registrada puede aplicar su `false` después del `true` de otra — el defecto exacto que arregla `fc16551`. Hoy el código está dormido; encontrado por lectura, no reproducido. |
+| Registrar los fallos de compra como non-fatal (`fc16551`) | pendiente, **antes** de activar la compra real | Android los manda a Crashlytics con etapa y código. En iOS `FirebaseCrashlytics` está enlazado al target pero nadie lo importa: los fallos de `loadOffers`, `purchase`, `restore` y las transacciones sin verificar sólo hacen `print`. El reporte del acknowledge agotado es Android-only (`finish()` es local). |
 | Plan anual | pendiente, después de activar la compra real | Necesita un product id nuevo en App Store Connect; el paywall ya soporta varios planes. |
 | Dynamic Type | pendiente (todo el repo) | Las 106 llamadas a `.font(.system(size:))` son tamaños fijos; no hay ni una fuente semántica. No es de esta tanda, pero nadie lo tenía anotado. |
 | Plantillas de hábito remotas | pendiente | `GetHabitTemplatesUseCase` es sólo local; Android las puede sobrescribir desde Firestore. |

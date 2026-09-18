@@ -20,6 +20,12 @@ enum HabitPalette {
         Color(hex: "#F472B6")  // 13 pink
     ]
 
+    /// "Color 3" — Android's `habit_editor_color_option`, 1-based. The swatches have no names on
+    /// either platform; the number at least tells two of them apart.
+    static func accessibilityLabel(at index: Int) -> LocalizedStringResource {
+        "Color \(index + 1)"
+    }
+
     static func color(at index: Int) -> Color {
         let count = colors.count
         let wrapped = ((index % count) + count) % count
