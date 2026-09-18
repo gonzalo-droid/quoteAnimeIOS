@@ -125,7 +125,7 @@ struct HabitEditorView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(templates) { template in
-                        let isLocked = template.isPremiumOnly && !premiumGate.isPremium
+                        let isLocked = template.isLocked(isPremium: premiumGate.isPremium)
                         Button {
                             if isLocked {
                                 router.push(.paywall)

@@ -219,7 +219,7 @@ struct PaywallView: View {
     }
 
     private var subscribeButton: some View {
-        Button(action: viewModel.subscribe) {
+        Button { Task { await viewModel.subscribe() } } label: {
             Group {
                 if viewModel.uiState.isPurchasing {
                     ProgressView().tint(.bgDark)
@@ -239,7 +239,7 @@ struct PaywallView: View {
 
     /// Play has no restore action, so Android has none either. The App Store requires one.
     private var restoreButton: some View {
-        Button(action: viewModel.restorePurchases) {
+        Button { Task { await viewModel.restorePurchases() } } label: {
             Group {
                 if viewModel.uiState.isRestoring {
                     ProgressView().tint(.textSecondary)

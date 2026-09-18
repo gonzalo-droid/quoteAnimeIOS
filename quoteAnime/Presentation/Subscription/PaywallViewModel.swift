@@ -114,43 +114,42 @@ final class PaywallViewModel: ObservableObject {
         uiState.selectedOfferId = offer.id
     }
 
-    func subscribe() {
+    func subscribe() async {
         guard let offer = uiState.selectedOffer, !uiState.isPurchasing else { return }
         uiState.isPurchasing = true
-        Task {
-            let outcome = await store.purchase(offer)
-            uiState.isPurchasing = false
-            switch outcome {
-            case .success:
-                // No message on success, same as Android: the screen flipping to "ya eres
-                // premium" is the feedback.
-                uiState.message = nil
-                clearDebugOverrideAfterPurchase()
-            case .pending:
-                uiState.message = .purchasePending
-            case .cancelled:
-                uiState.message = .purchaseCancelled
-            case .failed(let reason):
-                uiState.message = .forError(reason)
-            }
+        let outcome = await store.purchase(offer)
+        uiState.isPurchasing = false
+        switch outcome {
+        case .success:
+            // No message on success, same as Android: the screen flipping to "ya eres premium"
+            // is the feedback. Read the gate straight away instead of waiting for the publisher's
+            // hop to the main run loop — the user tapped, the screen has to answer now.
+            uiState.message = nil
+            clearDebugOverrideAfterPurchase()
+            uiState.isPremium = premiumGate.isPremium
+        case .pending:
+            uiState.message = .purchasePending
+        case .cancelled:
+            uiState.message = .purchaseCancelled
+        case .failed(let reason):
+            uiState.message = .forError(reason)
         }
     }
 
-    func restorePurchases() {
+    func restorePurchases() async {
         guard !uiState.isRestoring else { return }
         uiState.isRestoring = true
-        Task {
-            let outcome = await store.restore()
-            uiState.isRestoring = false
-            switch outcome {
-            case .restored:
-                uiState.message = .restored
-                clearDebugOverrideAfterPurchase()
-            case .nothingToRestore:
-                uiState.message = .nothingToRestore
-            case .failed(let reason):
-                uiState.message = .forError(reason)
-            }
+        let outcome = await store.restore()
+        uiState.isRestoring = false
+        switch outcome {
+        case .restored:
+            uiState.message = .restored
+            clearDebugOverrideAfterPurchase()
+            uiState.isPremium = premiumGate.isPremium
+        case .nothingToRestore:
+            uiState.message = .nothingToRestore
+        case .failed(let reason):
+            uiState.message = .forError(reason)
         }
     }
 
