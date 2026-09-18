@@ -17,7 +17,8 @@ struct HabitEditorView: View {
         habitRepository: HabitRepository,
         habitReminderScheduler: HabitReminderScheduling,
         routineWidgetRefresher: RoutineWidgetRefreshing,
-        premiumGate: PremiumGate
+        premiumGate: PremiumGate,
+        analytics: RoutineAnalytics
     ) {
         _viewModel = StateObject(wrappedValue: HabitEditorViewModel(
             habitId: habitId,
@@ -25,7 +26,8 @@ struct HabitEditorView: View {
             updateHabitUseCase: updateHabitUseCase,
             habitRepository: habitRepository,
             habitReminderScheduler: habitReminderScheduler,
-            routineWidgetRefresher: routineWidgetRefresher
+            routineWidgetRefresher: routineWidgetRefresher,
+            analytics: analytics
         ))
         _premiumGate = ObservedObject(wrappedValue: premiumGate)
     }

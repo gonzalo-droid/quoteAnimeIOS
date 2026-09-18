@@ -49,6 +49,8 @@ final class AppDependencies: ObservableObject {
     /// Single entry point for keeping the home-screen widgets in sync, mirroring Android's
     /// `RoutineWidgetScheduler`. A no-op below iOS 17, where there is no habit store to read.
     var routineWidgetRefresher: RoutineWidgetRefreshing = NoopRoutineWidgetRefresher()
+    /// "Mi Rutina" events in Firebase Analytics, with Android's names — see `RoutineAnalytics`.
+    let routineAnalytics: RoutineAnalytics = FirebaseRoutineAnalytics()
 
     /// Whether "Mi Rutina" can run at all. False below iOS 17 (SwiftData) and also when the
     /// `ModelContainer` fails to build. Entry points to the feature must check this and hide
@@ -156,7 +158,11 @@ final class AppDependencies: ObservableObject {
 
             HabitReminderScheduler.registerCategory()
             let delegate = HabitReminderNotificationDelegate(
-                toggleHabitCompletion: ToggleHabitCompletionUseCase(repository: habitRepo),
+                markDone: HabitReminderDoneAction(
+                    repository: habitRepo,
+                    toggleHabitCompletion: ToggleHabitCompletionUseCase(repository: habitRepo),
+                    analytics: routineAnalytics
+                ),
                 routineWidgetRefresher: refresher
             )
             self.habitReminderNotificationDelegate = delegate

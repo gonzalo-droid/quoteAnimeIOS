@@ -16,6 +16,7 @@ final class OnboardingViewModel: ObservableObject {
     /// to be told about it — otherwise a widget added right after onboarding would find an empty
     /// snapshot and offer no habit to follow.
     private var routineWidgetRefresher: RoutineWidgetRefreshing = NoopRoutineWidgetRefresher()
+    private var analytics: RoutineAnalytics = NoopRoutineAnalytics()
     private var onComplete: (() -> Void)?
 
     private var setupDone = false
@@ -24,6 +25,7 @@ final class OnboardingViewModel: ObservableObject {
         setOnboardingCompleted: SetOnboardingCompletedUseCase,
         createHabitUseCase: CreateHabitUseCase?,
         routineWidgetRefresher: RoutineWidgetRefreshing = NoopRoutineWidgetRefresher(),
+        analytics: RoutineAnalytics = NoopRoutineAnalytics(),
         onComplete: @escaping () -> Void
     ) {
         guard !setupDone else { return }
@@ -31,6 +33,7 @@ final class OnboardingViewModel: ObservableObject {
         self.setOnboardingCompleted = setOnboardingCompleted
         self.createHabitUseCase     = createHabitUseCase
         self.routineWidgetRefresher = routineWidgetRefresher
+        self.analytics              = analytics
         self.onComplete             = onComplete
     }
 
@@ -56,7 +59,11 @@ final class OnboardingViewModel: ObservableObject {
                     coverAnimeSlug: nil,
                     createdAt: Date()
                 )
-                _ = try? await createHabitUseCase.execute(habit)
+                if (try? await createHabitUseCase.execute(habit)) != nil {
+                    // Android's onboarding reports the same three `false`s: no reminder or end
+                    // date can be set on this page.
+                    analytics.trackHabitCreated(templateId: template.id, hasReminder: false, hasEndDate: false)
+                }
                 await routineWidgetRefresher.refresh()
                 onComplete?()
             }
