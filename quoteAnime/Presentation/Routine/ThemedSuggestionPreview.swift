@@ -55,10 +55,13 @@ struct ThemedSuggestionPreview: View {
     private var cover: some View {
         if let asset = HabitThemeImages.assetName(for: themeKey) {
             // `Color.clear` sizes the frame; the image fills it and is cropped, so a portrait cover
-            // never stretches the card.
+            // never stretches the card. `clipped()` only clips the drawing: the 4:5 image still
+            // overflows the 108 pt card for hit-testing and swallowed taps meant for the rows
+            // above it (seen in the onboarding), hence `allowsHitTesting(false)`.
             Color.clear
                 .overlay(Image(asset).resizable().scaledToFill())
                 .clipped()
+                .allowsHitTesting(false)
                 .accessibilityHidden(true)
         } else {
             accentColor.opacity(0.25)

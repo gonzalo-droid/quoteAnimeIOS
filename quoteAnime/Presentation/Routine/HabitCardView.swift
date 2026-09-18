@@ -90,6 +90,9 @@ struct HabitCardView: View {
                 .overlay(Image(asset).resizable().scaledToFill())
                 .overlay(Color.surface.opacity(0.82))
                 .clipped()
+                // The cropped overflow still hit-tests; without this it steals taps from the
+                // neighbouring cards (see `ThemedSuggestionPreview`).
+                .allowsHitTesting(false)
                 .accessibilityHidden(true)
         } else {
             Color.surface
