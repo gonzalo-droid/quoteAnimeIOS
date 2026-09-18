@@ -12,7 +12,8 @@ import Combine
 /// than by a fresh key.
 ///
 /// Never talks to the store. The only StoreKit call anywhere near it is the detector's
-/// `AppTransaction.shared`, which is how a release build learns it is TestFlight.
+/// `AppTransaction.shared`, made only by a release binary whose receipt path already says
+/// sandbox — never by an App Store install.
 final class MockPremiumEntitlementSource: PremiumEntitlementSource, TestPremiumControlling {
     static let flagKey = "pref_is_premium"
 
@@ -21,6 +22,9 @@ final class MockPremiumEntitlementSource: PremiumEntitlementSource, TestPremiumC
     private let distributionSubject: CurrentValueSubject<AppDistribution, Never>
     private let premiumSubject: CurrentValueSubject<Bool, Never>
     private var isDistributionResolved = false
+    /// Launch (`.task`) and the first `scenePhase == .active` both call `refresh()` at once;
+    /// they share one detection instead of asking twice.
+    private var detection: Task<AppDistribution?, Never>?
 
     init(defaults: UserDefaults = .standard, detector: AppDistributionDetecting) {
         self.defaults = defaults
@@ -44,7 +48,17 @@ final class MockPremiumEntitlementSource: PremiumEntitlementSource, TestPremiumC
     /// only finishes working out where the app runs — once that is known it is never asked again.
     func refresh() async {
         guard !isDistributionResolved else { return }
-        guard let resolved = await detector.detect() else { return }
+        let task: Task<AppDistribution?, Never>
+        if let detection {
+            task = detection
+        } else {
+            let detector = detector
+            task = Task { await detector.detect() }
+            detection = task
+        }
+        let result = await task.value
+        detection = nil
+        guard let resolved = result, !isDistributionResolved else { return }
         isDistributionResolved = true
         if distributionSubject.value != resolved {
             distributionSubject.send(resolved)

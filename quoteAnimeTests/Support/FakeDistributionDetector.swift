@@ -7,6 +7,8 @@ final class FakeDistributionDetector: AppDistributionDetecting {
     let provisional: AppDistribution
     /// What `detect()` answers; `nil` simulates "could not ask yet" (offline, the lookup threw).
     var detected: AppDistribution?
+    /// Makes `detect()` take a while, so two refreshes can overlap.
+    var delayNanoseconds: UInt64 = 0
     private(set) var detectCount = 0
 
     init(provisional: AppDistribution = .appStore, detected: AppDistribution? = nil) {
@@ -21,6 +23,7 @@ final class FakeDistributionDetector: AppDistributionDetecting {
 
     func detect() async -> AppDistribution? {
         detectCount += 1
+        if delayNanoseconds > 0 { try? await Task.sleep(nanoseconds: delayNanoseconds) }
         return detected
     }
 }

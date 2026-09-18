@@ -319,6 +319,37 @@ struct PremiumMockTests {
         #expect(detector.detectCount == 2)
     }
 
+    @Test("el arranque y la vuelta a primer plano a la vez comparten una sola detección")
+    func overlappingRefreshesAskOnce() async {
+        let testDefaults = TestDefaults()
+        defer { testDefaults.tearDown() }
+        let detector = FakeDistributionDetector(provisional: .appStore, detected: .testFlight)
+        detector.delayNanoseconds = 100_000_000
+        let gate = Self.mockServices(detector, defaults: testDefaults.defaults).gate
+
+        async let launch: Void = gate.refresh()
+        async let foreground: Void = gate.refresh()
+        _ = await (launch, foreground)
+
+        #expect(detector.detectCount == 1)
+    }
+
+    /// An App Store install must decide without asking the store: `AppTransaction.shared` with no
+    /// local transaction pops a "Sign in to Apple Account" alert (seen on the simulator).
+    @Test(
+        "sólo un recibo de sandbox justifica preguntarle a AppTransaction",
+        arguments: [
+            ("file:///private/var/mobile/Containers/Data/Application/X/StoreKit/sandboxReceipt", true),
+            ("file:///private/var/mobile/Containers/Data/Application/X/StoreKit/receipt", false),
+            (nil, false),
+        ]
+    )
+    func onlySandboxReceiptAsksTheStore(path: String?, expected: Bool) {
+        let url = path.flatMap(URL.init(string:))
+
+        #expect(AppTransactionDistributionDetector.mayBeTestFlight(receiptURL: url) == expected)
+    }
+
     // MARK: - The switch on
 
     @Test("con el interruptor en true se construye StoreKit una vez y el store comparte la fuente del gate")
