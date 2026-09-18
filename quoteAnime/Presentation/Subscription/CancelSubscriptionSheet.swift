@@ -86,7 +86,11 @@ struct CancelSubscriptionSheet: View {
                 .font(.system(size: 14))
                 .strikethrough()
                 .foregroundColor(.textSecondary)
-            Spacer(minLength: 0)
+                .multilineTextAlignment(.leading)
+                // Inside an HStack a Text gets one line and truncates; the themes row is long
+                // enough in both languages to need two.
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
