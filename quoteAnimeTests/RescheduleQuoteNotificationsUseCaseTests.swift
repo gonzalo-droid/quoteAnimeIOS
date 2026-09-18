@@ -109,7 +109,7 @@ struct RescheduleQuoteNotificationsUseCaseTests {
         await useCase.execute(preferences: Self.preferences(selection: ["Anime Que No Existe"]))
 
         #expect(scheduler.scheduledBatches.isEmpty)
-        #expect(scheduler.cancelAllCount == 0)
+        #expect(scheduler.cancelQuoteNotificationsCount == 0)
     }
 
     @Test("si el repositorio falla, no se programa nada y no se propaga el error")

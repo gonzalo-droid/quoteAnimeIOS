@@ -9,7 +9,7 @@ final class FakeQuoteNotificationScheduler: QuoteNotificationScheduling, @unchec
 
     /// One entry per `reschedule` call, in order.
     private(set) var scheduledBatches: [[Quote]] = []
-    private(set) var cancelAllCount = 0
+    private(set) var cancelQuoteNotificationsCount = 0
     private(set) var requestPermissionCount = 0
 
     var permissionGranted = true
@@ -32,7 +32,7 @@ final class FakeQuoteNotificationScheduler: QuoteNotificationScheduling, @unchec
         scheduledBatches.append(quotes)
     }
 
-    func cancelAll() async {
-        cancelAllCount += 1
+    func cancelQuoteNotifications() async {
+        cancelQuoteNotificationsCount += 1
     }
 }

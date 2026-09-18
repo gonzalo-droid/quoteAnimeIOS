@@ -66,7 +66,7 @@ final class SettingsViewModel: ObservableObject {
             }
         } else {
             // User is turning it OFF
-            await notificationScheduler.cancelAll()
+            await notificationScheduler.cancelQuoteNotifications()
         }
         savePreferences()
     }

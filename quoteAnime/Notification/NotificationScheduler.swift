@@ -1,5 +1,6 @@
 import Foundation
 import UserNotifications
+import os
 
 /// What the quote-notification callers actually need from the scheduler. Exists so the
 /// domain layer can be exercised with a hand-written fake instead of the real
@@ -8,7 +9,8 @@ protocol QuoteNotificationScheduling {
     func requestPermission() async -> Bool
     func authorizationStatus() async -> UNAuthorizationStatus
     func reschedule(preferences: UserPreferences, quotes: [Quote]) async
-    func cancelAll() async
+    /// Cancels the pending quote notifications. Habit reminders are left alone.
+    func cancelQuoteNotifications() async
 }
 
 extension UNUserNotificationCenter {
@@ -29,6 +31,17 @@ extension UNUserNotificationCenter {
 final class NotificationScheduler: QuoteNotificationScheduling {
     private let center = UNUserNotificationCenter.current()
 
+    /// iOS keeps at most 64 pending local notifications per app — quote notifications **and**
+    /// habit reminders together. Past that the system silently drops the latest-firing ones.
+    static let systemPendingLimit = 64
+
+    /// Every quote request starts with this; habit reminders start with `habit_`. The format of
+    /// the ids before tanda 12 (`quote_<day>_<h>h<m>m`) shares the prefix, so rescheduling
+    /// also clears what an older build booked.
+    static let identifierPrefix = "quote_"
+
+    private static let logger = Logger(subsystem: "com.gonzadev.quoteAnime", category: "QuoteNotifications")
+
     // MARK: - Permission
 
     func requestPermission() async -> Bool {
@@ -41,40 +54,30 @@ final class NotificationScheduler: QuoteNotificationScheduling {
 
     // MARK: - Scheduling
 
-    /// Cancels all pending notifications and schedules up to 64 future ones,
-    /// each with a **different** randomly selected quote.
+    /// Replaces the pending quote notifications with the next slots of the user's window
+    /// (`QuoteNotificationSlotCalculator`), each with a different random quote while the pool lasts.
     ///
-    /// iOS limits apps to 64 pending notifications at a time. With that budget:
-    /// - frequency 1/day  → ~64 days of notifications
-    /// - frequency 5/day  → ~12 days
-    /// - frequency 10/day →  ~6 days
+    /// Android books one slot at a time and chains the next from the worker. iOS runs no code
+    /// when a notification fires, so it books as many upcoming slots as the 64-request budget
+    /// allows — ~64 days at 1 per day, 6.4 days at 10 per day — in date order, so a high
+    /// frequency ends on a partial last day rather than skipping one. Home refills it on every
+    /// launch, which is also what moves an existing install off the old spacing.
     ///
-    /// Call this method again when the app returns to the foreground to refill the budget.
+    /// Only this app's **quote** requests are touched. Habit reminders share the 64-slot budget,
+    /// so the quotes take what is left after them instead of crowding them out.
     func reschedule(preferences: UserPreferences, quotes: [Quote]) async {
-        await center.removeAllPendingNotificationRequests()
+        let otherPending = await removePendingQuoteRequests()
         guard preferences.notificationsEnabled, !quotes.isEmpty else { return }
 
-        let frequency = max(1, preferences.notificationFrequency)
-
-        // Work entirely in minutes-from-midnight to correctly handle start/end minutes
-        let startTotal = preferences.notificationStartHour * 60 + preferences.notificationStartMinute
-        let endTotal   = preferences.notificationEndHour   * 60 + preferences.notificationEndMinute
-        let rangeTotal = endTotal - startTotal
-
-        guard rangeTotal > 0 else {
-            print("[NotificationScheduler] invalid time range (start >= end), nothing scheduled")
-            return
-        }
-
-        // Distribute exactly `frequency` slots evenly across the range.
-        // Each slot = startTotal + n * interval, kept strictly inside [startTotal, endTotal).
-        let intervalMins = max(1, rangeTotal / frequency)
-        let slots: [(hour: Int, minute: Int)] = (0..<frequency).compactMap { n in
-            let absoluteMin = startTotal + n * intervalMins
-            guard absoluteMin < endTotal else { return nil }
-            return (absoluteMin / 60, absoluteMin % 60)
-        }
-        guard !slots.isEmpty else { return }
+        let calendar = Calendar.current
+        let fireDates = QuoteNotificationSlotCalculator.upcomingSlots(
+            from: Date(),
+            startMinute: preferences.notificationStartMinuteOfDay,
+            endMinute: preferences.notificationEndMinuteOfDay,
+            timesPerDay: preferences.notificationFrequency,
+            limit: Self.quoteBudget(otherPendingCount: otherPending),
+            calendar: calendar
+        )
 
         // Shuffled quote pool — cycles with a new shuffle when exhausted
         var pool = quotes.shuffled()
@@ -85,43 +88,69 @@ final class NotificationScheduler: QuoteNotificationScheduling {
             return pool[poolIdx]
         }
 
-        let calendar = Calendar.current
-        let now = Date()
-        var requests: [UNNotificationRequest] = []
-
-        outer: for dayOffset in 0..<90 {               // never exceed 90 days ahead
-            guard let base = calendar.date(byAdding: .day, value: dayOffset, to: now) else { break }
-            for slot in slots {
-                guard requests.count < 64 else { break outer }  // iOS hard limit
-
-                guard
-                    let fireDate = calendar.date(
-                        bySettingHour: slot.hour, minute: slot.minute, second: 0, of: base
-                    ),
-                    fireDate > now                              // skip times already past
-                else { continue }
-
-                let comps   = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate)
-                let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
-                let content = NotificationHelper.makeContent(for: nextQuote())
-                let request = UNNotificationRequest(
-                    identifier: "quote_\(dayOffset)_\(slot.hour)h\(slot.minute)m",
-                    content: content,
-                    trigger: trigger
-                )
-                requests.append(request)
-            }
-        }
-
-        for request in requests {
+        for fireDate in fireDates {
+            let comps = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate)
+            let request = UNNotificationRequest(
+                identifier: Self.identifier(for: comps),
+                content: NotificationHelper.makeContent(for: nextQuote()),
+                trigger: UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+            )
             try? await center.add(request)
         }
 
-        print("[NotificationScheduler] scheduled \(requests.count) notifications " +
-              "(\(frequency)/day, \(slots.count) slots, pool of \(quotes.count) quotes)")
+        Self.logger.info("scheduled \(fireDates.count) quote notifications (\(preferences.notificationFrequency)/day, \(otherPending) other pending, pool of \(quotes.count))")
+        #if DEBUG
+        await logPendingQuoteRequests()
+        #endif
     }
 
-    func cancelAll() async {
-        await center.removeAllPendingNotificationRequests()
+    /// Cancels the quote notifications only — never a habit reminder.
+    func cancelQuoteNotifications() async {
+        await removePendingQuoteRequests()
     }
+
+    // MARK: - Budget
+
+    /// How many quote requests fit beside the `otherPendingCount` requests (habit reminders) that
+    /// are already pending. Never negative.
+    static func quoteBudget(otherPendingCount: Int) -> Int {
+        max(0, systemPendingLimit - otherPendingCount)
+    }
+
+    static func isQuoteRequest(identifier: String) -> Bool {
+        identifier.hasPrefix(identifierPrefix)
+    }
+
+    /// `quote_20260725_2200` — one per wall-clock minute, so re-adding the same slot replaces it.
+    static func identifier(for comps: DateComponents) -> String {
+        String(format: "%@%04d%02d%02d_%02d%02d", identifierPrefix,
+               comps.year ?? 0, comps.month ?? 0, comps.day ?? 0, comps.hour ?? 0, comps.minute ?? 0)
+    }
+
+    // MARK: - Private
+
+    /// Removes every pending quote request and returns how many *other* requests stay pending.
+    @discardableResult
+    private func removePendingQuoteRequests() async -> Int {
+        let pending = await center.pendingNotificationRequests().map(\.identifier)
+        let quoteIDs = pending.filter(Self.isQuoteRequest(identifier:))
+        center.removePendingNotificationRequests(withIdentifiers: quoteIDs)
+        return pending.count - quoteIDs.count
+    }
+
+    #if DEBUG
+    /// What `getPendingNotificationRequests` holds after a reschedule, for checking the slots
+    /// on a simulator: `log stream --predicate 'category == "QuoteNotifications"'`.
+    private func logPendingQuoteRequests() async {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE yyyy-MM-dd HH:mm"
+        let dates = await center.pendingNotificationRequests()
+            .filter { Self.isQuoteRequest(identifier: $0.identifier) }
+            .compactMap { ($0.trigger as? UNCalendarNotificationTrigger)?.nextTriggerDate() }
+            .sorted()
+        for (index, date) in dates.enumerated() {
+            Self.logger.debug("pending quote \(index + 1)/\(dates.count): \(formatter.string(from: date), privacy: .public)")
+        }
+    }
+    #endif
 }
