@@ -294,7 +294,7 @@ hardcoded any more**: every string goes through a catalog.
   `extractionState: manual` in the catalog so Xcode doesn't flag them as stale.
 - Dates, month names and weekday initials come from `Calendar`/`FormatStyle` with the user's
   locale (`veryShortStandaloneWeekdaySymbols` for initials); never hardcode "L M X…".
-- Persistence keys, Firestore ids (`"motivación"`), `print("[Type] …")` logs and `#Preview` data
+- Persistence keys, category ids from the RTDB `categories` field (`"motivación"`), `print("[Type] …")` logs and `#Preview` data
   stay as they are.
 - To check that everything the compiler extracts is in the catalogs, run
   `xcodebuild -exportLocalizations -project quoteanime.xcodeproj -localizationPath /tmp/l10n -exportLanguage en -exportLanguage es`
@@ -398,9 +398,11 @@ una clave le falta cualquiera de los dos idiomas.
 
 **7. Valores que nunca cruzan de plataforma**
 
-- **`selectedCategoryIds`** — espacios de ids distintos. Android guarda ids de Firestore
-  (`amor`, `motivación`); iOS guarda **nombres de anime**. Sincronizar el valor corrompe en silencio
-  la selección del usuario.
+- **`selectedCategoryIds`** — espacios de valores distintos. Android guarda valores del campo
+  `categories` de la Realtime Database (emociones en producción: `motivación`, `amor`…; sólo cae a
+  `anime` en una frase sin `categories`); iOS guarda **nombres de anime**. Copiar el valor vaciaría la
+  selección en silencio, y además es una preferencia local de cada instalación. La app no usa
+  Firestore.
 - **El orden de `HabitPalette.colors` y las claves de `HabitIcons`** — se persisten por índice y por
   clave. Reordenar o renombrar repinta todos los hábitos existentes y ningún test lo detecta.
 - **Bundle id, App Group (`group.com.gonzadev.quoteAnime`), product ids, firma y keystore** —

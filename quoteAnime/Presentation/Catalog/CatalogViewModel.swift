@@ -20,7 +20,8 @@ enum CatalogFilter: Equatable {
 
 // MARK: - Emotion categories (hardcoded)
 
-/// `id` is the Firestore category id and is never translated; `label` is display text only.
+/// `id` is a value of the quotes' `categories` field in the Realtime Database and is never
+/// translated; `label` is display text only.
 struct EmotionCategory: Identifiable {
     let id: String
     let label: String
