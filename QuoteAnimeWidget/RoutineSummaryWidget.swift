@@ -70,7 +70,7 @@ struct RoutineSummaryWidgetEntryView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Mi Rutina")
-                    .font(.system(size: 13, weight: .bold))
+                    .font(.footnote.weight(.bold))
                     .foregroundColor(.wTextPrimary)
                 Spacer()
                 if entry.globalStreak > 0 {
@@ -79,7 +79,7 @@ struct RoutineSummaryWidgetEntryView: View {
                     } icon: {
                         Image(systemName: "flame.fill")
                     }
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.caption2.weight(.semibold))
                     .foregroundColor(.wAccentPurple)
                     .accessibilityLabel("\(entry.globalStreak) días seguidos")
                 }
@@ -88,7 +88,7 @@ struct RoutineSummaryWidgetEntryView: View {
             if entry.habits.isEmpty {
                 Spacer()
                 Text("Sin hábitos activos")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.wTextSecond)
                 Spacer()
             } else {
@@ -99,7 +99,7 @@ struct RoutineSummaryWidgetEntryView: View {
                                 .fill(habitColor(at: habit.colorIndex))
                                 .frame(width: 8, height: 8)
                             Text(habit.title)
-                                .font(.system(size: 12))
+                                .font(.caption)
                                 .foregroundColor(.wTextPrimary)
                                 .lineLimit(1)
                             Spacer()
@@ -114,6 +114,7 @@ struct RoutineSummaryWidgetEntryView: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .dynamicTypeSize(...wMaxDynamicTypeSize)
     }
 }
 

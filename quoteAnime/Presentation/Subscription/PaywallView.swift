@@ -38,12 +38,12 @@ struct PaywallView: View {
                     .padding(.top, 8)
 
                 Text("Hazte Premium")
-                    .font(.system(size: 24, weight: .bold))
+                    .scaledFont(size: 24, weight: .bold)
                     .foregroundColor(.textPrimary)
                     .padding(.top, 20)
 
                 Text("Desbloquea todo el potencial de tu rutina.")
-                    .font(.system(size: 14))
+                    .scaledFont(size: 14)
                     .foregroundColor(.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.top, 8)
@@ -115,16 +115,18 @@ struct PaywallView: View {
     private var premiumSection: some View {
         VStack(spacing: 12) {
             Text("✨ Ya eres premium")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.headline)
                 .foregroundColor(.textPrimary)
 
             if viewModel.uiState.showsManageSubscription {
                 Button(action: viewModel.onManageSubscriptionTapped) {
                     Text("Gestionar suscripción")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundColor(.accentPurple)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 48)
+                        .multilineTextAlignment(.center)
+                        .padding(.vertical, 8)
+                        .frame(minHeight: 48)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
                                 .stroke(Color.accentPurple.opacity(0.6), lineWidth: 1)
@@ -138,9 +140,11 @@ struct PaywallView: View {
             // also reaches TestFlight while billing is a mock, and never the App Store.
             if viewModel.uiState.canUseTestPremium {
                 Button("Quitar premium (solo pruebas)") { viewModel.setTestPremium(false) }
-                    .font(.system(size: 13))
+                    .font(.footnote)
                     .foregroundColor(.textSecondary)
-                    .frame(height: 44)
+                    .multilineTextAlignment(.center)
+                    .padding(.vertical, 8)
+                    .frame(minHeight: 44)
             }
         }
     }
@@ -151,7 +155,7 @@ struct PaywallView: View {
             if viewModel.uiState.isComingSoon {
                 comingSoonButton
                 Text("Estamos preparando las suscripciones premium.")
-                    .font(.system(size: 11))
+                    .font(.caption2)
                     .foregroundColor(.textSecondary)
                     .multilineTextAlignment(.center)
             } else if viewModel.uiState.isLoadingOffers {
@@ -164,7 +168,7 @@ struct PaywallView: View {
                 offerList
                 subscribeButton
                 Text("Cancela cuando quieras desde Ajustes.")
-                    .font(.system(size: 11))
+                    .font(.caption2)
                     .foregroundColor(.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -176,9 +180,11 @@ struct PaywallView: View {
 
             if viewModel.uiState.canUseTestPremium {
                 Button("Activar premium (solo pruebas)") { viewModel.setTestPremium(true) }
-                    .font(.system(size: 13))
+                    .font(.footnote)
                     .foregroundColor(.textSecondary)
-                    .frame(height: 44)
+                    .multilineTextAlignment(.center)
+                    .padding(.vertical, 8)
+                    .frame(minHeight: 44)
             }
         }
     }
@@ -188,10 +194,12 @@ struct PaywallView: View {
     private var comingSoonButton: some View {
         Button {} label: {
             Text("Próximamente")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.callout.weight(.semibold))
                 .foregroundColor(.bgDark)
                 .frame(maxWidth: .infinity)
-                .frame(height: 52)
+                .multilineTextAlignment(.center)
+                .padding(.vertical, 8)
+                .frame(minHeight: 52)
                 .background(Color.accentPurple.opacity(0.5))
                 .cornerRadius(16)
         }
@@ -206,13 +214,15 @@ struct PaywallView: View {
                 .font(.system(size: 28))
                 .foregroundColor(.textSecondary)
             Text("Los planes de suscripción no están disponibles en este momento. Prueba de nuevo más tarde.")
-                .font(.system(size: 13))
+                .scaledFont(size: 13)
                 .foregroundColor(.textSecondary)
                 .multilineTextAlignment(.center)
             Button("Reintentar", action: viewModel.retryLoadingOffers)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(.accentPurple)
-                .frame(height: 44)
+                .multilineTextAlignment(.center)
+                .padding(.vertical, 8)
+                .frame(minHeight: 44)
         }
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity)
@@ -234,11 +244,11 @@ struct PaywallView: View {
                         }
                         VStack(alignment: .leading, spacing: 2) {
                             Text(verbatim: offer.priceDescription)
-                                .font(.system(size: 15, weight: .semibold))
+                                .font(.subheadline.weight(.semibold))
                                 .foregroundColor(.textPrimary)
                             if let trial = offer.freeTrialDescription {
                                 Text(verbatim: trial)
-                                    .font(.system(size: 12))
+                                    .font(.caption)
                                     .foregroundColor(.accentPurple)
                             }
                         }
@@ -266,12 +276,14 @@ struct PaywallView: View {
                     ProgressView().tint(.bgDark)
                 } else {
                     Text("Suscribirme")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.callout.weight(.semibold))
                 }
             }
             .foregroundColor(.bgDark)
             .frame(maxWidth: .infinity)
-            .frame(height: 52)
+            .multilineTextAlignment(.center)
+            .padding(.vertical, 8)
+            .frame(minHeight: 52)
             .background(Color.accentPurple.opacity(viewModel.uiState.canSubscribe ? 1 : 0.5))
             .cornerRadius(16)
         }
@@ -286,12 +298,14 @@ struct PaywallView: View {
                     ProgressView().tint(.textSecondary)
                 } else {
                     Text("Restaurar compras")
-                        .font(.system(size: 14))
+                        .scaledFont(size: 14)
                 }
             }
             .foregroundColor(.textSecondary)
             .frame(maxWidth: .infinity)
-            .frame(height: 44)
+            .multilineTextAlignment(.center)
+            .padding(.vertical, 8)
+            .frame(minHeight: 44)
         }
         .disabled(viewModel.uiState.isRestoring)
     }
@@ -303,7 +317,7 @@ struct PaywallView: View {
         if let message = viewModel.uiState.message {
             Button(action: viewModel.onMessageShown) {
                 Text(verbatim: message.text)
-                    .font(.system(size: 13))
+                    .scaledFont(size: 13)
                     .foregroundColor(.textPrimary)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -327,10 +341,10 @@ struct PaywallView: View {
                 )
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundColor(.textPrimary)
                 Text(body)
-                    .font(.system(size: 13))
+                    .scaledFont(size: 13)
                     .foregroundColor(.textSecondary)
             }
         }

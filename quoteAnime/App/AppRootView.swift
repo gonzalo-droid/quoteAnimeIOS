@@ -196,7 +196,7 @@ struct MainContainerView: View {
         VStack {
             Spacer()
             Text(message)
-                .font(.system(size: 14))
+                .scaledFont(size: 14)
                 .foregroundColor(.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)

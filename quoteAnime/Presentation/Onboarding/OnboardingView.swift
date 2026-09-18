@@ -61,10 +61,12 @@ struct OnboardingView: View {
                         }
                     } label: {
                         Text(isLastPage ? "Comenzar" : "Siguiente")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.headline)
                             .foregroundColor(.bgDark)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 52)
+                            .multilineTextAlignment(.center)
+                            .padding(.vertical, 8)
+                            .frame(minHeight: 52)
                             .background(Color.accentPurple)
                             .cornerRadius(14)
                             .padding(.horizontal, 32)
@@ -78,7 +80,7 @@ struct OnboardingView: View {
         // Skip button outside ignoresSafeArea so SwiftUI respects the safe area automatically
         .overlay(alignment: .topTrailing) {
             Button("Saltar") { viewModel.complete() }
-                .font(.system(size: 15, weight: .medium))
+                .font(.subheadline.weight(.medium))
                 .foregroundColor(.white.opacity(0.75))
                 .padding(.top, 12)
                 .padding(.trailing, 24)
@@ -149,6 +151,12 @@ private struct OnboardingPageView: View {
 /// background is Android's bgDark → surface → bgDark gradient, from the app's tokens.
 private struct HabitSelectionPageView: View {
     @ObservedObject var viewModel: OnboardingViewModel
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    /// Room the scrolling layout leaves for what `OnboardingView` draws on top of the page: the
+    /// status bar and "Saltar" above, the page dots and the button below.
+    private static let accessibilityTopInset: CGFloat = 120
+    private static let accessibilityBottomInset: CGFloat = 190
 
     var body: some View {
         GeometryReader { geo in
@@ -159,48 +167,63 @@ private struct HabitSelectionPageView: View {
                     endPoint: .bottom
                 )
 
-                VStack(spacing: 24) {
-                    Spacer()
-
-                    Text("Elige tu primer hábito")
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(.textPrimary)
-                        .multilineTextAlignment(.center)
-
-                    Text("Puedes cambiarlo o crear otro más tarde, desde Mi Rutina.")
-                        .font(.system(size: 14))
-                        .foregroundColor(.textSecondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
-
-                    VStack(spacing: 12) {
-                        ForEach(viewModel.habitTemplates) { template in
-                            templateRow(template)
-                        }
+                if dynamicTypeSize.isAccessibilitySize {
+                    // At accessibility sizes the page no longer fits between "Saltar" and the
+                    // button: it scrolls instead of running under them.
+                    ScrollView {
+                        VStack(spacing: 24) { sections }
+                            .frame(width: geo.size.width)
+                            .padding(.top, Self.accessibilityTopInset)
+                            .padding(.bottom, Self.accessibilityBottomInset)
                     }
-                    .padding(.horizontal, 32)
-                    .padding(.top, 12)
-
-                    if let template = viewModel.selectedTemplate {
-                        ThemedSuggestionPreview(
-                            iconKey: template.iconKey,
-                            title: template.title,
-                            description: HabitThemeImages.description(for: template.themeKey) ?? "",
-                            themeKey: template.themeKey,
-                            accentColor: HabitPalette.color(at: template.themeColorIndex ?? 0)
-                        )
-                        .padding(.horizontal, 32)
-                        .transition(.opacity)
+                } else {
+                    VStack(spacing: 24) {
+                        Spacer()
+                        sections
+                        Spacer()
+                        Spacer()
                     }
-
-                    Spacer()
-                    Spacer()
+                    .frame(width: geo.size.width)
                 }
-                .frame(width: geo.size.width)
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
         .ignoresSafeArea()
+    }
+
+    @ViewBuilder
+    private var sections: some View {
+        Text("Elige tu primer hábito")
+            .scaledFont(size: 24, weight: .bold)
+            .foregroundColor(.textPrimary)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 32)
+
+        Text("Puedes cambiarlo o crear otro más tarde, desde Mi Rutina.")
+            .scaledFont(size: 14)
+            .foregroundColor(.textSecondary)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 32)
+
+        VStack(spacing: 12) {
+            ForEach(viewModel.habitTemplates) { template in
+                templateRow(template)
+            }
+        }
+        .padding(.horizontal, 32)
+        .padding(.top, 12)
+
+        if let template = viewModel.selectedTemplate {
+            ThemedSuggestionPreview(
+                iconKey: template.iconKey,
+                title: template.title,
+                description: HabitThemeImages.description(for: template.themeKey) ?? "",
+                themeKey: template.themeKey,
+                accentColor: HabitPalette.color(at: template.themeColorIndex ?? 0)
+            )
+            .padding(.horizontal, 32)
+            .transition(.opacity)
+        }
     }
 
     private func templateRow(_ template: HabitTemplate) -> some View {
@@ -214,8 +237,9 @@ private struct HabitSelectionPageView: View {
                     .foregroundColor(HabitPalette.color(at: template.themeColorIndex ?? 0))
                     .frame(width: 28)
                 Text(verbatim: template.title)
-                    .font(.system(size: 15, weight: .medium))
+                    .font(.subheadline.weight(.medium))
                     .foregroundColor(.textPrimary)
+                    .multilineTextAlignment(.leading)
                 Spacer()
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 18))

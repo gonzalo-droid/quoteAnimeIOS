@@ -21,7 +21,7 @@ struct QuoteCard: View {
                         .foregroundColor(.textSecondary)
 
                     Text(quote.anime.uppercased())
-                        .font(.system(size: 10, weight: .medium))
+                        .scaledFont(size: 10, weight: .medium)
                         .kerning(2)
                         .foregroundColor(.accentPurple)
                 }

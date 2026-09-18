@@ -13,12 +13,12 @@ struct CancelSubscriptionSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("¿Seguro que quieres cancelar?")
-                .font(.system(size: 20, weight: .bold))
+                .font(.title3.weight(.bold))
                 .foregroundColor(.textPrimary)
                 .padding(.top, 28)
 
             Text("Si cancelas, al terminar tu periodo actual vas a perder:")
-                .font(.system(size: 14))
+                .scaledFont(size: 14)
                 .foregroundColor(.textSecondary)
                 .padding(.top, 8)
 
@@ -41,7 +41,7 @@ struct CancelSubscriptionSheet: View {
             // No date here on purpose: same as Android, the client is not told when the paid
             // period ends, so promising one would be a guess.
             Text("Tranquilo: conservas todo hasta el final del periodo que ya pagaste.")
-                .font(.system(size: 13))
+                .scaledFont(size: 13)
                 .foregroundColor(.textSecondary)
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -53,20 +53,24 @@ struct CancelSubscriptionSheet: View {
 
             Button(action: onKeepPremium) {
                 Text("Seguir siendo premium")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.callout.weight(.semibold))
                     .foregroundColor(.bgDark)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 52)
+                    .multilineTextAlignment(.center)
+                    .padding(.vertical, 8)
+                    .frame(minHeight: 52)
                     .background(Color.accentPurple)
                     .cornerRadius(16)
             }
 
             Button(action: onCancelAnyway) {
                 Text("Cancelar de todos modos")
-                    .font(.system(size: 15))
+                    .font(.subheadline)
                     .foregroundColor(.textSecondary)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 44)
+                    .multilineTextAlignment(.center)
+                    .padding(.vertical, 8)
+                    .frame(minHeight: 44)
             }
             .padding(.top, 4)
             .padding(.bottom, 12)
@@ -83,7 +87,7 @@ struct CancelSubscriptionSheet: View {
                 .foregroundColor(.textSecondary)
                 .frame(width: 22)
             text
-                .font(.system(size: 14))
+                .scaledFont(size: 14)
                 .strikethrough()
                 .foregroundColor(.textSecondary)
                 .multilineTextAlignment(.leading)

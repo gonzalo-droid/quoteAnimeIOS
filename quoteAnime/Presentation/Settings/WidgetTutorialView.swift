@@ -55,10 +55,12 @@ struct WidgetTutorialView: View {
                 HStack(spacing: 16) {
                     if currentStep > 0 {
                         Button("Anterior") { currentStep -= 1 }
-                            .font(.system(size: 15, weight: .medium))
+                            .font(.subheadline.weight(.medium))
                             .foregroundColor(.textSecondary)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 48)
+                            .multilineTextAlignment(.center)
+                            .padding(.vertical, 8)
+                            .frame(minHeight: 48)
                             .background(Color.surface)
                             .cornerRadius(12)
                     }
@@ -69,10 +71,12 @@ struct WidgetTutorialView: View {
                         }
                         // "Entendido" — navigation back is handled by NavigationStack
                     }
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.headline)
                     .foregroundColor(.bgDark)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 48)
+                    .multilineTextAlignment(.center)
+                    .padding(.vertical, 8)
+                    .frame(minHeight: 48)
                     .background(Color.accentPurple)
                     .cornerRadius(12)
                 }
@@ -91,7 +95,7 @@ struct WidgetTutorialView: View {
             Spacer()
 
             Text("Paso \(index + 1) de \(steps.count)")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundColor(.accentPurple)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
@@ -109,7 +113,7 @@ struct WidgetTutorialView: View {
                     .multilineTextAlignment(.center)
 
                 Text(step.description)
-                    .font(.system(size: 15))
+                    .scaledFont(size: 15)
                     .foregroundColor(.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
