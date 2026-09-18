@@ -99,7 +99,7 @@ struct CatalogView: View {
                     .font(.system(size: 20))
                     .foregroundColor(color)
                 Text(filter.label)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.callout.weight(.semibold))
                     .foregroundColor(.textPrimary)
             }
             .frame(maxWidth: .infinity, minHeight: 64)
@@ -120,7 +120,7 @@ struct CatalogView: View {
                 Text(emotion.emoji)
                     .font(.system(size: 32))
                 Text(emotion.label)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.footnote.weight(.medium))
                     .foregroundColor(.textPrimary)
                     .multilineTextAlignment(.center)
             }
@@ -220,7 +220,7 @@ struct CatalogView: View {
             .padding(.leading, 8)
 
             Text(title)
-                .font(.system(size: 17, weight: .semibold))
+                .font(.headline)
                 .foregroundColor(.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .center)
 
@@ -229,6 +229,9 @@ struct CatalogView: View {
                 .padding(.trailing, 8)
         }
         .frame(height: 52)
+        // A navigation bar: like the system's, its title stops growing at the largest
+        // non-accessibility size instead of pushing the buttons out of their 44 pt slots.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .background(Color.bgDark)
     }
 }

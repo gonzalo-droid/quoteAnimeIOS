@@ -114,7 +114,7 @@ struct HabitEditorView: View {
             .accessibilityLabel("Volver")
 
             Text(viewModel.uiState.isEditing ? "Editar hábito" : "Nuevo hábito")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.headline)
                 .foregroundColor(.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .center)
 
@@ -126,14 +126,21 @@ struct HabitEditorView: View {
                         .frame(width: 44, height: 44)
                 } else {
                     Text("Guardar")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundColor(viewModel.uiState.canSave ? .accentPurple : .textSecondary)
+                        // The bar stops growing at xxxLarge; there "Guardar" is a few points
+                        // wider than its slot, so it shrinks slightly instead of touching the edge.
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                         .frame(width: 72, height: 44)
                 }
             }
             .disabled(!viewModel.uiState.canSave || viewModel.uiState.isSaving)
         }
         .frame(height: 52)
+        // A navigation bar: like the system's, its title stops growing at the largest
+        // non-accessibility size instead of pushing the buttons out of their 44 pt slots.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .background(Color.bgDark)
     }
 
@@ -157,7 +164,7 @@ struct HabitEditorView: View {
                             HStack(spacing: 6) {
                                 Image(systemName: isLocked ? "lock.fill" : HabitIcons.symbol(for: template.iconKey))
                                 Text(verbatim: template.title)
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(.footnote.weight(.medium))
                             }
                             .foregroundColor(isLocked ? .textSecondary : (isSelected ? .bgDark : .textPrimary))
                             .padding(.horizontal, 12)
@@ -210,7 +217,7 @@ struct HabitEditorView: View {
                         .foregroundColor(HabitPalette.color(at: viewModel.uiState.colorIndex))
                         .accessibilityHidden(true)
                     Text("Elegir ícono")
-                        .font(.system(size: 14))
+                        .scaledFont(size: 14)
                         .foregroundColor(.textPrimary)
                     Spacer()
                     Image(systemName: "chevron.right")
@@ -341,7 +348,7 @@ struct HabitEditorView: View {
 
                     if viewModel.uiState.reminderHasNoWeekdays {
                         Label("Elige al menos un día. Sin días, el recordatorio queda apagado.", systemImage: "exclamationmark.circle")
-                            .font(.system(size: 12))
+                            .scaledFont(size: 12)
                             .foregroundColor(.textSecondary)
                     }
 
@@ -373,7 +380,7 @@ struct HabitEditorView: View {
 
     private func sectionLabel(_ text: LocalizedStringKey) -> some View {
         Text(text)
-            .font(.system(size: 13, weight: .medium))
+            .font(.footnote.weight(.medium))
             .foregroundColor(.textSecondary)
     }
 }
@@ -425,7 +432,7 @@ private struct HabitIconPickerView: View {
                 ForEach(visibleCategories) { category in
                     VStack(alignment: .leading, spacing: 10) {
                         Text(category.title)
-                            .font(.system(size: 14, weight: .semibold))
+                            .scaledFont(size: 14, weight: .semibold)
                             .foregroundColor(.textSecondary)
                             .accessibilityAddTraits(.isHeader)
 
@@ -473,7 +480,7 @@ private struct HabitIconPickerView: View {
                     .foregroundColor(.textSecondary)
                     .accessibilityHidden(true)
                 Text("No se encontraron íconos")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.headline)
                     .foregroundColor(.textPrimary)
             }
         }

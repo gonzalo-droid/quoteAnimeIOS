@@ -66,7 +66,7 @@ struct RoutineView: View {
                 .accessibilityLabel("Volver")
 
                 Text("Mi Rutina")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.headline)
                     .foregroundColor(.textPrimary)
                     .frame(maxWidth: .infinity, alignment: .center)
 
@@ -81,11 +81,14 @@ struct RoutineView: View {
                 .accessibilityLabel("Añadir hábito")
             }
             .frame(height: 52)
+            // A navigation bar: like the system's, its title stops growing at the largest
+            // non-accessibility size instead of pushing the buttons out of their 44 pt slots.
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
 
             if viewModel.uiState.globalStreak.current > 0 {
                 // "1 día seguido" / "5 días seguidos": the plural lives in the String Catalog.
                 Label("\(viewModel.uiState.globalStreak.current) días seguidos", systemImage: "flame.fill")
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.footnote.weight(.medium))
                     .foregroundColor(.accentPurple)
                     .padding(.bottom, 8)
             }
@@ -106,7 +109,7 @@ struct RoutineView: View {
         let isSelected = viewModel.uiState.filter == filter
         return Button { viewModel.onFilterChanged(filter) } label: {
             Text(title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundColor(isSelected ? .bgDark : .textPrimary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
@@ -122,14 +125,14 @@ struct RoutineView: View {
                 .font(.system(size: 44))
                 .foregroundColor(.textSecondary)
             Text(viewModel.uiState.filter == .active ? "Todavía no tienes hábitos" : "No archivaste ningún hábito")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.callout.weight(.semibold))
                 .foregroundColor(.textPrimary)
             Text(
                 viewModel.uiState.filter == .active
                     ? "Crea el primero para empezar a construir tu racha"
                     : "Los hábitos archivados guardan su historial — restáuralos cuando quieras retomarlos"
             )
-            .font(.system(size: 13))
+            .scaledFont(size: 13)
             .foregroundColor(.textSecondary)
             .multilineTextAlignment(.center)
             .padding(.horizontal, 40)
@@ -139,7 +142,7 @@ struct RoutineView: View {
                     router.push(.habitEditor(habitId: nil))
                 } label: {
                     Text("Crear hábito")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundColor(.bgDark)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)

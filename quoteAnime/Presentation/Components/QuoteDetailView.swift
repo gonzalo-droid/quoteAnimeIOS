@@ -113,11 +113,14 @@ struct QuoteDetailView<Actions: View>: View {
 
             // Anime name
             Text(quote.anime.uppercased())
-                .font(.system(size: 11, weight: .bold))
+                .font(.caption2.weight(.bold))
                 .kerning(2.5)
                 .foregroundColor(.accentPurple)
                 .padding(.top, 6)
         }
+        // The quote fills the screen with nothing to scroll: past this size a long quote would
+        // push the author and the anime off it.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
 }
 

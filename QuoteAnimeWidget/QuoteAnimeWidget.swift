@@ -29,6 +29,64 @@ extension Color {
     static let wTextSecond   = Color(red: 0.608, green: 0.553, blue: 0.702) // #9B8DB3
 }
 
+// MARK: - Typography (hand-mirrored from the app's `Theme/Typography.swift`)
+// Same rule as the app: a size that is a text style's default size uses that style; any other
+// size scales along the nearest style. Every widget view caps the range, because a widget's frame
+// never grows with the text: `wMaxDynamicTypeSize` for the routine widgets,
+// `wQuoteMaxDynamicTypeSize` for the quote widgets.
+
+/// The largest text size the routine widgets follow. A system widget has a fixed frame, so past
+/// this the habit rows would only get cut.
+let wMaxDynamicTypeSize = DynamicTypeSize.xLarge
+
+/// The quote widgets don't grow at all: a three-line quote already fills the medium widget at the
+/// default size, and at `.xLarge` it collapsed to a single truncated line (seen in the simulator
+/// with a 117-character quote). The quote *is* the widget, so it keeps its design size; the app
+/// shows the same quote at the user's size one tap away.
+let wQuoteMaxDynamicTypeSize = DynamicTypeSize.large
+
+enum WTypography {
+    static let defaultSizes: [(style: Font.TextStyle, size: CGFloat)] = [
+        (.caption2, 11), (.caption, 12), (.footnote, 13), (.subheadline, 15), (.callout, 16),
+        (.body, 17), (.title3, 20), (.title2, 22), (.title, 28), (.largeTitle, 34),
+    ]
+
+    static func textStyle(forSize size: CGFloat) -> Font.TextStyle {
+        defaultSizes.min { abs($0.size - size) < abs($1.size - size) }?.style ?? .body
+    }
+}
+
+extension Font {
+    static func wQuoteSerif(size: CGFloat) -> Font {
+        .custom("Didot", size: size, relativeTo: WTypography.textStyle(forSize: size))
+    }
+
+    static func wQuoteSerifItalic(size: CGFloat) -> Font {
+        .custom("Georgia", size: size, relativeTo: WTypography.textStyle(forSize: size))
+    }
+}
+
+private struct WScaledSystemFont: ViewModifier {
+    @ScaledMetric private var size: CGFloat
+    let weight: Font.Weight
+
+    init(size: CGFloat, weight: Font.Weight) {
+        _size = ScaledMetric(wrappedValue: size, relativeTo: WTypography.textStyle(forSize: size))
+        self.weight = weight
+    }
+
+    func body(content: Content) -> some View {
+        content.font(.system(size: size, weight: weight))
+    }
+}
+
+extension View {
+    /// The app's `scaledFont(size:weight:)`, for the widget target.
+    func wScaledFont(size: CGFloat, weight: Font.Weight = .regular) -> some View {
+        modifier(WScaledSystemFont(size: size, weight: weight))
+    }
+}
+
 // MARK: - Entry
 
 struct QuoteEntry: TimelineEntry {
@@ -276,7 +334,7 @@ struct QuoteWidgetSmallContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(entry.quoteText)
-                .font(.custom("Georgia", size: 12))
+                .font(.wQuoteSerifItalic(size: 12))
                 .foregroundColor(.wTextPrimary)
                 .lineSpacing(3)
                 .lineLimit(5)
@@ -284,17 +342,18 @@ struct QuoteWidgetSmallContent: View {
             Spacer(minLength: 6)
 
             Text(verbatim: "— \(entry.author)")
-                .font(.custom("Didot", size: 10))
+                .font(.wQuoteSerif(size: 10))
                 .foregroundColor(.wTextPrimary.opacity(0.8))
 
             Text(entry.anime.uppercased())
-                .font(.system(size: 8, weight: .bold))
+                .wScaledFont(size: 8, weight: .bold)
                 .kerning(1.5)
                 .foregroundColor(.wAccentPurple)
                 .padding(.top, 2)
         }
         .padding(14)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .dynamicTypeSize(...wQuoteMaxDynamicTypeSize)
     }
 }
 
@@ -304,7 +363,7 @@ struct QuoteWidgetMediumContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(entry.quoteText)
-                .font(.custom("Georgia", size: 14))
+                .font(.wQuoteSerifItalic(size: 14))
                 .foregroundColor(.wTextPrimary)
                 .lineSpacing(4)
                 .lineLimit(4)
@@ -316,17 +375,18 @@ struct QuoteWidgetMediumContent: View {
                 .padding(.vertical, 10)
 
             Text(verbatim: "— \(entry.author)")
-                .font(.custom("Didot", size: 11))
+                .font(.wQuoteSerif(size: 11))
                 .foregroundColor(.wTextPrimary.opacity(0.85))
 
             Text(entry.anime.uppercased())
-                .font(.system(size: 9, weight: .bold))
+                .wScaledFont(size: 9, weight: .bold)
                 .kerning(2)
                 .foregroundColor(.wAccentPurple)
                 .padding(.top, 3)
         }
         .padding(16)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .dynamicTypeSize(...wQuoteMaxDynamicTypeSize)
     }
 }
 
@@ -336,12 +396,13 @@ struct QuoteWidgetLockScreenContent: View {
     let entry: QuoteEntry
     var body: some View {
         Text(entry.quoteText)
-            .font(.custom("SF Pro", size: 14))
+            .wScaledFont(size: 14)
             .lineSpacing(1)
             .lineLimit(3)
             .minimumScaleFactor(0.8)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .widgetAccentable()
+            .dynamicTypeSize(...wQuoteMaxDynamicTypeSize)
     }
 }
 

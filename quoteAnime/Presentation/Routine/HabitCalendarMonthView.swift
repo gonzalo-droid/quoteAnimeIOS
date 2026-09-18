@@ -36,7 +36,7 @@ struct HabitCalendarMonthView: View {
             HStack(spacing: 0) {
                 ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { _, symbol in
                     Text(symbol)
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.caption2.weight(.medium))
                         .foregroundColor(.textSecondary)
                         .frame(maxWidth: .infinity)
                 }
@@ -52,6 +52,8 @@ struct HabitCalendarMonthView: View {
                 }
             }
         }
+        // Seven columns and 44 pt rows: past this size a two-digit day no longer fits its cell.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
 
     @ViewBuilder
@@ -73,7 +75,7 @@ struct HabitCalendarMonthView: View {
                 }
                 VStack(spacing: 3) {
                     Text(calendar.component(.day, from: day), format: .number)
-                        .font(.system(size: 13, weight: isToday ? .semibold : .regular))
+                        .font(.footnote.weight(isToday ? .semibold : .regular))
                         .foregroundColor(dayNumberColor(isInMonth: isInMonth, isMarkable: isMarkable, isToday: isToday))
                     Circle()
                         .fill(isCompleted ? accentColor : Color.clear)

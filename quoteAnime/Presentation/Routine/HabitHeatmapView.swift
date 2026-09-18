@@ -44,6 +44,9 @@ struct HabitHeatmapView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 labeledGrid
             }
+            // The day and month labels live in 16 × 14 pt slots aligned to the cells; past this
+            // size they would spill onto the grid.
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Mapa de actividad de las últimas \(weeks) semanas")
             .accessibilityValue(Text("\(completedDayCount) días completados"))
@@ -124,7 +127,7 @@ struct HabitHeatmapView: View {
         ZStack(alignment: .topLeading) {
             ForEach([0, 2, 4], id: \.self) { row in
                 Text(weekdayInitial(row: row))
-                    .font(.system(size: 9))
+                    .scaledFont(size: 9)
                     .foregroundColor(.textSecondary)
                     .offset(y: CGFloat(row) * (cellSize + cellSpacing) - 1)
             }
@@ -136,7 +139,7 @@ struct HabitHeatmapView: View {
         ZStack(alignment: .topLeading) {
             ForEach(monthLabelPositions, id: \.column) { position in
                 Text(position.label)
-                    .font(.system(size: 9))
+                    .scaledFont(size: 9)
                     .foregroundColor(.textSecondary)
                     .offset(x: dayLabelWidth + CGFloat(position.column) * (cellSize + cellSpacing))
             }

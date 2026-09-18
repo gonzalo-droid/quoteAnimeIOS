@@ -12,6 +12,7 @@ struct HabitDetailView: View {
     @StateObject private var viewModel: HabitDetailViewModel
     @EnvironmentObject private var router: AppRouter
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var pendingArchive = false
     @State private var pendingDelete = false
@@ -99,7 +100,7 @@ struct HabitDetailView: View {
             }
         } else {
             Text("Este hábito ya no existe.")
-                .font(.system(size: 14))
+                .scaledFont(size: 14)
                 .foregroundColor(.textSecondary)
         }
     }
@@ -117,14 +118,14 @@ struct HabitDetailView: View {
             VStack(alignment: .leading, spacing: 4) {
                 if habit.isArchived {
                     Label("Archivado", systemImage: "archivebox.fill")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.caption2.weight(.semibold))
                         .foregroundColor(.textSecondary)
                 }
                 Text(habit.description?.isEmpty == false ? habit.description! : String(localized: "Sin descripción"))
-                    .font(.system(size: 13))
+                    .scaledFont(size: 13)
                     .foregroundColor(.textSecondary)
                 Text(dateRangeLabel(habit))
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.textSecondary.opacity(0.8))
             }
             Spacer(minLength: 0)
@@ -154,14 +155,14 @@ struct HabitDetailView: View {
         let isCompleted = viewModel.uiState.completions.contains(date)
         return HStack {
             Text("Día seleccionado")
-                .font(.system(size: 12))
+                .font(.caption)
                 .foregroundColor(.textSecondary)
             Spacer()
             Text(date.formatted(.dateTime.day().month(.abbreviated).year()))
-                .font(.system(size: 12))
+                .font(.caption)
                 .foregroundColor(.textPrimary)
             Text(isCompleted ? "Completado" : "No completado")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.caption.weight(.semibold))
                 .foregroundColor(isCompleted ? accentColor : .textSecondary)
         }
         .padding(.horizontal, 12)
@@ -170,8 +171,13 @@ struct HabitDetailView: View {
         .cornerRadius(10)
     }
 
+    /// Three chips side by side; at accessibility sizes a third of the width can't hold
+    /// "Días marcados", so they stack.
     private var statsRow: some View {
-        HStack(spacing: 10) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(spacing: 10))
+            : AnyLayout(HStackLayout(spacing: 10))
+        return layout {
             statChip(
                 systemImage: "flame.fill",
                 value: viewModel.uiState.streak.current,
@@ -200,11 +206,11 @@ struct HabitDetailView: View {
                     .font(.system(size: 12))
                     .foregroundColor(tint)
                 Text(value, format: .number)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.callout.weight(.semibold))
                     .foregroundColor(.textPrimary)
             }
             Text(caption)
-                .font(.system(size: 11))
+                .font(.caption2)
                 .foregroundColor(.textSecondary)
         }
         .frame(maxWidth: .infinity)
@@ -220,7 +226,7 @@ struct HabitDetailView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(monthLabel)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundColor(.textPrimary)
                 Spacer()
                 Button { viewModel.onMonthChanged(by: -1) } label: {
@@ -251,7 +257,7 @@ struct HabitDetailView: View {
             )
 
             Text("Toca cualquier día para marcarlo o desmarcarlo. Los días futuros y los que quedan fuera del período del hábito no se pueden marcar.")
-                .font(.system(size: 11))
+                .scaledFont(size: 11)
                 .foregroundColor(.textSecondary.opacity(0.8))
         }
         .padding(.bottom, 16)
@@ -297,7 +303,7 @@ struct HabitDetailView: View {
 
     private func sectionLabel(_ text: LocalizedStringKey) -> some View {
         Text(text)
-            .font(.system(size: 13, weight: .medium))
+            .font(.footnote.weight(.medium))
             .foregroundColor(.textSecondary)
     }
 }

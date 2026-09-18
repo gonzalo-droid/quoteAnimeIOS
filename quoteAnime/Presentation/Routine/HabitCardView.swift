@@ -4,6 +4,7 @@ import SwiftUI
 /// overflow menu (and the detail's toolbar menu) so the primary tap goes to the richer screen.
 /// Trailing controls consume their own tap first so they never also open the detail.
 struct HabitCardView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let item: HabitWithProgress
     var isArchived: Bool = false
     let onToggleToday: () -> Void
@@ -29,9 +30,11 @@ struct HabitCardView: View {
                         .accessibilityHidden(true)
 
                     Text(item.habit.title)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.callout.weight(.semibold))
                         .foregroundColor(.textPrimary)
-                        .lineLimit(1)
+                        // One line as designed; at accessibility sizes a title cut to "Sé un sai…"
+                        // says nothing, so it may wrap.
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
 
                     Spacer()
 
@@ -50,12 +53,12 @@ struct HabitCardView: View {
                     } icon: {
                         Image(systemName: "flame.fill")
                     }
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.caption.weight(.medium))
                     .foregroundColor(.textSecondary)
                     .accessibilityLabel("\(item.streak.current) días seguidos")
                     Spacer()
                     Text("Mejor: \(item.streak.best)")
-                        .font(.system(size: 12))
+                        .font(.caption)
                         .foregroundColor(.textSecondary)
                 }
             }

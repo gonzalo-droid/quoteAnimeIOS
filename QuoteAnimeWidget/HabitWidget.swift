@@ -206,19 +206,22 @@ struct HabitWidgetEntryView: View {
     let entry: HabitWidgetEntry
 
     var body: some View {
-        switch entry.content {
-        case .unconfigured:
-            message("Mantén pulsado el widget para elegir un hábito.")
-        case .missing:
-            message("Este hábito ya no existe.")
-        case .habit(let habit):
-            habitBody(habit)
+        Group {
+            switch entry.content {
+            case .unconfigured:
+                message("Mantén pulsado el widget para elegir un hábito.")
+            case .missing:
+                message("Este hábito ya no existe.")
+            case .habit(let habit):
+                habitBody(habit)
+            }
         }
+        .dynamicTypeSize(...wMaxDynamicTypeSize)
     }
 
     private func message(_ text: LocalizedStringKey) -> some View {
         Text(text)
-            .font(.system(size: 12))
+            .font(.caption)
             .foregroundColor(.wTextSecond)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -256,7 +259,7 @@ struct HabitWidgetEntryView: View {
                     .foregroundColor(color)
                 // The habit's title is the user's own text — never translated.
                 Text(verbatim: habit.title)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.footnote.weight(.semibold))
                     .foregroundColor(.wTextPrimary)
                     .lineLimit(1)
                     // A name like "Find the One Piece" is cut to "Find the O…" on the small size
@@ -266,7 +269,7 @@ struct HabitWidgetEntryView: View {
             }
             HStack(spacing: 4) {
                 Text("\(habit.currentStreak) días")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.caption2.weight(.medium))
                     .foregroundColor(color)
                 if habit.completedToday {
                     Image(systemName: "checkmark.circle.fill")

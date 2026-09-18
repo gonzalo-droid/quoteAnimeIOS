@@ -32,12 +32,12 @@ struct ThemedSuggestionPreview: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: title)
-                        .font(.system(size: 14, weight: .semibold))
+                        .scaledFont(size: 14, weight: .semibold)
                         .foregroundColor(.white)
                         .lineLimit(1)
                     if !description.isEmpty {
                         Text(verbatim: description)
-                            .font(.system(size: 11, weight: .medium))
+                            .scaledFont(size: 11, weight: .medium)
                             .foregroundColor(.white.opacity(0.85))
                             .lineLimit(2)
                     }
@@ -47,6 +47,8 @@ struct ThemedSuggestionPreview: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 108)
+        // A fixed-height cover: title + two lines of description must fit in it.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .accessibilityElement(children: .combine)
     }
