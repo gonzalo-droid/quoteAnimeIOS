@@ -10,8 +10,10 @@ import Testing
 @Suite("Widget de frases: Inicio en esa frase")
 struct HomeQuoteFocusTests {
 
-    private static func makeViewModel(selection: Set<String> = []) -> (HomeViewModel, AppRouter) {
-        let repository = FakeQuoteRepository.withCatalogue([("Naruto", 5), ("One Piece", 5)])
+    private static func makeViewModel(
+        selection: Set<String> = [],
+        repository: FakeQuoteRepository = .withCatalogue([("Naruto", 5), ("One Piece", 5)])
+    ) -> (HomeViewModel, AppRouter) {
         var prefs = UserPreferences()
         prefs.selectedCategoryIds = selection
         let preferences = FakeUserPreferencesRepository(preferences: prefs)
@@ -92,6 +94,27 @@ struct HomeQuoteFocusTests {
         #expect(viewModel.scrollRequest == nil)
         #expect(viewModel.quotes.count == 5)
         #expect(Set(viewModel.quotes.map(\.anime)) == ["Naruto"])
+    }
+
+    /// On launch `.onAppear` asks for a reload before the first load has finished. A second load
+    /// used to start: a second fetch, a second reschedule, and a reshuffle that left the widget's
+    /// page pointing at another quote.
+    @Test("al arrancar el feed se carga una sola vez aunque Inicio aparezca durante la carga")
+    func launchLoadsOnce() async {
+        let repository = FakeQuoteRepository.withCatalogue([("Naruto", 5), ("One Piece", 5)])
+        let (viewModel, _) = Self.makeViewModel(repository: repository)
+        viewModel.focus(onQuoteId: "Naruto-2")
+
+        await viewModel.reloadIfCategorySelectionChanged()   // `.onAppear`, mid-load
+        await Self.waitForFirstLoad(viewModel)
+        await viewModel.reloadIfCategorySelectionChanged()   // back from Settings, nothing changed
+        // Let `setup`'s own load task run too, whichever order the executor picked.
+        for _ in 0..<200 { await Task.yield() }
+
+        #expect(repository.fetchCount == 1)
+        let index = viewModel.quotes.firstIndex { $0.id == "Naruto-2" }
+        #expect(index != nil)
+        #expect(viewModel.scrollRequest == index)
     }
 
     @Test("un pedido fallido no queda colgado para la próxima recarga")

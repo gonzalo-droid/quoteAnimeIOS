@@ -71,8 +71,12 @@ final class HomeViewModel: ObservableObject {
 
     /// Called when Home comes back to the front. The anime selection lives in Settings and is
     /// written straight to the store, so the feed has to notice it changed while we were away.
+    ///
+    /// Skipped while a load is in flight: on launch `onAppear` fires before the first load has
+    /// recorded its selection, and used to start a second one — two fetches, two reschedules,
+    /// and a second shuffle that moved the feed out from under a widget's quote.
     func reloadIfCategorySelectionChanged() async {
-        guard setupDone, let prefs = getUserPreferences?.execute() else { return }
+        guard setupDone, !isLoading, let prefs = getUserPreferences?.execute() else { return }
         guard prefs.selectedCategoryIds != appliedCategoryIds else { return }
         await loadQuotes()
     }
