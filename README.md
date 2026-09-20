@@ -1,6 +1,6 @@
 # QuoteAnime
 
-![Version](https://img.shields.io/badge/version-1.0.6%20(16)-blue)
+![Version](https://img.shields.io/badge/version-1.1.0%20(17)-blue)
 ![Platform](https://img.shields.io/badge/iOS-16.6%2B-brightgreen)
 ![License](https://img.shields.io/badge/license-Proprietary-lightgrey)
 
@@ -133,7 +133,7 @@ xcodebuild test -project quoteanime.xcodeproj -scheme quoteAnime \
 
 ## Versioning
 
-Current release: **1.0.6** (build 16)
+Current release: **1.1.0** (build 17)
 
 This project follows [Semantic Versioning](https://semver.org/). The full release history
 lives in [CHANGELOG.md](CHANGELOG.md).

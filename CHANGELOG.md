@@ -8,6 +8,8 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-09
+
 ### Added
 - **El texto sigue el tamaño de letra de tu iPhone.** Si agrandas la letra en Ajustes → Pantalla y brillo → Tamaño del texto (o en Accesibilidad), la app la agranda también: Inicio, Mi Rutina, el detalle y el editor de hábitos, el paywall, la bienvenida y los widgets de Mi Rutina. Con el tamaño normal todo se ve exactamente igual que antes. En los tamaños más grandes las rachas del detalle se apilan, los nombres largos de hábitos pasan a dos líneas y la página de elegir hábito de la bienvenida se puede desplazar; la frase a pantalla completa, el mapa de actividad y las barras superiores crecen hasta un límite para no romperse, y los widgets de frases mantienen su tamaño.
 - Tests del escalado de la tipografía (5 casos nuevos, 437 en total).
