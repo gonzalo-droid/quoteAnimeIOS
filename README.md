@@ -18,10 +18,14 @@ from themed templates, mark them done, and watch a streak counter and a heatmap 
 
 ## Screenshots
 
-> Pending. Screens to capture, in flow order: Onboarding · Quote feed · Catalog ·
-> Mi Rutina · Settings · Widgets
+| | | |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/01-onboarding.png" width="240"> | <img src="docs/screenshots/02-home.png" width="240"> | <img src="docs/screenshots/03-catalog.png" width="240"> |
+| **Onboarding** | **Quote feed** | **Catalog** |
+| <img src="docs/screenshots/04-routine.png" width="240"> | <img src="docs/screenshots/05-settings.png" width="240"> | <img src="docs/screenshots/06-anime-selection.png" width="240"> |
+| **Mi Rutina** | **Settings** | **Anime selection** |
 
-<!-- TODO: capturar y reemplazar por la tabla de imágenes -->
+<sub>Quotes are stored in Spanish; the interface follows the device language.</sub>
 
 ---
 
