@@ -138,8 +138,6 @@ Current release: **1.0.6** (build 16)
 This project follows [Semantic Versioning](https://semver.org/). The full release history
 lives in [CHANGELOG.md](CHANGELOG.md).
 
-<!-- TODO: CHANGELOG.md's latest released heading is [1.1.0] while MARKETING_VERSION is 1.0.6 — one of the two is wrong -->
-
 ---
 
 ## Privacy Policy

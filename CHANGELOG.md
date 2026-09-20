@@ -99,7 +99,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ---
 
-## [1.1.0] — 2025
+## [1.0.6] — 2026-04
 
 ### Added
 - **Category filter** — browse quotes by anime in the Catalog.
