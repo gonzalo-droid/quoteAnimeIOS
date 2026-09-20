@@ -1,102 +1,154 @@
 # QuoteAnime
 
-iOS app that displays anime quotes in a full-screen, swipeable feed. Users can save favorites, filter by anime, share quotes with custom artwork, and pin the current quote to a home-screen widget.
+![Version](https://img.shields.io/badge/version-1.0.6%20(16)-blue)
+![Platform](https://img.shields.io/badge/iOS-16.6%2B-brightgreen)
+![License](https://img.shields.io/badge/license-Proprietary-lightgrey)
+
+[App Store](https://apps.apple.com/app/id6762100338)
+
+QuoteAnime shows motivational quotes from the anime you already love, one per screen, read
+the way you read a feed: swipe up for the next one. Pick which series the feed draws from,
+save the ones that stick, share any of them as an image card, and pin one to your home or
+lock screen.
+
+On iOS 17 and later it also ships **Mi Rutina**, an anime-themed habit tracker — pick habits
+from themed templates, mark them done, and watch a streak counter and a heatmap fill in.
+
+---
+
+## Screenshots
+
+> Pending. Screens to capture, in flow order: Onboarding · Quote feed · Catalog ·
+> Mi Rutina · Settings · Widgets
+
+<!-- TODO: capturar y reemplazar por la tabla de imágenes -->
 
 ---
 
 ## Features
 
-- Full-screen vertical swipe feed of anime quotes
-- Filter by anime category
-- Pick which animes the feed and the notifications draw from (Settings → Contenido → Animes)
-- Favorites (persisted locally)
-- Share quote as a generated image card
-- WidgetKit — current quote (home + lock screen), a routine summary, and a per-habit widget with its activity map
-- Daily push notifications with a random quote
-- "Mi Rutina" habits: themed suggestions with cover art, an icon picker you can search by name, a heatmap and a month calendar
-- AdMob interstitial between every 3 shares (configurable), plus a banner under a quote opened from Explorar — none of either for premium
-- "Mi Rutina" events in Firebase Analytics, with the same names and parameters as the Android app
-- Dark-only UI
-- Spanish and English, following the device language (String Catalogs)
+| Feature | Detail |
+|---|---|
+| **Full-screen quote feed** | Vertical paging, one quote per screen, drawn from the animes you selected |
+| **Anime selection** | Settings → Contenido → Animes; drives the feed, the notifications and the quote widget |
+| **Catalog** | Browse and filter quotes by anime, or list only favorites |
+| **Favorites** | SwiftData on iOS 17+, a JSON fallback in UserDefaults on iOS 16 — both offline |
+| **Share as image** | Renders a quote card and opens the system share sheet |
+| **Quote notifications** | Time window plus 1–10 per day, spread end to end across the window; up to 64 are pre-scheduled and refilled in the background |
+| **Mi Rutina (habit tracker)** | iOS 17+ only: habits from themed templates, current and best streak, heatmap, month calendar with retroactive marking, archive / restore / delete |
+| **Habit reminders** | Per-habit local notification with a "Hecho" action that marks the day without opening the app |
+| **Home-screen widgets** | Quote (small, medium), Mi Rutina summary (small, medium, large) and a single-habit widget whose habit is chosen in its configuration picker |
+| **Lock-screen widget** | Quote in the rectangular and inline accessory families |
+| **Deep links** | Tapping a reminder or a routine widget opens Mi Rutina; tapping the quote widget opens Home on that quote |
+| **Premium** | Lifts the three-habit free limit and removes ads. **Currently a mock**: StoreKit 2 is implemented but disabled by `PremiumConfig.usesRealBilling`, so the paywall shows a disabled "Próximamente" button |
+| **Ads** | Interstitial every third share plus one banner in a quote opened from Explorar; premium users see neither |
+| **Localization** | Spanish and English via String Catalogs, English for any other device language |
+| **Dark theme** | Always dark |
 
 ---
 
-## Requirements
+## Tech Stack
 
-| Tool | Version |
-|------|---------|
-| Xcode | 15+ |
-| iOS target | 16.0+ |
-| Swift | 5.9+ |
-
----
-
-## Setup
-
-1. **Clone the repo** and open `quoteAnime.xcodeproj`.
-
-2. **Add Swift Package dependencies** via Xcode → File → Add Package Dependencies:
-   - Firebase iOS SDK: `https://github.com/firebase/firebase-ios-sdk`  
-     Products: `FirebaseDatabase`, `FirebaseCrashlytics`, `FirebaseAnalytics`
-   - Google Mobile Ads: `https://github.com/googleads/swift-package-manager-google-mobile-ads`  
-     Product: `GoogleMobileAds`
-
-3. **Add `GoogleService-Info.plist`** (Firebase project config) to the app target root.
-
-4. **Add source files to the target** — new files are not added automatically in Xcode. Drag any new files into the project navigator or use File → Add Files.
-
-5. **Capabilities to enable** in Xcode → Signing & Capabilities:
-   - App Groups: `group.com.gonzadev.quoteAnime` (both main target and widget extension)
-   - Push Notifications
-   - Background Modes → Background fetch (optional, for widget refresh)
-
-6. **Widget Extension**: `QuoteAnimeWidgetExtension` already exists; its sources live in the synchronised `QuoteAnimeWidget/` folder. The writers (`WidgetDataWriter`, `HabitWidgetDataWriter`, `RoutineWidgetRefresher`) stay in the main target under `quoteAnime/Widget/`.
-
-7. **Info.plist keys** (set in Build Settings → Info, the plist is auto-generated):
-   - `GADApplicationIdentifier` — AdMob app ID
-   - Visible Info.plist values are translated in `quoteAnime/InfoPlist.xcstrings`
-
-### Build
-
-```bash
-xcodebuild -project quoteAnime.xcodeproj -scheme quoteAnime \
-  -destination 'platform=iOS Simulator,name=iPhone 16' build
-```
+- **Language**: Swift (the project builds in the Swift 5 language mode; `SWIFT_VERSION = 5.0`)
+- **UI**: SwiftUI, always dark
+- **Architecture**: Clean Architecture + MVVM, manual DI (`AppDependencies`)
+- **Remote**: Firebase Realtime Database (firebase-ios-sdk 12.12.0) + Analytics + Crashlytics
+- **Local persistence**: SwiftData (iOS 17+), UserDefaults fallback for favorites on iOS 16
+- **Billing**: StoreKit 2 — written, currently switched off (see Features)
+- **Widgets**: WidgetKit + AppIntents, data shared through an App Group
+- **Notifications**: UserNotifications (local only)
+- **Ads**: Google Mobile Ads 13.2.0
+- **Localization**: String Catalogs (`.xcstrings`), English source language
+- **Tests**: Swift Testing — 437 cases across 38 files
 
 ---
 
 ## Architecture
 
-The app follows **Clean Architecture + MVVM**, split into three layers with strict unidirectional dependencies: Domain ← Data ← Presentation.
-
 ```
 quoteAnime/
-├── App/                        # Entry point and DI composition root
-├── Domain/                     # Business rules, no framework imports
-│   ├── Model/                  # Quote, Category, UserPreferences
-│   ├── Analytics/              # RoutineAnalytics protocol + event factories (Android's names)
-│   ├── Repository/             # Protocols only
-│   └── UseCase/                # One struct per operation
-├── Data/                       # Implements domain protocols
-│   ├── Remote/                 # Firebase + image fetching
-│   ├── Analytics/              # FirebaseRoutineAnalytics
-│   ├── Local/                  # SwiftData (iOS 17+) + UserDefaults fallback
-│   └── Repository/             # Concrete implementations
-├── Presentation/               # SwiftUI views + ViewModels
-│   ├── Navigation/             # AppRouter ([AppRoute] path + screen enum) + AppDeepLink
-│   ├── Home/                   # Full-screen quote feed
-│   ├── Catalog/                # Browse/filter quotes by anime
-│   ├── Settings/               # Preferences + anime selection + widget tutorial
-│   ├── Onboarding/             # First-launch flow
-│   ├── Routine/                # "Mi Rutina": habit list, detail (heatmap + month
-│   │                           #  calendar with retroactive marking), editor
-│   ├── Ads/                    # Interstitial manager, ShareAdPolicy, BannerAdPolicy
-│   ├── Common/                 # AppLinks (legal + App Store URLs)
-│   └── Components/             # Shared: QuoteDetailView, QuoteCard, ShareCardView
-├── Notification/               # Local notification scheduling
-├── Widget/                     # WidgetDataWriter + HabitWidgetDataWriter + RoutineWidgetRefresher
-└── Theme/                      # Colors.swift, Typography.swift
+├── App/                  # Entry point, AppDependencies (DI), PremiumConfig, PremiumServices
+├── Domain/               # Model/, Repository/ (protocols), UseCase/, Premium/, Analytics/
+├── Data/
+│   ├── Remote/           # Quote, anime images and habit templates from RTDB + DTOs
+│   ├── Local/            # SwiftData DAOs, UserDefaults stores, preferences
+│   ├── Premium/          # StoreKit and mock entitlement sources
+│   └── Repository/       # Concrete implementations of the domain protocols
+├── Presentation/
+│   ├── Navigation/       # AppRouter (AppScreen + typed AppRoute path)
+│   ├── Splash/ Onboarding/ Home/ Catalog/ Settings/
+│   ├── Routine/          # Mi Rutina
+│   ├── Subscription/     # Paywall, manage subscription
+│   └── Ads/ Common/ Components/
+├── Notification/         # Quote scheduling + slot calculator, habit reminders, background refresh
+├── Widget/               # Writers that feed the extension through the App Group
+└── Theme/                # Colors, typography
+
+QuoteAnimeWidget/         # Extension: quote, lock screen, routine summary, per-habit widget
+quoteAnimeTests/          # Swift Testing suite
 ```
+
+---
+
+## Requirements & Setup
+
+| Tool | Version |
+|---|---|
+| Xcode | builds with 26.2 |
+| iOS deployment target | 16.6 (app and widget extension) |
+| Swift language mode | 5 |
+
+The project file on disk is **`quoteanime.xcodeproj`** — lowercase, unlike the target name.
+
+### Files that are not in the repo
+
+| File | Why |
+|---|---|
+| `quoteAnime/GoogleService-Info.plist` | Firebase config, git-ignored. Download it from the Firebase console and add it to the app target. |
+
+### Steps
+
+1. Clone the repo and open `quoteanime.xcodeproj`.
+2. Let Xcode resolve the Swift packages (pinned in `Package.resolved`): Firebase iOS SDK and
+   Google Mobile Ads.
+3. Add `GoogleService-Info.plist` to the app target.
+4. In Signing & Capabilities, on **both** the app and the widget extension, enable the App
+   Group `group.com.gonzadev.quoteAnime`. The app target also needs Push Notifications.
+
+Source files are picked up automatically: the project uses Xcode 16 synchronised folder
+groups, so nothing has to be dragged into the navigator. A new *target* or build setting
+still means editing `project.pbxproj`.
+
+### Build and test
+
+```bash
+xcodebuild -project quoteanime.xcodeproj -scheme quoteAnime \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+
+xcodebuild test -project quoteanime.xcodeproj -scheme quoteAnime \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+```
+
+---
+
+## Versioning
+
+Current release: **1.0.6** (build 16)
+
+This project follows [Semantic Versioning](https://semver.org/). The full release history
+lives in [CHANGELOG.md](CHANGELOG.md).
+
+<!-- TODO: CHANGELOG.md's latest released heading is [1.1.0] while MARKETING_VERSION is 1.0.6 — one of the two is wrong -->
+
+---
+
+## Privacy Policy
+
+The published privacy policy and terms of service open inside the app and are declared in
+`Presentation/Common/AppLinks.swift`:
+
+- https://www.animequote.app/privacy-policy
+- https://www.animequote.app/terms-and-conditions
 
 ---
 
@@ -169,9 +221,9 @@ The same App Group carries the user's anime selection (`pref_selected_category_i
 
 `Localizable.xcstrings` in the app and a separate one in the widget extension (an extension can't read the app bundle's catalog). English is the development/source language, so any device language other than Spanish or English falls back to English, as on Android. Keys are still the Spanish text, and both languages have an explicit value for every key; English translations reuse the Android app's wording where one exists. Plurals ("1 día seguido" / "5 días seguidos") are catalog plural variations, not `if` branches. The Spanish register is "tú" throughout. `LocalizationTests` fails if any key is missing its Spanish or English value. See `CLAUDE.md` → Localization for the rules.
 
-### UI — always dark, portrait only
+### UI — always dark
 
-`preferredColorScheme(.dark)` is enforced at the root. All colors are `Color` static extensions in `Theme/Colors.swift`. Quote text uses Georgia (serif) via custom `Font` extensions.
+`preferredColorScheme(.dark)` is enforced at the root. The project declares all four interface orientations and nothing locks them in code, so the app does rotate. All colors are `Color` static extensions in `Theme/Colors.swift`. Quote text uses Georgia (serif) via custom `Font` extensions.
 
 **Why always dark:** Anime artwork reads better on dark backgrounds and the intended aesthetic is cinematic.
 
@@ -194,5 +246,18 @@ The same App Group carries the user's anime selection (`pref_selected_category_i
 
 - Bundle ID: `com.gonzadev.quoteAnime`
 - App Group: `group.com.gonzadev.quoteAnime`
-- Minimum deployment: iOS 16.0
+- Minimum deployment: iOS 16.6
 - Optimized features on iOS 17+: `scrollTargetBehavior(.paging)`, SwiftData
+
+---
+
+## License
+
+Copyright © 2026 Gondroid. All rights reserved.
+
+This source code is proprietary. It may be viewed for reference, but it may not be
+copied, modified, redistributed, or published to any app store without written
+permission.
+
+Quotes, characters, and artwork belong to their respective rights holders. The license
+above covers this application's source code only, not third-party content.
