@@ -8,18 +8,12 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
-### Changed
-- **Premium en pausa**: la suscripción todavía no está a la venta, así que la app ya no la ofrece en ningún lado — desaparece "Hazte Premium" de Ajustes. Mientras tanto Mi Rutina no tiene límite de hábitos y las sugerencias temáticas premium (Pokémon, Black Clover) están desbloqueadas. Los anuncios se siguen mostrando. Se reactiva con `PremiumConfig.paymentsEnabled`.
-- Tests de los pagos apagados (3 casos nuevos, 440 en total).
-
-### Fixed
-- **El banner de anuncios usaba una unidad de Android**: ahora pide la unidad de banner de la app de iOS, así que puede cargar en la versión de la App Store.
-
 ## [1.1.0] — 2026-09
 
 ### Added
 - **El texto sigue el tamaño de letra de tu iPhone.** Si agrandas la letra en Ajustes → Pantalla y brillo → Tamaño del texto (o en Accesibilidad), la app la agranda también: Inicio, Mi Rutina, el detalle y el editor de hábitos, el paywall, la bienvenida y los widgets de Mi Rutina. Con el tamaño normal todo se ve exactamente igual que antes. En los tamaños más grandes las rachas del detalle se apilan, los nombres largos de hábitos pasan a dos líneas y la página de elegir hábito de la bienvenida se puede desplazar; la frase a pantalla completa, el mapa de actividad y las barras superiores crecen hasta un límite para no romperse, y los widgets de frases mantienen su tamaño.
 - Tests del escalado de la tipografía (5 casos nuevos, 437 en total).
+- Tests de los pagos apagados (3 casos nuevos, 440 en total).
 - **Las frases por notificación ya no se acaban si no abres la app.** La app pide a iOS repasar las notificaciones en segundo plano más o menos una vez al día y vuelve a llenar la tanda con tus animes y horarios, sin tocar los recordatorios de hábitos. iOS decide cuándo lo hace, así que la última notificación de cada tanda es un aviso para abrir la app: solo llega si nada la repuso a tiempo.
 - Tests de la reposición en segundo plano y del aviso final (11 casos nuevos, 432 en total).
 - Tests del recordatorio sin días en el editor y en los casos de uso (8 casos nuevos, 421 en total).
@@ -37,7 +31,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **El selector de íconos se puede usar con VoiceOver.** Cada uno de los 126 íconos se lee con su nombre ("Entrenar", "Beber agua", "Tender la cama"…), en español o en inglés según el iPhone, igual que en Android; el que tiene el hábito se anuncia como seleccionado y los títulos de categoría se leen como encabezados.
 - Con VoiceOver, "Elegir ícono" dice qué ícono tiene el hábito, cada color dice si es el elegido y el mapa de actividad del detalle dice cuántos días completaste en esas semanas.
 - Tests de las etiquetas de VoiceOver: los 126 íconos en los dos idiomas, los 14 colores y el conteo de días del mapa de actividad (15 casos nuevos, 283 en total).
-- **Premium llega próximamente.** El paywall ya muestra lo que incluye premium (hábitos ilimitados, sin anuncios y los temas de Pokémon y Black Clover), con el botón "Próximamente" mientras preparamos las suscripciones. El plan gratuito sigue igual: 3 hábitos activos y las plantillas premium con candado.
+- **Premium en pausa.** La suscripción todavía no está a la venta, así que esta versión no la ofrece en ningún lado: no hay "Hazte Premium" en Ajustes ni paywall. Mientras tanto Mi Rutina no tiene límite de hábitos y las sugerencias temáticas de Pokémon y Black Clover están desbloqueadas para todos. Los anuncios se siguen mostrando. Se reactiva con `PremiumConfig.paymentsEnabled`.
 - Premium de prueba solo en las versiones de desarrollo y TestFlight, para revisar las pantallas premium; la versión de la App Store no lo ofrece ni lo acepta.
 - La compra con la App Store (planes, restaurar compras, gestionar o cancelar la suscripción) ya está hecha pero apagada hasta la versión productiva: la app no se conecta a la tienda mientras tanto.
 - Tests del premium apagado: "Próximamente" en la App Store, premium de prueba en desarrollo y TestFlight, y que la tienda no se toca (17 casos nuevos, 268 en total).
@@ -79,6 +73,7 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - Typography: `quoteSerif` changed from `Georgia` to `Didot`; `quoteSerifItalic` changed from `Georgia-Italic` to `Georgia`.
 
 ### Fixed
+- **El banner de anuncios usaba una unidad de Android**: ahora pide la unidad de banner de la app de iOS, así que puede cargar en la versión de la App Store.
 - **Un recordatorio ya no queda encendido sin días.** Al activar el recordatorio de un hábito se eligen los siete días, y si quitas todos el editor te avisa de que así no va a sonar; si guardas igual, se guarda apagado en vez de parecer activo sin programar nada.
 - **Los recordatorios de hábitos ya no desaparecen.** Con las notificaciones de frases activadas, cada vez que abrías la app se borraban los recordatorios de tus hábitos (y también al apagar las de frases); ahora conviven.
 - Inicio cargaba las frases dos veces al abrir la app.
