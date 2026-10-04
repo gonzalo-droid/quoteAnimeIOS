@@ -74,11 +74,8 @@ enum AdConstants {
     static let bannerID            = "ca-app-pub-3940256099942544/2934735716" // Google test: iOS banner
     static let shareInterstitialID = "ca-app-pub-3940256099942544/4411468910" // Google test: iOS interstitial
     #else
-    /// ⚠️ This is the value Android's release build uses for its banner (`BANNER_AD_UNIT_ID`),
-    /// not an iOS unit: it predates the port and nothing records where it came from. If AdMob
-    /// rejects it for this app the banner just collapses. Create a banner unit under the iOS app
-    /// in AdMob and replace it — see `PARITY.md` → Pendiente.
-    static let bannerID            = "ca-app-pub-1427341798923689/4873365993"
+    /// Both units belong to the iOS app in AdMob (`~5172948580`).
+    static let bannerID            = "ca-app-pub-1427341798923689/3752284926"
     static let shareInterstitialID = "ca-app-pub-1427341798923689/7805407829"
     #endif
 

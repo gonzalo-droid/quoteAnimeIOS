@@ -12,6 +12,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 - **Premium en pausa**: la suscripción todavía no está a la venta, así que la app ya no la ofrece en ningún lado — desaparece "Hazte Premium" de Ajustes. Mientras tanto Mi Rutina no tiene límite de hábitos y las sugerencias temáticas premium (Pokémon, Black Clover) están desbloqueadas. Los anuncios se siguen mostrando. Se reactiva con `PremiumConfig.paymentsEnabled`.
 - Tests de los pagos apagados (3 casos nuevos, 440 en total).
 
+### Fixed
+- **El banner de anuncios usaba una unidad de Android**: ahora pide la unidad de banner de la app de iOS, así que puede cargar en la versión de la App Store.
+
 ## [1.1.0] — 2026-09
 
 ### Added
