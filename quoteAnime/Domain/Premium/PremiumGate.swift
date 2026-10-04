@@ -19,10 +19,15 @@ final class PremiumGate: ObservableObject {
     /// Exposed for the paywall's DEBUG path only: a real purchase clears the QA override on
     /// *this* source (`DebugPremiumOverrideSource`).
     let source: PremiumEntitlementSource
+    /// `PremiumConfig.paymentsEnabled` in the app. While `false` the free plan has no limits —
+    /// there is no paywall to send anyone to — but `isPremium` stays the real entitlement, so ads
+    /// keep following it. Defaults to `true` so tests exercise the paid plan unless they opt out.
+    let paymentsEnabled: Bool
     private var cancellable: AnyCancellable?
 
-    init(source: PremiumEntitlementSource) {
+    init(source: PremiumEntitlementSource, paymentsEnabled: Bool = true) {
         self.source = source
+        self.paymentsEnabled = paymentsEnabled
         cancellable = source.isPremiumPublisher
             .removeDuplicates()
             .receive(on: RunLoop.main)
@@ -35,7 +40,13 @@ final class PremiumGate: ObservableObject {
     var isPremiumPublisher: AnyPublisher<Bool, Never> { source.isPremiumPublisher }
 
     var maxActiveHabits: Int {
-        isPremium ? Int.max : Self.freeHabitLimit
+        unlocksPremiumFeatures ? Int.max : Self.freeHabitLimit
+    }
+
+    /// What the plan limits check (habit cap, padlocked suggestions) — never the ads, which read
+    /// `isPremium`.
+    var unlocksPremiumFeatures: Bool {
+        isPremium || !paymentsEnabled
     }
 
     /// Called at launch and on every return to the foreground. With real billing it re-reads

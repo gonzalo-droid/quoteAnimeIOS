@@ -1,7 +1,14 @@
 import Foundation
 
-/// The one switch between the premium mock and real App Store billing.
+/// The switches for premium: whether it is on sale at all, and mock vs. real App Store billing.
 enum PremiumConfig {
+    /// `false`: the subscription is not offered anywhere. No paywall entry is shown (Settings,
+    /// the Mi Rutina "+" at the limit, the padlocked suggestions), so the free plan has nothing to
+    /// sell against: unlimited habits and every suggestion unlocked (`PremiumGate`). Ads still
+    /// follow the real entitlement and keep showing. Kept off until real billing is ready, so App
+    /// Review never meets the mock paywall. Same switch as Android's `PremiumGate.PAYMENTS_ENABLED`.
+    static let paymentsEnabled = false
+
     /// `false`: premium is a mock. Nothing talks to the App Store — no products are loaded, no
     /// `Transaction.updates` listener runs, nothing re-syncs on returning to the foreground. The
     /// paywall shows the benefits with a disabled "Próximamente" button and no restore or manage;

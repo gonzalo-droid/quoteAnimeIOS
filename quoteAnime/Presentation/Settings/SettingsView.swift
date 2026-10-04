@@ -30,7 +30,9 @@ struct SettingsView: View {
 
     var body: some View {
         List {
-            premiumSection
+            if PremiumConfig.paymentsEnabled {
+                premiumSection
+            }
             contentSection
             notificationsSection
             widgetSection

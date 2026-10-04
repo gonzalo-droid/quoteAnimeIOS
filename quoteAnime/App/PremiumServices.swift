@@ -10,13 +10,17 @@ struct PremiumServices {
     /// `nil` where no test switch can exist at all: a release build with real billing.
     let testControls: TestPremiumControlling?
 
-    static let live = make(usesRealBilling: PremiumConfig.usesRealBilling)
+    static let live = make(
+        usesRealBilling: PremiumConfig.usesRealBilling,
+        paymentsEnabled: PremiumConfig.paymentsEnabled
+    )
 
     /// The StoreKit types arrive as factories on purpose: with `usesRealBilling == false` they
     /// must not even be constructed — `StoreKitEntitlementSource.init` starts listening to
     /// `Transaction.updates` — and a test proves it by passing factories that fail when called.
     static func make(
         usesRealBilling: Bool,
+        paymentsEnabled: Bool = true,
         defaults: UserDefaults = .standard,
         detector: AppDistributionDetecting = AppTransactionDistributionDetector(),
         makeStoreKitSource: () -> PremiumEntitlementSource = { StoreKitEntitlementSource() },
@@ -27,7 +31,7 @@ struct PremiumServices {
         guard usesRealBilling else {
             let mock = MockPremiumEntitlementSource(defaults: defaults, detector: detector)
             return PremiumServices(
-                gate: PremiumGate(source: mock),
+                gate: PremiumGate(source: mock, paymentsEnabled: paymentsEnabled),
                 store: UnavailablePremiumStore(),
                 purchaseAvailability: .comingSoon,
                 testControls: mock
@@ -45,7 +49,7 @@ struct PremiumServices {
         let testControls: TestPremiumControlling? = nil
         #endif
         return PremiumServices(
-            gate: PremiumGate(source: source),
+            gate: PremiumGate(source: source, paymentsEnabled: paymentsEnabled),
             // Shares the gate's source on purpose — a second one would mean a second
             // `Transaction.updates` listener and a second cache disagreeing with the first.
             store: makeStoreKitStore(source),

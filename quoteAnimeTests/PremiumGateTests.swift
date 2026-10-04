@@ -49,6 +49,36 @@ struct PremiumGateTests {
         #expect(gate.maxActiveHabits == PremiumGate.freeHabitLimit)
     }
 
+    @Test("con los pagos apagados no hay límite de hábitos, pero isPremium sigue siendo el real")
+    func paymentsOffLiftsLimits() {
+        let gate = PremiumGate(source: FakeEntitlementSource(isPremium: false), paymentsEnabled: false)
+
+        #expect(gate.maxActiveHabits == Int.max)
+        #expect(gate.unlocksPremiumFeatures == true)
+        // Los anuncios leen isPremium: tienen que seguir apareciendo.
+        #expect(gate.isPremium == false)
+    }
+
+    @Test("con los pagos encendidos las sugerencias premium siguen con candado")
+    func paymentsOnKeepsLocks() {
+        let gate = PremiumGate.fake()
+        let premiumOnly = HabitTemplate(
+            id: "t", title: "t", iconKey: "star", order: 0,
+            themeColorIndex: nil, themeKey: nil, isPremiumOnly: true
+        )
+
+        #expect(premiumOnly.isLocked(isPremium: gate.unlocksPremiumFeatures) == true)
+        let free = PremiumGate(source: FakeEntitlementSource(), paymentsEnabled: false)
+        #expect(premiumOnly.isLocked(isPremium: free.unlocksPremiumFeatures) == false)
+    }
+
+    @Test("el build que se publica tiene los pagos apagados")
+    func shippedBuildHasPaymentsOff() {
+        // Cambiar junto con PremiumConfig.paymentsEnabled cuando la suscripción exista en App Store Connect.
+        #expect(PremiumConfig.paymentsEnabled == false)
+        #expect(PremiumServices.live.gate.paymentsEnabled == false)
+    }
+
     @Test("el gate no guarda copia: lee siempre la fuente")
     func readsThroughToTheSource() {
         let source = FakeEntitlementSource(isPremium: false)

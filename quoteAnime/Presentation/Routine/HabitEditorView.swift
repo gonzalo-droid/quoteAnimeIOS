@@ -66,10 +66,10 @@ struct HabitEditorView: View {
         .navigationBarHidden(true)
         .onAppear {
             viewModel.onAppear()
-            viewModel.applyDefaultTemplate(from: viewModel.templates, isPremium: premiumGate.isPremium)
+            viewModel.applyDefaultTemplate(from: viewModel.templates, isPremium: premiumGate.unlocksPremiumFeatures)
         }
         .task {
-            await viewModel.loadTemplates(isPremium: { premiumGate.isPremium })
+            await viewModel.loadTemplates(isPremium: { premiumGate.unlocksPremiumFeatures })
         }
         .sheet(isPresented: $showIconPicker) {
             HabitIconPickerView(selectedKey: $viewModel.uiState.iconKey)
@@ -150,7 +150,7 @@ struct HabitEditorView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(viewModel.templates) { template in
-                        let isLocked = template.isLocked(isPremium: premiumGate.isPremium)
+                        let isLocked = template.isLocked(isPremium: premiumGate.unlocksPremiumFeatures)
                         // Android's `FilterChip(selected = templateId == template.id)`: now that a
                         // new habit starts from a suggestion, the chip has to say which one.
                         let isSelected = viewModel.uiState.templateId == template.id

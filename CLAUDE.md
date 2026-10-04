@@ -141,6 +141,13 @@ quoteAnime/
 
 **Habit validation lives in the use cases**, mirroring Android: `CreateHabitUseCase` / `UpdateHabitUseCase` own the blank-title and `endDate < startDate` checks plus the trimming, and `ToggleHabitCompletionUseCase` rejects an unknown habit, a future day and a day outside the habit's window (`Habit.isActiveOn`). Views must not duplicate these rules — `HabitCalendarMonthView` only *disables* the days the use case would reject.
 
+**Premium — not offered at all right now.** `PremiumConfig.paymentsEnabled` is **`false`**: no
+paywall entry is shown (Settings' premium section; the Mi Rutina "+" can't hit the limit), and
+`PremiumGate.unlocksPremiumFeatures` lifts the free-plan limits — unlimited habits, no padlocked
+suggestions. `isPremium` stays the real entitlement, so ads keep showing. Android has the same switch
+(`PremiumGate.PAYMENTS_ENABLED`). `PremiumGate(source:)` defaults to `paymentsEnabled: true`, so tests
+exercise the paid plan unless they opt out; only `PremiumServices.live` passes the config value.
+
 **Premium — mock until the production release, StoreKit asleep behind one switch.**
 `PremiumConfig.usesRealBilling` (in `App/PremiumConfig.swift`) is **`false`** by product decision:
 the subscription does not exist in App Store Connect yet. Its `///` lists what must be done before
