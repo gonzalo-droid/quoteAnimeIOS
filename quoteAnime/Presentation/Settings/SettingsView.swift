@@ -34,6 +34,7 @@ struct SettingsView: View {
                 premiumSection
             }
             contentSection
+            languageSection
             notificationsSection
             widgetSection
             ratingSection
@@ -91,6 +92,34 @@ struct SettingsView: View {
                 }
                 .contentShape(Rectangle())
             }
+        }
+        .listRowBackground(Color.surface)
+    }
+
+    /// iOS keeps the per-app language in the system Settings, so this row shows the current one
+    /// and opens that page (see `AppLanguage`). The arrow says it leaves the app.
+    private var languageSection: some View {
+        Section {
+            Button {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            } label: {
+                HStack {
+                    Label("Idioma", systemImage: "globe")
+                        .foregroundColor(.textPrimary)
+                    Spacer()
+                    Text(verbatim: AppLanguage.displayName(forCode: AppLanguage.currentCode()))
+                        .foregroundColor(.textSecondary)
+                    Image(systemName: "arrow.up.forward")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.textSecondary)
+                }
+                .contentShape(Rectangle())
+            }
+            .accessibilityHint(Text("Abre los Ajustes del iPhone para cambiar el idioma de la app"))
+        } footer: {
+            Text("Se cambia en los Ajustes del iPhone, en la página de QuoteAnime. Las frases solo están disponibles en español.")
         }
         .listRowBackground(Color.surface)
     }

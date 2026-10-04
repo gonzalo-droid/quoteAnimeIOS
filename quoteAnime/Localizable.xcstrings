@@ -228,6 +228,23 @@
             "value" : "Abre la app para seguir recibiendo frases de anime."
           }
         }
+      },
+      "extractionState" : "manual"
+    },
+    "Abre los Ajustes del iPhone para cambiar el idioma de la app" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens iPhone Settings to change the app's language"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre los Ajustes del iPhone para cambiar el idioma de la app"
+          }
+        }
       }
     },
     "Accede a colecciones temáticas exclusivas, como Pokémon y Black Clover." : {
@@ -2943,6 +2960,22 @@
         }
       }
     },
+    "Idioma" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idioma"
+          }
+        }
+      }
+    },
     "Información" : {
       "localizations" : {
         "en" : {
@@ -3938,7 +3971,8 @@
             "value" : "No te quedes sin frases"
           }
         }
-      }
+      },
+      "extractionState" : "manual"
     },
     "Noche" : {
       "comment" : "VoiceOver name of a habit icon in the icon picker",
@@ -4789,6 +4823,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Se borra el hábito y todo su historial. Esta acción no se puede deshacer."
+          }
+        }
+      }
+    },
+    "Se cambia en los Ajustes del iPhone, en la página de QuoteAnime. Las frases solo están disponibles en español." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changed in iPhone Settings, on the QuoteAnime page. Quotes are only available in Spanish."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se cambia en los Ajustes del iPhone, en la página de QuoteAnime. Las frases solo están disponibles en español."
           }
         }
       }

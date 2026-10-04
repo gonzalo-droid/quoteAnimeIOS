@@ -13,10 +13,17 @@ enum NotificationHelper {
 
     /// The last booked slot of a batch (`NotificationScheduler.isRefillNotice`). Only fires when
     /// nothing refilled the batch in time; tapping it opens the app, and Home books a new batch.
+    ///
+    /// Its texts are resolved when it is delivered, not when it is booked: a batch is booked days
+    /// ahead, and the app's language may change meanwhile (Ajustes › QuoteAnime › Idioma).
+    /// Same pattern as the habit reminders' body; the keys are carried by hand in the catalog.
+    static let refillNoticeTitleKey = "No te quedes sin frases"
+    static let refillNoticeBodyKey = "Abre la app para seguir recibiendo frases de anime."
+
     static func makeRefillNoticeContent() -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
-        content.title = String(localized: "No te quedes sin frases")
-        content.body  = String(localized: "Abre la app para seguir recibiendo frases de anime.")
+        content.title = NSString.localizedUserNotificationString(forKey: refillNoticeTitleKey, arguments: nil)
+        content.body  = NSString.localizedUserNotificationString(forKey: refillNoticeBodyKey, arguments: nil)
         content.sound = .default
         return content
     }

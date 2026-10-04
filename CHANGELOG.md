@@ -11,6 +11,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 ## [1.1.0] — 2026-09
 
 ### Added
+- **Idioma en Ajustes.** Una nueva fila "Idioma" muestra en qué idioma está la app (English o Español) y abre la página de QuoteAnime en los Ajustes del iPhone, donde se elige el idioma solo para esta app. Toda la app cambia, incluidos el widget y los avisos; las frases siguen en español porque solo existen en ese idioma.
+- El aviso "No te quedes sin frases" ahora sale en el idioma que tenga la app cuando llega, no en el que tenía cuando se agendó.
+- Tests de la fila de idioma y de las traducciones de los avisos (3 casos nuevos, 443 en total).
 - **El texto sigue el tamaño de letra de tu iPhone.** Si agrandas la letra en Ajustes → Pantalla y brillo → Tamaño del texto (o en Accesibilidad), la app la agranda también: Inicio, Mi Rutina, el detalle y el editor de hábitos, el paywall, la bienvenida y los widgets de Mi Rutina. Con el tamaño normal todo se ve exactamente igual que antes. En los tamaños más grandes las rachas del detalle se apilan, los nombres largos de hábitos pasan a dos líneas y la página de elegir hábito de la bienvenida se puede desplazar; la frase a pantalla completa, el mapa de actividad y las barras superiores crecen hasta un límite para no romperse, y los widgets de frases mantienen su tamaño.
 - Tests del escalado de la tipografía (5 casos nuevos, 437 en total).
 - Tests de los pagos apagados (3 casos nuevos, 440 en total).

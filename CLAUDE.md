@@ -401,7 +401,15 @@ una clave le falta cualquiera de los dos idiomas.
   Store Connect, el acuerdo de apps pagas y una prueba en sandbox — es un fork, pregunta.
   **Nunca llames `AppTransaction.shared` sin condición**: dispara un login interactivo del App Store
   al arrancar.
-- **Sin selector de idioma en la app**, igual que Android: se sigue el idioma del dispositivo.
+- **Idioma de la app: fila "Idioma" en Ajustes que abre los Ajustes del iPhone.** iOS no deja que
+  una app cambie su propio idioma; la elección por app vive en Ajustes › QuoteAnime › Idioma (iOS la
+  muestra porque la app trae `en` y `es`) y al cambiarla relanza la app y el widget. La fila
+  (`AppLanguage`) sólo muestra el idioma actual y abre `openSettingsURLString`. Android, en cambio,
+  elige dentro de la app con `LocaleManager` (13+). En el simulador el enlace a veces cae en la raíz
+  de Ajustes; el pie de la sección dice dónde está la opción. **Texto de una notificación que se
+  agenda con días de anticipación**: resolverlo al entregarla con
+  `NSString.localizedUserNotificationString` (clave constante, marcada `manual` en el catálogo), no con
+  `String(localized:)` — si no, queda en el idioma que tenía la app al agendarla.
 
 **7. Valores que nunca cruzan de plataforma**
 
