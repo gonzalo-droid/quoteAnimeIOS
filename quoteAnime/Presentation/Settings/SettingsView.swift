@@ -33,7 +33,10 @@ struct SettingsView: View {
             if PremiumConfig.paymentsEnabled {
                 premiumSection
             }
-            contentSection
+            // Hidden for now, like Android (bcfd711): the anime selection is not offered.
+            // A selection saved earlier still filters Home, notifications and the widget.
+            // Restore this line to bring the section back.
+            // contentSection
             languageSection
             notificationsSection
             widgetSection

@@ -8,6 +8,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+### Changed
+- Se ocultó la sección "Animes" de Ajustes, igual que en Android.
+
 ## [1.1.2] — 2026-11
 
 ### Fixed

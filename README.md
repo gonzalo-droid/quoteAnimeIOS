@@ -34,7 +34,7 @@ from themed templates, mark them done, and watch a streak counter and a heatmap 
 | Feature | Detail |
 |---|---|
 | **Full-screen quote feed** | Vertical paging, one quote per screen, drawn from the animes you selected |
-| **Anime selection** | Settings → Contenido → Animes; drives the feed, the notifications and the quote widget |
+| **Anime selection** | Settings → Contenido → Animes (**hidden for now**, as on Android); drives the feed, the notifications and the quote widget |
 | **Catalog** | Browse and filter quotes by anime, or list only favorites |
 | **Favorites** | SwiftData on iOS 17+, a JSON fallback in UserDefaults on iOS 16 — both offline |
 | **Share as image** | Renders a quote card and opens the system share sheet |

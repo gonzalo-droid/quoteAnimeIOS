@@ -255,7 +255,9 @@ struct UserPreferences { selectedCategoryIds, notificationsEnabled, notification
 - `selectedCategoryIds` guarda **nombres de anime**, no ids remotos. Set vacío = todos, igual que
   en Android. Se aplica en `GetAllQuotesUseCase.filtered` (feed) y en
   `RescheduleQuoteNotificationsUseCase` (pozo de notificaciones); se elige en
-  Ajustes → Contenido → Animes
+  Ajustes → Contenido → Animes. **Esa sección está oculta desde 2026-11** (igual que en Android,
+  `bcfd711`): la línea `contentSection` está comentada en `SettingsView`; una selección guardada
+  antes sigue filtrando.
 
 ### Localization — String Catalogs, English source, Spanish keys, "tú"
 
