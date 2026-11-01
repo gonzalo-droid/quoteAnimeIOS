@@ -15,8 +15,8 @@ struct WidgetTutorialView: View {
             "plus.circle.fill"
         ),
         (
-            "Busca Quote Anime",
-            "Escribe Quote en el buscador y selecciona el widget de Quote Anime.",
+            "Busca AnimeQuotes",
+            "Escribe AnimeQuotes en el buscador y selecciona su widget.",
             "magnifyingglass"
         ),
         (

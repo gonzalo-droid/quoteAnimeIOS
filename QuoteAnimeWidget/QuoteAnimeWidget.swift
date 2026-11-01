@@ -482,7 +482,7 @@ struct QuoteAnimeWidget: Widget {
                     .widgetURL(entry.openURL)
             }
         }
-        .configurationDisplayName("Quote Anime")
+        .configurationDisplayName("AnimeQuotes")
         .description("Una frase de anime en tu pantalla de inicio.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
@@ -507,7 +507,7 @@ struct QuoteAnimeLockWidget: Widget {
                     .widgetURL(entry.openURL)
             }
         }
-        .configurationDisplayName("Quote Anime — Pantalla bloqueada")
+        .configurationDisplayName("AnimeQuotes — Pantalla bloqueada")
         .description("Una frase de anime en tu pantalla bloqueada.")
         .supportedFamilies([.accessoryRectangular, .accessoryInline])
     }

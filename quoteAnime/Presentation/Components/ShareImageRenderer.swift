@@ -183,7 +183,7 @@ enum ShareImageRenderer {
         let hPad:        CGFloat = 18
         let iconSize:    CGFloat = 56
         let spacing:     CGFloat = 10
-        let appName              = "Quote Anime"
+        let appName              = "AnimeQuotes"
         let nameFont             = UIFont.systemFont(ofSize: 24, weight: .bold)
         let nameAttrs: [NSAttributedString.Key: Any] = [
             .font: nameFont,

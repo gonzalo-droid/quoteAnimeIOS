@@ -8,6 +8,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+### Fixed
+- Quedaba "Quote Anime" en la pantalla de inicio, en la imagen al compartir, en el tutorial del widget y en el nombre de los widgets; ahora dice AnimeQuotes.
+
 ## [1.1.1] — 2026-11
 
 ### Changed

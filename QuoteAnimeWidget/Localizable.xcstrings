@@ -81,6 +81,39 @@
         }
       }
     },
+    "AnimeQuotes": {
+      "comment": "Widget name, not translated",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AnimeQuotes"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AnimeQuotes"
+          }
+        }
+      }
+    },
+    "AnimeQuotes — Pantalla bloqueada": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AnimeQuotes — Lock Screen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AnimeQuotes — Pantalla bloqueada"
+          }
+        }
+      }
+    },
     "Elige un hábito": {
       "localizations": {
         "en": {
@@ -198,39 +231,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mi Rutina"
-          }
-        }
-      }
-    },
-    "Quote Anime": {
-      "comment": "Widget name, not translated",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quote Anime"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quote Anime"
-          }
-        }
-      }
-    },
-    "Quote Anime — Pantalla bloqueada": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quote Anime — Lock Screen"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quote Anime — Pantalla bloqueada"
           }
         }
       }
