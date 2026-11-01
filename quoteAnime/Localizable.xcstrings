@@ -496,6 +496,23 @@
         }
       }
     },
+    "AnimeQuotes" : {
+      "comment" : "App name, not translated",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AnimeQuotes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AnimeQuotes"
+          }
+        }
+      }
+    },
     "Animes" : {
       "localizations" : {
         "en" : {
@@ -4511,23 +4528,6 @@
         }
       }
     },
-    "QuoteAnime" : {
-      "comment" : "App name, not translated",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "QuoteAnime"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "QuoteAnime"
-          }
-        }
-      }
-    },
     "Racha actual" : {
       "localizations" : {
         "en" : {
@@ -4827,18 +4827,18 @@
         }
       }
     },
-    "Se cambia en los Ajustes del iPhone, en la página de QuoteAnime. Las frases solo están disponibles en español." : {
+    "Se cambia en los Ajustes del iPhone, en la página de AnimeQuotes. Las frases solo están disponibles en español." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Changed in iPhone Settings, on the QuoteAnime page. Quotes are only available in Spanish."
+            "value" : "Changed in iPhone Settings, on the AnimeQuotes page. Quotes are only available in Spanish."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se cambia en los Ajustes del iPhone, en la página de QuoteAnime. Las frases solo están disponibles en español."
+            "value" : "Se cambia en los Ajustes del iPhone, en la página de AnimeQuotes. Las frases solo están disponibles en español."
           }
         }
       }
@@ -5949,18 +5949,18 @@
         }
       }
     },
-    "¡Descubre QuoteAnime! Las mejores frases de tus animes favoritos 🌟 Descárgala gratis:" : {
+    "¡Descubre AnimeQuotes! Las mejores frases de tus animes favoritos 🌟 Descárgala gratis:" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Discover QuoteAnime! The best quotes from your favorite anime 🌟 Download it for free:"
+            "value" : "Discover AnimeQuotes! The best quotes from your favorite anime 🌟 Download it for free:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¡Descubre QuoteAnime! Las mejores frases de tus animes favoritos 🌟 Descárgala gratis:"
+            "value" : "¡Descubre AnimeQuotes! Las mejores frases de tus animes favoritos 🌟 Descárgala gratis:"
           }
         }
       }

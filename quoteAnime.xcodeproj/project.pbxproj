@@ -493,7 +493,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = quoteAnime/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = QuoteAnime;
+				INFOPLIST_KEY_CFBundleDisplayName = AnimeQuotes;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -533,7 +533,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = quoteAnime/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = QuoteAnime;
+				INFOPLIST_KEY_CFBundleDisplayName = AnimeQuotes;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

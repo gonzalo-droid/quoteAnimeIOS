@@ -7,13 +7,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QuoteAnime"
+            "value" : "AnimeQuotes"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QuoteAnime"
+            "value" : "AnimeQuotes"
           }
         }
       }

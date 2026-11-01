@@ -422,9 +422,10 @@ una clave le falta cualquiera de los dos idiomas.
   clave. Reordenar o renombrar repinta todos los hábitos existentes y ningún test lo detecta.
 - **Bundle id, App Group (`group.com.gonzadev.quoteAnime`), product ids, firma y keystore** —
   específicos de plataforma por definición.
-- **El nombre visible de la app** — distinto a propósito (`QuoteAnime` en iOS, `Frases Anime` /
-  `Anime Quotes` en Android). Renombrarlo le cambia el nombre instalado a los usuarios actuales:
-  es una decisión de marca, no de paridad.
+- **El nombre visible de la app** — hoy `AnimeQuotes` en las dos plataformas y en los dos idiomas
+  (`CFBundleDisplayName` en `InfoPlist.xcstrings`, `app_name` en Android). Renombrarlo le cambia el
+  nombre instalado a los usuarios actuales: es una decisión de marca, se cambia en los dos lados.
+  El bundle id, el proyecto y los tipos (`QuoteAnimeApp`, `QuoteAnimeWidget`) no se renombran.
 
 **8. Documentos que hay que mantener ciertos**
 
@@ -458,7 +459,7 @@ una clave le falta cualquiera de los dos idiomas.
   notificaciones", con un `swipe` corto: el `tap` no mueve el `Toggle`). El banner dura ~5 s: haz
   `push` y el `tap` sobre el banner en llamadas seguidas, sin captura en medio. Tocar la
   notificación desde el Centro de notificaciones **no** abrió la app en el simulador. `simctl openurl
-  quoteanime://routine` con la app en segundo plano o cerrada pide confirmar "Open in QuoteAnime?".
+  quoteanime://routine` con la app en segundo plano o cerrada pide confirmar "Open in AnimeQuotes?".
   Prueba de que la respuesta llegó: `log show --predicate 'eventMessage CONTAINS "UNNotificationDefaultActionIdentifier"'`.
 - **Ver las notificaciones de frases pendientes en el simulador**: en DEBUG, `NotificationScheduler`
   escribe cada horario pendiente en el log (subsistema `com.gonzadev.quoteAnime`, categoría
