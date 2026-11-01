@@ -18,7 +18,7 @@ struct SplashView: View {
                     .frame(width: 110, height: 110)
                     .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
 
-                Text(verbatim: "Quote Anime")
+                Text(verbatim: "AnimeQuotes")
                     .font(.quoteSerif(size: 28))
                     .foregroundColor(.textPrimary)
                     .kerning(1.5)

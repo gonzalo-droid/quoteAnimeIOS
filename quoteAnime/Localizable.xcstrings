@@ -760,18 +760,18 @@
         }
       }
     },
-    "Busca Quote Anime" : {
+    "Busca AnimeQuotes" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Search for Quote Anime"
+            "value" : "Search for AnimeQuotes"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Busca Quote Anime"
+            "value" : "Busca AnimeQuotes"
           }
         }
       }
@@ -2170,18 +2170,18 @@
         }
       }
     },
-    "Escribe Quote en el buscador y selecciona el widget de Quote Anime." : {
+    "Escribe AnimeQuotes en el buscador y selecciona su widget." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Type Quote in the search field and select the Quote Anime widget."
+            "value" : "Type AnimeQuotes in the search field and select its widget."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escribe Quote en el buscador y selecciona el widget de Quote Anime."
+            "value" : "Escribe AnimeQuotes en el buscador y selecciona su widget."
           }
         }
       }
