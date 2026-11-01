@@ -8,6 +8,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+### Changed
+- **La app ahora se llama AnimeQuotes**, igual que en Android: bajo el ícono, en el mensaje para invitar amigos y en Ajustes.
+
 ## [1.1.0] — 2026-09
 
 ### Added

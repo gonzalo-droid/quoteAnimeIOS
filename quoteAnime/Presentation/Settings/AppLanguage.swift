@@ -3,7 +3,7 @@ import Foundation
 /// The language the app is showing, for the Settings "Idioma" row.
 ///
 /// iOS has no API for an app to switch its own language: the per-app choice lives in the
-/// system Settings (Ajustes › QuoteAnime › Idioma), which iOS shows on its own because the app
+/// system Settings (Ajustes › AnimeQuotes › Idioma), which iOS shows on its own because the app
 /// ships more than one localization. Changing it there relaunches the app, the widget extension
 /// included. So the row only reports the current language and opens that page — the same choice
 /// Android's Settings picker writes through `LocaleManager`.

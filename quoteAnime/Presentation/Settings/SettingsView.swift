@@ -119,7 +119,7 @@ struct SettingsView: View {
             }
             .accessibilityHint(Text("Abre los Ajustes del iPhone para cambiar el idioma de la app"))
         } footer: {
-            Text("Se cambia en los Ajustes del iPhone, en la página de QuoteAnime. Las frases solo están disponibles en español.")
+            Text("Se cambia en los Ajustes del iPhone, en la página de AnimeQuotes. Las frases solo están disponibles en español.")
         }
         .listRowBackground(Color.surface)
     }
@@ -230,8 +230,8 @@ struct SettingsView: View {
 
             ShareLink(
                 item: AppLinks.appStore,
-                subject: Text("QuoteAnime"),
-                message: Text("¡Descubre QuoteAnime! Las mejores frases de tus animes favoritos 🌟 Descárgala gratis:")
+                subject: Text("AnimeQuotes"),
+                message: Text("¡Descubre AnimeQuotes! Las mejores frases de tus animes favoritos 🌟 Descárgala gratis:")
             ) {
                 Label("Compartir la app", systemImage: "square.and.arrow.up")
                     .foregroundColor(.textPrimary)

@@ -1,4 +1,4 @@
-# QuoteAnime
+# AnimeQuotes
 
 ![Version](https://img.shields.io/badge/version-1.1.0%20(17)-blue)
 ![Platform](https://img.shields.io/badge/iOS-16.6%2B-brightgreen)
@@ -6,7 +6,7 @@
 
 [App Store](https://apps.apple.com/app/id6762100338)
 
-QuoteAnime shows motivational quotes from the anime you already love, one per screen, read
+AnimeQuotes shows motivational quotes from the anime you already love, one per screen, read
 the way you read a feed: swipe up for the next one. Pick which series the feed draws from,
 save the ones that stick, share any of them as an image card, and pin one to your home or
 lock screen.
