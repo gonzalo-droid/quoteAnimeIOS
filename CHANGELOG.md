@@ -8,6 +8,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+### Added
+- **Consentimiento de anuncios**: donde la ley lo exige (Europa, Reino Unido y algunos estados de EE. UU.), la app pregunta antes de mostrar anuncios, con el formulario de Google. En Ajustes aparece "Opciones de privacidad de anuncios" para cambiar la elección.
+
 ### Changed
 - Se ocultó la sección "Animes" de Ajustes, igual que en Android.
 

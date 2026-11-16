@@ -10,9 +10,10 @@ struct QuoteAnimeApp: App {
 
     init() {
         FirebaseApp.configure()
-        MobileAds.shared.start()
-        // Warm up the interstitial so the first ad is ready when the user shares
-        _ = ShareInterstitialManager.shared
+        // Ads start only if a consent saved in an earlier launch allows it; a first launch waits
+        // for `gatherConsent()` below (Google's consent form, where the law requires it). Starting
+        // also warms up the share interstitial.
+        AdsConsentManager.shared.startAdsIfAllowed()
         // Built here, not lazily by `StateObject`: `AppDependencies` installs the notification
         // delegate, and a reminder tap that cold-launches the app is only delivered to a delegate
         // that exists before launch finishes.
@@ -41,6 +42,7 @@ struct QuoteAnimeApp: App {
                 // `PremiumConfig.usesRealBilling` is false the same call never reaches StoreKit's
                 // entitlements — it only settles whether this release build is TestFlight.
                 .task { await dependencies.premiumGate.refresh() }
+                .task { await AdsConsentManager.shared.gatherConsent() }
                 .onChange(of: scenePhase) { newPhase in
                     switch newPhase {
                     case .active:

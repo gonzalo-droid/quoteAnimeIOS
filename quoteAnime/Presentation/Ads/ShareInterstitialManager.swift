@@ -46,7 +46,9 @@ final class ShareInterstitialManager: NSObject {
     /// Pre-loads the next interstitial in background. Safe to call multiple times — no-ops if already loaded.
     func preload() {
         // Premium users never see this ad, so there is nothing to warm up — same as Android.
-        guard !PremiumGate.shared.isPremium, interstitial == nil else { return }
+        // Nothing is requested before the ad consent allows it (`AdsConsentManager`).
+        guard AdsConsentManager.shared.canRequestAds,
+              !PremiumGate.shared.isPremium, interstitial == nil else { return }
         let request = Request()
         InterstitialAd.load(
             with: AdConstants.shareInterstitialID,

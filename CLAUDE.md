@@ -42,7 +42,12 @@ xcrun simctl launch booted com.gonzadev.quoteAnime -AppleLanguages "(en)" -Apple
    - `GADApplicationIdentifier` — AdMob app ID, and `SKAdNetworkItems` (Google's
      `cstr6suwn9.skadnetwork`) — both already in `quoteAnime/Info.plist`. No ATT prompt and no
      `NSUserTrackingUsageDescription`: the app does not request tracking. Debug builds use Google's
-     test ad units (`AdConstants`).
+     test ad units (`AdConstants`). **Ad consent** goes through Google's UMP
+     (`Presentation/Ads/AdsConsentManager.swift`, Android's `AdsConsentManager`): `QuoteAnimeApp`
+     starts ads only if a saved consent allows it and runs `gatherConsent()` on launch; the banner
+     and the share interstitial request nothing until `canRequestAds`. The form is configured in
+     AdMob → Privacy & messaging. `UserMessagingPlatform` arrives through the Google Mobile Ads
+     package (no product of its own in the pbxproj).
    - `BGTaskSchedulerPermittedIdentifiers` (`com.gonzadev.quoteAnime.quoteNotificationsRefresh`) and
      `UIBackgroundModes` = `fetch` — the quote notifications' background refill
      (`QuoteNotificationBackgroundRefresh`). Both already in `quoteAnime/Info.plist`; no entitlement
