@@ -9,6 +9,8 @@ struct SettingsView: View {
     /// Observed, not just held: with StoreKit behind it the answer can change while this
     /// screen is open (a purchase, a cancellation made in Ajustes).
     @ObservedObject var premiumGate: PremiumGate
+    /// Shows "Opciones de privacidad de anuncios" when Google's consent rules require it.
+    @ObservedObject private var adsConsent = AdsConsentManager.shared
 
     init(
         getUserPreferences: GetUserPreferencesUseCase,
@@ -299,6 +301,16 @@ struct SettingsView: View {
             } label: {
                 Label("Términos y condiciones", systemImage: "doc.text.fill")
                     .foregroundColor(.textPrimary)
+            }
+
+            // Required wherever the consent form applies: a way to change the ad choice later.
+            if adsConsent.privacyOptionsRequired {
+                Button {
+                    Task { await adsConsent.presentPrivacyOptions() }
+                } label: {
+                    Label("Opciones de privacidad de anuncios", systemImage: "megaphone.fill")
+                        .foregroundColor(.textPrimary)
+                }
             }
 
             HStack {

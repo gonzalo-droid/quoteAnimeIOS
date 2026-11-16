@@ -4113,6 +4113,22 @@
         }
       }
     },
+    "Opciones de privacidad de anuncios" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ad privacy options"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opciones de privacidad de anuncios"
+          }
+        }
+      }
+    },
     "Ordenar el armario" : {
       "comment" : "VoiceOver name of a habit icon in the icon picker",
       "localizations" : {

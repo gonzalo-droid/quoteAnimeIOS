@@ -12,11 +12,15 @@ import GoogleMobileAds
 struct BannerAdView: View {
     let adUnitID: String
     @State private var didFail = false
+    /// No banner is requested before the ad consent allows it; until then it takes no space.
+    @ObservedObject private var consent = AdsConsentManager.shared
 
     var body: some View {
-        BannerAdRepresentable(adUnitID: adUnitID, didFail: $didFail)
-            .frame(width: 320, height: didFail ? 0 : 50)
-            .opacity(didFail ? 0 : 1)
+        if consent.canRequestAds {
+            BannerAdRepresentable(adUnitID: adUnitID, didFail: $didFail)
+                .frame(width: 320, height: didFail ? 0 : 50)
+                .opacity(didFail ? 0 : 1)
+        }
     }
 }
 
