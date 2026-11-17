@@ -54,6 +54,10 @@ xcrun simctl launch booted com.gonzadev.quoteAnime -AppleLanguages "(en)" -Apple
      and no pbxproj change are involved. Renaming the identifier means changing both places.
    - `CFBundleURLTypes` — the `quoteanime://` scheme, so the widgets' `widgetURL` opens the app (see Navigation). Already in `quoteAnime/Info.plist`.
    - Visible Info.plist values (today only `CFBundleDisplayName`) are translated in `quoteAnime/InfoPlist.xcstrings`.
+   - **Privacy manifests**: `quoteAnime/PrivacyInfo.xcprivacy` (UserDefaults, reasons `CA92.1` +
+     `1C8F.1`) and `QuoteAnimeWidget/PrivacyInfo.xcprivacy` (`1C8F.1`). They cover the app's own code;
+     the Google SDKs ship their own. A new required-reason API (file timestamps, disk space…) goes
+     here too; `PrivacyManifestTests` pins the app's reasons.
 
 5. **App Group** for widget data sharing: Add capability `group.com.gonzadev.quoteAnime` to both the main app target and the widget extension target.
 
