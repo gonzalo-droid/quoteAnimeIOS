@@ -8,12 +8,10 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
-### Added
-- La app y el widget declaran en su privacy manifest para qué usan las preferencias guardadas, como exige el App Store.
-
 ## [1.2.0] — 2026-11
 
 ### Added
+- La app y el widget declaran en su privacy manifest para qué usan las preferencias guardadas, como exige el App Store.
 - **Consentimiento de anuncios**: donde la ley lo exige (Europa, Reino Unido y algunos estados de EE. UU.), la app pregunta antes de mostrar anuncios, con el formulario de Google. En Ajustes aparece "Opciones de privacidad de anuncios" para cambiar la elección.
 
 ### Changed
