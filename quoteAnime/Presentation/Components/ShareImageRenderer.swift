@@ -115,7 +115,7 @@ enum ShareImageRenderer {
         let gap3:        CGFloat = 16  // author → anime
 
         // Wrap quote text
-        let quoteText  = quote.quote
+        let quoteText  = quote.localizedText
         let lines      = wrapText(quoteText, font: quoteFont, maxWidth: maxTextW)
         let textH      = CGFloat(lines.count) * lineHeight
         let authorH:   CGFloat = 46

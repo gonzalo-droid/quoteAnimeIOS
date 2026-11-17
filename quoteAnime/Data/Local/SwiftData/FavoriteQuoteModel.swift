@@ -6,6 +6,9 @@ import SwiftData
 final class FavoriteQuoteModel {
     @Attribute(.unique) var id: String
     var quoteText: String
+    /// English text (`Quote.quoteEn`). Optional, added after the first version: SwiftData's
+    /// implicit lightweight migration reads favorites saved before it as nil.
+    var quoteTextEn: String?
     var author: String
     var anime: String
     var animeSlug: String?
@@ -14,6 +17,7 @@ final class FavoriteQuoteModel {
     init(from quote: Quote) {
         self.id        = quote.id
         self.quoteText = quote.quote
+        self.quoteTextEn = quote.quoteEn
         self.author    = quote.author
         self.anime     = quote.anime
         self.animeSlug = quote.animeSlug
@@ -24,6 +28,7 @@ final class FavoriteQuoteModel {
         Quote(
             id: id,
             quote: quoteText,
+            quoteEn: quoteTextEn,
             author: author,
             anime: anime,
             categories: [],

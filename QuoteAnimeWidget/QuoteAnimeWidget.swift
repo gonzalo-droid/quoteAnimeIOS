@@ -101,7 +101,11 @@ struct QuoteEntry: TimelineEntry {
 
     static let placeholder = QuoteEntry(
         date: .now,
-        quoteText: "El esfuerzo supera al talento cuando el talento no se esfuerza.",
+        // A quote, not UI text: it goes through the same language rule as a fetched one.
+        quoteText: WidgetQuoteText.localized(
+            spanish: "El esfuerzo supera al talento cuando el talento no se esfuerza.",
+            english: "Hard work beats talent when talent doesn't work hard."
+        ),
         author: "Rock Lee",
         anime: "Naruto",
         backgroundImageData: nil,
@@ -162,7 +166,8 @@ private enum WidgetNetworkService {
             let anime  = picked.fields["anime"]  as? String
         else { return nil }
 
-        return (text, author, anime, picked.fields["animeSlug"] as? String,
+        let localized = WidgetQuoteText.localized(spanish: text, english: picked.fields["quoteEn"] as? String)
+        return (localized, author, anime, picked.fields["animeSlug"] as? String,
                 WidgetQuoteID.resolve(fields: picked.fields, key: picked.key))
     }
 
@@ -255,7 +260,9 @@ private enum WidgetNetworkService {
         let storedText = d?.string(forKey: WidgetSharedKey.quoteText)
         return QuoteEntry(
             date: .now,
-            quoteText: storedText ?? QuoteEntry.placeholder.quoteText,
+            quoteText: storedText.map {
+                WidgetQuoteText.localized(spanish: $0, english: d?.string(forKey: WidgetSharedKey.quoteTextEn))
+            } ?? QuoteEntry.placeholder.quoteText,
             author:    d?.string(forKey: WidgetSharedKey.quoteAuthor) ?? QuoteEntry.placeholder.author,
             anime:     d?.string(forKey: WidgetSharedKey.quoteAnime)  ?? QuoteEntry.placeholder.anime,
             backgroundImageData: imageData,

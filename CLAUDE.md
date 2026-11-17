@@ -243,7 +243,11 @@ sin llamador, sólo para que los tests puedan fijar lo que decide el selector de
 ### Domain models (identical to Android)
 
 ```swift
-struct Quote: Identifiable, Codable, Hashable { id, quote, author, anime, isFavorite }
+struct Quote: Identifiable, Codable, Hashable { id, quote, quoteEn?, author, anime, categories,
+                                                 animeSlug?, size?, isFavorite }
+// Show `quote.localizedText` (Presentation/Common), never `quote.quote`: Spanish app → `quote`,
+// any other language → `quoteEn`, a nil/blank one falls back to the other (`QuoteText.select`,
+// Android's `textFor`). The widget keeps a copy, `WidgetQuoteText`, pinned by `QuoteTextTests`.
 struct Category: Identifiable, Hashable { id, name }  // derived from unique anime values
 struct UserPreferences { selectedCategoryIds, notificationsEnabled, notificationStart/EndHour/Minute,
                          notificationFrequency (1–10), widgetUpdateTimesPerDay (1–8) }
@@ -251,7 +255,16 @@ struct UserPreferences { selectedCategoryIds, notificationsEnabled, notification
 
 ### Firebase structure
 
-- Node `/quotes` — flat array of `{ id, quote, author, anime }` objects
+- Node `/quotes` — `{ quote, quoteEn?, author, anime, categories?, animeSlug?, size? }` per quote
+  (keyed node or flat array). `quote` is Spanish; `quoteEn` is the English translation and may be
+  null or missing. `categories` are emotions, `animeSlug` resolves `/imagenes/{slug}`, `size` is
+  a length bucket (`"xs"`…) that nothing reads yet. Quotes without the new fields still decode.
+- Favorites keep the translation: SwiftData `FavoriteQuoteModel.quoteTextEn` (optional, implicit
+  lightweight migration) and the iOS 16 JSON. Ones saved earlier borrow it from the feed in memory.
+- The quote widget receives both texts through the App Group (`widget_quote_text`,
+  `widget_quote_text_en`) and picks with its own language when it renders. Caveat: nothing calls
+  `WidgetDataWriter.write` today, so the widget's real path is its own REST fetch, which reads
+  `quoteEn` directly; the App Group copy is only its offline fallback.
 - `QuoteRemoteDataSource` handles both array and dictionary root structures
 - Categories derived dynamically from unique `anime` field values (19 hoy, 307 frases)
 - Node `/habitTemplates/{id}` — `title` (an **Android string-resource key**, e.g. `template_theme_ninja`,

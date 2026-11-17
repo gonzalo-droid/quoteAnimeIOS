@@ -8,7 +8,7 @@ struct QuoteCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(quote.quote)
+            Text(quote.localizedText)
                 .font(.quoteSerifItalic(size: 16))
                 .foregroundColor(.textPrimary)
                 .lineSpacing(4)

@@ -11,6 +11,7 @@ let kAppGroupSuite = "group.com.gonzadev.quoteAnime"
 /// Mirrors `WidgetSharedKeys` / `HabitWidgetSharedKeys` / `UserPreferencesStore.Keys`.
 enum WidgetSharedKey {
     static let quoteText          = "widget_quote_text"
+    static let quoteTextEn        = "widget_quote_text_en"
     static let quoteAuthor        = "widget_quote_author"
     static let quoteAnime         = "widget_quote_anime"
     static let imageUrl           = "widget_image_url"
@@ -55,6 +56,39 @@ enum WidgetDeepLink {
 enum WidgetQuoteID {
     static func resolve(fields: [String: Any], key: String?) -> String? {
         (fields["id"] as? String) ?? key
+    }
+}
+
+// MARK: - Quote text by language
+// Mirrors `QuoteText` (`quoteAnime/Domain/Model/Quote.swift`), Android's `Quote.textFor(locale)`:
+// Spanish shows `quote`, any other language `quoteEn`, and a missing or blank text falls back to
+// the other one. `QuoteTextTests` reads this file and fails if the copy drifts.
+
+enum WidgetQuoteText {
+    static func select(spanish: String, english: String?, languageCode: String) -> String {
+        let es = nonBlank(spanish)
+        let en = nonBlank(english)
+        let text = isSpanish(languageCode) ? (es ?? en) : (en ?? es)
+        return text ?? ""
+    }
+
+    static func isSpanish(_ languageCode: String) -> Bool {
+        languageCode.prefix { $0 != "-" && $0 != "_" }.lowercased() == "es"
+    }
+
+    static func nonBlank(_ text: String?) -> String? {
+        guard let text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+        return text
+    }
+
+    /// The extension's own resolved localization — it ships `en` and `es`, and iOS relaunches it
+    /// with the app when the per-app language changes (Mirrors `AppLanguage.currentCode`).
+    static func currentLanguageCode(bundle: Bundle = .main) -> String {
+        bundle.preferredLocalizations.first ?? "en"
+    }
+
+    static func localized(spanish: String, english: String?) -> String {
+        select(spanish: spanish, english: english, languageCode: currentLanguageCode())
     }
 }
 
