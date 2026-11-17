@@ -197,7 +197,7 @@ Routes are typed via the `AppRoute` enum (`catalog`, `settings`, `routine`, `hab
 
 ### Firebase — flat array structure
 
-Quotes are stored under `/quotes` as a flat array of `{ id, quote, author, anime }`. Categories are derived at runtime from the unique set of `anime` field values — no separate `/categories` node exists.
+Quotes are stored under `/quotes` as `{ quote, quoteEn, author, anime, categories, animeSlug, size }` (`quoteEn` may be null; the app shows it when its language isn't Spanish, and falls back to `quote`). Categories are derived at runtime from the unique set of `anime` field values — no separate `/categories` node exists.
 
 **Why:** Reduces Firebase read overhead and avoids keeping two nodes in sync. Category filtering happens in memory after a single fetch.
 

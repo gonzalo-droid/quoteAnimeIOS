@@ -3,19 +3,25 @@ import Foundation
 struct QuoteDTO: Codable {
     let id: String
     let quote: String
+    /// English translation; nil (or absent) until the quote is translated.
+    let quoteEn: String?
     let author: String
     let anime: String
     let categories: [String]
     let animeSlug: String?
+    /// Length bucket (`"xs"`…), added with `quoteEn`. Older quotes don't carry it.
+    let size: String?
 
     func toDomain() -> Quote {
         Quote(
             id: id,
             quote: quote,
+            quoteEn: quoteEn,
             author: author,
             anime: anime,
             categories: categories,
-            animeSlug: animeSlug
+            animeSlug: animeSlug,
+            size: size
         )
     }
 
@@ -34,6 +40,10 @@ struct QuoteDTO: Codable {
         self.author     = author
         self.anime      = anime
         self.animeSlug  = dict["animeSlug"] as? String
+        // `quoteEn` may be missing, `null` (which Firebase drops) or not text: all mean "no
+        // translation". Blank text is kept here and ignored by `QuoteText.select`.
+        self.quoteEn    = dict["quoteEn"] as? String
+        self.size       = dict["size"] as? String
 
         // categories can be a Firebase array (becomes [String]) or a dict with int keys
         if let arr = dict["categories"] as? [String] {

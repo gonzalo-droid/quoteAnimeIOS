@@ -93,7 +93,7 @@ struct QuoteDetailView<Actions: View>: View {
     private var quoteBlock: some View {
         VStack(spacing: 0) {
             // Quote text
-            Text(quote.quote)
+            Text(quote.localizedText)
                 .font(.quoteSerifItalic(size: 20))
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)

@@ -51,8 +51,11 @@ final class QuoteRepositoryImpl: QuoteRepository {
     func fetchFavorites() async throws -> [Quote] {
         await preloadImagesIfNeeded()
         let favorites = try favoriteStorage.fetchAll()
+        // A favorite saved before `quoteEn` existed has no English text; the feed already in
+        // memory may have it. Only in memory — the stored copy stays as it was.
+        let feedById = Dictionary(cache.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         return favorites.map { quote in
-            var q = quote
+            var q = feedById[quote.id].map(quote.withTranslation(from:)) ?? quote
             q.imageUrl = imageCache.resolve(slug: q.animeSlug)
             return q
         }

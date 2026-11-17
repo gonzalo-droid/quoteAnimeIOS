@@ -6,7 +6,7 @@ enum NotificationHelper {
         let content = UNMutableNotificationContent()
         content.title    = quote.anime
         // content.subtitle = "— \(quote.author)"
-        content.body     = quote.quote
+        content.body     = quote.localizedText
         content.sound    = .default
         return content
     }
