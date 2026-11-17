@@ -8,6 +8,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+### Added
+- La app y el widget declaran en su privacy manifest para qué usan las preferencias guardadas, como exige el App Store.
+
 ## [1.2.0] — 2026-11
 
 ### Added
