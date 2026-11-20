@@ -27,9 +27,20 @@ final class AdsConsentManager: ObservableObject {
 
     private init() {}
 
+    /// Debug-only switch for store screenshots: launched with `-hideAds`, the ads SDK never starts
+    /// and no consent is asked, so no banner takes space and sharing skips the interstitial.
+    /// Release always shows ads.
+    static let adsHidden: Bool = {
+        #if DEBUG
+        return ProcessInfo.processInfo.arguments.contains("-hideAds")
+        #else
+        return false
+        #endif
+    }()
+
     /// Starts the ads SDK if a consent saved in an earlier launch already allows it. Shows nothing.
     func startAdsIfAllowed() {
-        guard ConsentInformation.shared.canRequestAds else { return }
+        guard !Self.adsHidden, ConsentInformation.shared.canRequestAds else { return }
         canRequestAds = true
         guard !adsStarted else { return }
         adsStarted = true
@@ -40,6 +51,7 @@ final class AdsConsentManager: ObservableObject {
     /// Refreshes the consent status and shows the form if this user still has to answer it.
     /// Called on every launch, as Google recommends: the status can change between launches.
     func gatherConsent() async {
+        guard !Self.adsHidden else { return }
         startAdsIfAllowed()
         guard !isGathering else { return }
         isGathering = true

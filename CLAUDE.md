@@ -48,6 +48,8 @@ xcrun simctl launch booted com.gonzadev.quoteAnime -AppleLanguages "(en)" -Apple
      and the share interstitial request nothing until `canRequestAds`. The form is configured in
      AdMob → Privacy & messaging. `UserMessagingPlatform` arrives through the Google Mobile Ads
      package (no product of its own in the pbxproj).
+     For store screenshots, a Debug launch with `-hideAds` (`AdsConsentManager.adsHidden`) hides
+     every ad: the SDK never starts and no consent is asked. Release ignores it.
    - `BGTaskSchedulerPermittedIdentifiers` (`com.gonzadev.quoteAnime.quoteNotificationsRefresh`) and
      `UIBackgroundModes` = `fetch` — the quote notifications' background refill
      (`QuoteNotificationBackgroundRefresh`). Both already in `quoteAnime/Info.plist`; no entitlement
