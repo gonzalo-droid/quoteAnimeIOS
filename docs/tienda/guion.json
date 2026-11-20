@@ -1,0 +1,102 @@
+{
+  "app": "AnimeQuotes",
+  "tiendas": [
+    "ios"
+  ],
+  "marca": {
+    "claro": "#F0EAFF",
+    "oscuro": "#0C0C1E",
+    "acento": "#7C5FC4",
+    "acentoSobreOscuro": "#A78BFA",
+    "detalle": "#FF6B8A",
+    "fuenteTitulo": "marca/fraunces_bold.ttf",
+    "icono": "marca/icono.png"
+  },
+  "laminas": [
+    {
+      "tipo": "portada",
+      "fondo": "oscuro",
+      "etiqueta": "01 · Inicio",
+      "titular": "Una frase anime\n*para cada día*",
+      "sub": "Motivación de tus personajes favoritos.",
+      "captura": {
+        "ios": "capturas/01-home_mha.png"
+      }
+    },
+    {
+      "tipo": "telefono-abajo",
+      "fondo": "claro",
+      "etiqueta": "02 · Mi Rutina",
+      "titular": "Convierte la\nmotivación en *hábitos*",
+      "sub": "Hábitos con temas de anime.",
+      "captura": {
+        "ios": "capturas/06-rutina.png"
+      }
+    },
+    {
+      "tipo": "destacado",
+      "fondo": "oscuro",
+      "etiqueta": "03 · Constancia",
+      "titular": "Mira tu *racha*\ncrecer",
+      "sub": "Cada día cumplido queda marcado.",
+      "captura": {
+        "ios": "capturas/07-habito_detalle.png"
+      },
+      "zona": {
+        "ios": [
+          48,
+          1040,
+          1224,
+          190
+        ]
+      }
+    },
+    {
+      "tipo": "dos-telefonos",
+      "fondo": "claro",
+      "etiqueta": "04 · Explorar",
+      "titular": "Frases según\n*cómo te sientes*",
+      "sub": "Motivación, lucha, amistad y más.",
+      "captura": {
+        "ios": "capturas/03-motivacion.png"
+      },
+      "captura2": {
+        "ios": "capturas/05-detalle.png"
+      }
+    },
+    {
+      "tipo": "telefono-abajo",
+      "fondo": "oscuro",
+      "etiqueta": "05 · Notificaciones",
+      "titular": "Una frase\n*en tu horario*",
+      "sub": "Tú eliges la hora y cuántas al día.",
+      "captura": {
+        "ios": "capturas/09-ajustes.png"
+      }
+    },
+    {
+      "tipo": "dos-telefonos",
+      "fondo": "claro",
+      "etiqueta": "06 · Favoritos",
+      "titular": "Guarda las que\n*te marcan*",
+      "sub": "Tus frases, siempre a mano.",
+      "captura": {
+        "ios": "capturas/04-favoritos.png"
+      },
+      "captura2": {
+        "ios": "capturas/02-home_spy.png"
+      }
+    },
+    {
+      "tipo": "lista",
+      "fondo": "acento",
+      "titular": "*Y además*",
+      "items": [
+        "Widget de inicio",
+        "Comparte como imagen",
+        "Español e inglés",
+        "Recordatorios"
+      ]
+    }
+  ]
+}
