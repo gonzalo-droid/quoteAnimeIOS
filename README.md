@@ -149,8 +149,8 @@ lives in [CHANGELOG.md](CHANGELOG.md).
 The published privacy policy and terms of service open inside the app and are declared in
 `Presentation/Common/AppLinks.swift`:
 
-- https://www.animequote.app/privacy-policy
-- https://www.animequote.app/terms-and-conditions
+- https://nekodojo.app/apps/animequote/privacy
+- https://nekodojo.app/apps/animequote/terms
 
 ---
 
