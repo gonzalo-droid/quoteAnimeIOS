@@ -4843,18 +4843,18 @@
         }
       }
     },
-    "Se cambia en los Ajustes del iPhone, en la página de AnimeQuotes. Las frases solo están disponibles en español." : {
+    "Se cambia en los Ajustes del iPhone, en la página de AnimeQuotes. Las frases se muestran en este idioma cuando tienen traducción." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Changed in iPhone Settings, on the AnimeQuotes page. Quotes are only available in Spanish."
+            "value" : "Changed in iPhone Settings, on the AnimeQuotes page. Quotes appear in this language when a translation is available."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se cambia en los Ajustes del iPhone, en la página de AnimeQuotes. Las frases solo están disponibles en español."
+            "value" : "Se cambia en los Ajustes del iPhone, en la página de AnimeQuotes. Las frases se muestran en este idioma cuando tienen traducción."
           }
         }
       }

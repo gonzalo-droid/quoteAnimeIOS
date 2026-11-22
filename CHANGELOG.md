@@ -8,6 +8,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+### Fixed
+- Ajustes › Idioma decía que las frases solo están en español; ahora dice que se muestran en el idioma elegido cuando tienen traducción.
+
 ## [1.2.1] — 2026-11
 
 ### Changed

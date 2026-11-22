@@ -124,7 +124,7 @@ struct SettingsView: View {
             }
             .accessibilityHint(Text("Abre los Ajustes del iPhone para cambiar el idioma de la app"))
         } footer: {
-            Text("Se cambia en los Ajustes del iPhone, en la página de AnimeQuotes. Las frases solo están disponibles en español.")
+            Text("Se cambia en los Ajustes del iPhone, en la página de AnimeQuotes. Las frases se muestran en este idioma cuando tienen traducción.")
         }
         .listRowBackground(Color.surface)
     }
