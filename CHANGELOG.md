@@ -8,6 +8,11 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+## [1.2.1] — 2026-11
+
+### Changed
+- Mismo código que la 1.2.0, con número de versión nuevo: la 1.2.0 (22) ya se publicó en la App Store bajo la ficha 1.1.0 y Apple no acepta otro build 1.2.0. Esta versión lleva las capturas nuevas de la tienda.
+
 ## [1.2.0] — 2026-11
 
 ### Added
