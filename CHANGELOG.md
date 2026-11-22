@@ -8,6 +8,9 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+### Changed
+- La política de privacidad y los términos ahora se abren en nekodojo.app, el nuevo sitio de la app.
+
 ### Fixed
 - Ajustes › Idioma decía que las frases solo están en español; ahora dice que se muestran en el idioma elegido cuando tienen traducción.
 
