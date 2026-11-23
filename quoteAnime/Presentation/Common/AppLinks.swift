@@ -3,7 +3,7 @@ import Foundation
 /// Web destinations owned by the app. Mirrors Android's `presentation/common/AppLinks.kt`
 /// so both platforms move together when a domain changes — the legal pages moved from
 /// `quote-anime-web.vercel.app` to `animequote.app` in Android commit `0b76ed0`, then to
-/// `nekodojo.app` (iOS first; Android still points at `animequote.app`).
+/// `nekodojo.app/apps/animequote/` on both platforms.
 ///
 /// The legal pages open in-app (`SafariView`); the App Store links leave the app.
 enum AppLinks {
