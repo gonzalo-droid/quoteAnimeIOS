@@ -54,6 +54,7 @@ final class QuoteRemoteDataSource {
 
             } withCancel: { error in
                 print("[Firebase] error de red/permisos: \(error.localizedDescription)")
+                CrashReporter.record(error, source: "rtdb_quotes")
                 continuation.resume(throwing: error)
             }
         }

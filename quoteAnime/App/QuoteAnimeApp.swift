@@ -1,5 +1,6 @@
 import SwiftUI
 import FirebaseCore
+import FirebaseCrashlytics
 import GoogleMobileAds
 
 @main
@@ -10,6 +11,13 @@ struct QuoteAnimeApp: App {
 
     init() {
         FirebaseApp.configure()
+        // Crashlytics collects in Release only. Set on every launch because the SDK persists it.
+        // Launch a Debug build with `-crashlyticsCollection YES` to send a test crash.
+        #if DEBUG
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(UserDefaults.standard.bool(forKey: "crashlyticsCollection"))
+        #else
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(true)
+        #endif
         // Ads start only if a consent saved in an earlier launch allows it; a first launch waits
         // for `gatherConsent()` below (Google's consent form, where the law requires it). Starting
         // also warms up the share interstitial.

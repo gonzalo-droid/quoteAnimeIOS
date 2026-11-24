@@ -93,7 +93,7 @@ quoteAnime/
 │   │                       AppTransactionDistributionDetector (switch off);
 │   │                       StoreKitEntitlementSource, StoreKitPremiumStore,
 │   │                       DebugPremiumOverrideSource (#if DEBUG only) (switch on)
-│   ├── Analytics/          FirebaseRoutineAnalytics (Analytics.logEvent)
+│   ├── Analytics/          FirebaseRoutineAnalytics (Analytics.logEvent), CrashReporter (Crashlytics non-fatals; collects in Release only, Debug with `-crashlyticsCollection YES`; the "Upload dSYM to Crashlytics" build phase uploads Release dSYMs)
 │   ├── Remote/             QuoteRemoteDataSource (Firebase) + DTOs,
 │   │                       HabitTemplateRemoteDataSource (`/habitTemplates`) + HabitTemplateDTO
 │   ├── Local/

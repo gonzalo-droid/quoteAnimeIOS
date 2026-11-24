@@ -8,6 +8,11 @@ Versions follow `MAJOR.MINOR.PATCH` — bumped in Xcode under `MARKETING_VERSION
 
 ## [Unreleased]
 
+### Added
+- Crashlytics: la build phase "Upload dSYM to Crashlytics" sube los dSYM de Release, así los crashes llegan simbolizados.
+- Crashlytics registra como errores no fatales los fallos que la app antes callaba: la lectura de frases en Realtime Database y los fallos de StoreKit al cargar planes, verificar una compra o restaurar.
+- Crashlytics recolecta solo en Release. En Debug está apagado; se enciende lanzando la app con `-crashlyticsCollection YES` para mandar un crash de prueba.
+
 ### Changed
 - La política de privacidad y los términos ahora se abren en nekodojo.app, el nuevo sitio de la app.
 

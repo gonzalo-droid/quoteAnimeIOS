@@ -33,6 +33,7 @@ final class StoreKitPremiumStore: PremiumStore {
             return products.compactMap(Self.offer(from:))
         } catch {
             print("[StoreKitPremiumStore] loadOffers failed: \(error)")
+            CrashReporter.record(error, source: "storekit_load_offers")
             return []
         }
     }
@@ -56,6 +57,7 @@ final class StoreKitPremiumStore: PremiumStore {
                     // Android would have granted premium here. We do not: an unverified
                     // transaction is exactly the forgery StoreKit's signature check exists to catch.
                     print("[StoreKitPremiumStore] unverified purchase: \(error)")
+                    CrashReporter.record(error, source: "storekit_unverified_purchase")
                     return .failed(.unverified)
                 }
             case .userCancelled:
@@ -83,6 +85,7 @@ final class StoreKitPremiumStore: PremiumStore {
         if let syncError {
             if case .userCancelled? = syncError as? StoreKitError { return .nothingToRestore }
             print("[StoreKitPremiumStore] restore failed: \(syncError)")
+            CrashReporter.record(syncError, source: "storekit_restore")
             return .failed(Self.reason(for: syncError))
         }
         return .nothingToRestore
