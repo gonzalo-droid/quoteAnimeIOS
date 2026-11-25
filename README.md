@@ -127,10 +127,10 @@ still means editing `project.pbxproj`.
 
 ```bash
 xcodebuild -project quoteanime.xcodeproj -scheme quoteAnime \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+  -destination 'platform=iOS Simulator,name=iPhone 17' build
 
 xcodebuild test -project quoteanime.xcodeproj -scheme quoteAnime \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+  -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
 ---

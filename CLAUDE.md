@@ -9,13 +9,13 @@ Standard Xcode project. Open `quoteAnime.xcodeproj`. Build with:
 ```bash
 # The project file is lowercase on disk: quoteanime.xcodeproj
 xcodebuild -project quoteanime.xcodeproj -scheme quoteAnime \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+  -destination 'platform=iOS Simulator,name=iPhone 17' build
 xcodebuild -project quoteanime.xcodeproj -scheme QuoteAnimeWidgetExtension \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+  -destination 'platform=iOS Simulator,name=iPhone 17' build
 
 # Tests (target quoteAnimeTests, Swift Testing)
 xcodebuild test -project quoteanime.xcodeproj -scheme quoteAnime \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+  -destination 'platform=iOS Simulator,name=iPhone 17'
 
 # StoreKit testing: the shared scheme `quoteAnime` points at `quoteAnimeTests/Premium.storekit`,
 # so running from Xcode uses the local store. `simctl launch` cannot: simctl has no StoreKit
